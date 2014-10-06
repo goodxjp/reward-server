@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  campaigns_id: 
+  price: 1
+  payment: 1
+  point: 1
+
+two:
+  campaigns_id: 
+  price: 1
+  payment: 1
+  point: 1

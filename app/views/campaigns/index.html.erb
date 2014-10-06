@@ -1,0 +1,32 @@
+<div class="starter-template">
+
+<h2>キャンペーン一覧</h2>
+
+<table class="table table-borderd table-hover">
+  <thead>
+    <tr class="span12">
+      <th class="col-md-1" >アイコン</th>
+      <th class="col-md-3" >名称</th>
+      <th>詳細</th>
+      <th class="col-md-3" colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @campaigns.each do |campaign| %>
+      <tr class="span12">
+        <td><%= image_tag campaign.icon_url, :size => '57x57' %></td>
+        <td><%= campaign.name %></td>
+        <td><%= campaign.detail %></td>
+        <td class="col-md-1"><%= link_to 'Edit', edit_campaign_path(campaign) %></td>
+        <td class="col-md-1"><%= link_to 'Destroy', campaign, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to '新規登録', new_campaign_path, :class => 'btn btn-primary' %>
+
+</div>
