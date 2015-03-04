@@ -12,7 +12,9 @@
  *
  *= require_tree .
  *= require_self
- *= require bootstrap
+ *= require bootstrap/css/bootstrap.min
+ *= require dist/css/AdminLTE
+ *= require dist/css/skins/_all-skins
  */
 .reward h1 {
   margin: 0;
