@@ -21,5 +21,6 @@ module RewardServer
     # config.i18n.default_locale = :de
 
     config.assets.paths << "#{Rails}/vender/assets/fonts"
+    config.assets.precompile += %w(*.eot *.svg *.ttf *.woff)
   end
 end
