@@ -11,25 +11,29 @@
     </div>
   <% end %>
 
-  <div class="form-input">
-    <%= f.input :name, label: 'キャンペーン名',
-        input_wrapper_html: { class: 'col-xs-8' } %>
-    <%= f.input :detail, label: '詳細',
-        input_wrapper_html: { class: 'col-xs-8' } %>
-    <%= f.input :icon_url, label: 'アイコン',
-        input_wrapper_html: { class: 'col-xs-8' } %>
+  <%= f.input :name, label: 'キャンペーン名',
+      input_wrapper_html: { class: 'col-sm-8' } %>
+  <%= f.input :detail, label: '詳細',
+      input_wrapper_html: { class: 'col-sm-8' } %>
+  <%= f.input :icon_url, label: 'アイコン',
+      input_wrapper_html: { class: 'col-sm-8' } %>
 
-    <%= f.simple_fields_for @advertisement do |a| %>
-      <%= a.input :price, label: '金額',
-          input_wrapper_html: { class: 'col-xs-3' }, placeholder: 'キャンペーン実行にかかる金額' %>
-      <%= a.input :payment, label: '報酬',
-          input_wrapper_html: { class: 'col-xs-3' }, placeholder: 'ネットワークから支払われる金額' %>
-      <%= a.input :point, label: 'ポイント',
-          input_wrapper_html: { class: 'col-xs-3' } %>
-    <% end %>
+  <%= f.simple_fields_for @advertisement do |a| %>
+  <%= a.input :price, label: '金額',
+      input_wrapper_html: { class: 'col-sm-3' }, placeholder: 'キャンペーン実行にかかる金額' %>
+  <%= a.input :payment, label: '報酬',
+      input_wrapper_html: { class: 'col-sm-3' }, placeholder: 'ネットワークから支払われる金額' %>
+  <%= a.input :point, label: 'ポイント',
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <% end %>
+
+  <div class="form-group">
+    <div class="col-sm-offset-3 col-sm-4">
+      <%= f.submit '登録', class: 'btn btn-primary' %>
+    </div>
   </div>
 
-  <div class="form-actions">
-    <%= f.button :submit, :class => 'btn-primary' %>
+  <div class="col-sm-offset-3 col-sm-4">
+    <a href="http://masterpeace21.com/iTunes2.php" target="_blank">AppStore アイコン取得</a>
   </div>
 <% end %>

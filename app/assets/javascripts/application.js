@@ -10,9 +10,9 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-// require jquery_ujs
-// require turbolinks
 //= require plugins/jQuery/jQuery-2.1.3.min
+//= require jquery_ujs
+// require turbolinks
 //= require bootstrap/js/bootstrap
 //= require plugins/slimScroll/jquery.slimscroll.min
 //= require plugins/fastclick/fastclick.min

@@ -1,16 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>RewardServer</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="width=device-width, initial=scale=1" name="viewport">
+
+  <title>管理画面</title>
+
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <!-- Font Awesome Icons -->
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
   <!-- Ionicons -->
   <link href="http://code.ionicframework.com/ionicons/2.0.0/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
-  <meta content="width=device-width, initial=scale=1" name="viewport">
+
 </head>
 <body role="document" class="skin-blue">
   <div class="wrapper">
@@ -36,11 +41,7 @@
       </section>
     </aside>
     <div class="content-wrapper">
-      <section class="content-header">
-      </section>
-      <section class="content">
-        <%= yield %>
-      </section>
+      <%= yield %>
     </div>
   </div><!-- /.wrapper -->
 </body>
