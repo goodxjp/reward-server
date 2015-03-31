@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140903045316) do
+ActiveRecord::Schema.define(version: 20150326041059) do
 
   create_table "advertisements", force: true do |t|
     t.integer  "campaign_id"
@@ -28,6 +28,14 @@ ActiveRecord::Schema.define(version: 20140903045316) do
     t.string   "name"
     t.text     "detail"
     t.string   "icon_url"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "media_users", force: true do |t|
+    t.string   "terminal_id"
+    t.text     "terminal_info"
+    t.string   "android_registration_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

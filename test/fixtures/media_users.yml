@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  terminal_id: MyString
+  terminal_info: MyText
+  android_registration_id: MyString
+
+two:
+  terminal_id: MyString
+  terminal_info: MyText
+  android_registration_id: MyString

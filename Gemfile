@@ -43,3 +43,5 @@ gem 'spring',        group: :development
 # http://techracho.bpsinc.jp/shibuya/2014_06_27/18101
 gem 'simple_form', '~> 3.1.0.rc2'
 
+# http://qiita.com/sue738/items/c2ce141cf24f9f1dbf01
+gem 'gcm'
