@@ -45,3 +45,6 @@ gem 'simple_form', '~> 3.1.0.rc2'
 
 # http://qiita.com/sue738/items/c2ce141cf24f9f1dbf01
 gem 'gcm'
+
+# http://railsgirls.jp/devise/
+gem 'devise'
