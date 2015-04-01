@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   devise_for :admin_users
   get 'welcome/index'
+  get 'welcome/admin'
 
   resources :advertisements
 
