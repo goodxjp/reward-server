@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  resources :media
+
+  resources :networks
+
   devise_for :admin_users
   get 'welcome/index'
   get 'welcome/admin'

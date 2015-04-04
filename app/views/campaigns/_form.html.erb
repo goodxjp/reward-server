@@ -11,6 +11,7 @@
     </div>
   <% end %>
 
+  <%= f.association :network, label: 'ネットワーク', input_wrapper_html: { class: 'col-sm-3' } %>
   <%= f.input :name, label: 'キャンペーン名',
       input_wrapper_html: { class: 'col-sm-8' } %>
   <%= f.input :detail, label: '詳細',
@@ -20,9 +21,9 @@
 
   <%= f.simple_fields_for @advertisement do |a| %>
   <%= a.input :price, label: '金額',
-      input_wrapper_html: { class: 'col-sm-2' }, placeholder: 'キャンペーン実行にかかる金額' %>
+      input_wrapper_html: { class: 'col-sm-2' } %>
   <%= a.input :payment, label: '報酬',
-      input_wrapper_html: { class: 'col-sm-2' }, placeholder: 'ネットワークから支払われる金額' %>
+      input_wrapper_html: { class: 'col-sm-2' } %>
   <%= a.input :point, label: 'ポイント',
       input_wrapper_html: { class: 'col-sm-2' } %>
   <% end %>

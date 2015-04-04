@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150331062954) do
+ActiveRecord::Schema.define(version: 20150404122438) do
 
   create_table "admin_users", force: true do |t|
     t.string   "email",                  default: "", null: false
@@ -48,12 +48,27 @@ ActiveRecord::Schema.define(version: 20150331062954) do
     t.string   "icon_url"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "network_id"
+  end
+
+  add_index "campaigns", ["network_id"], name: "index_campaigns_on_network_id"
+
+  create_table "media", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "media_users", force: true do |t|
     t.string   "terminal_id"
     t.text     "terminal_info"
     t.string   "android_registration_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "networks", force: true do |t|
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

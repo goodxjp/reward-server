@@ -1,37 +1,32 @@
 <section class="content-header">
-  <h2>キャンペーン一覧</h2>
+  <h2>メディア一覧</h2>
 </section>
 
 <section class="content">
+  <p>しばらくは 1 つ固定で。複数運用できる仕組みだけ入れておく。</p>
+
   <table class="table table-striped table-bordered table-hover">
     <thead>
       <tr>
         <th class="col-sm-1">ID</th>
-        <th class="col-sm-1">ネットワーク</th>
-        <th class="col-sm-1">アイコン</th>
-        <th class="col-sm-2">名称</th>
-        <th class="hidden-xs col-sm-2">詳細</th>
-        <th class="col-sm-1">ポイント</th>
+        <th class="col-sm-6">名前</th>
         <th class="col-sm-1">状態</th>
-        <th class="col-sm-1">登録日時</th>
+        <th class="col-sm-2">登録日時</th>
         <th class="col-sm-2 text-center"></th>
       </tr>
     </thead>
 
     <tbody>
-      <% @campaigns.each do |campaign| %>
+      <% @media.each do |medium| %>
       <tr>
-        <td><%= campaign.id %></td>
-        <td><%= campaign.network.name %></td>
-        <td><%= image_tag campaign.icon_url, :size => '57x57' %></td>
-        <td><%= campaign.name %></td>
-        <td class="hidden-xs col-sm-2"><%= truncate(campaign.detail, :lenght => 30) %></td>
-        <td><%= campaign.advertisements[0].point %></td>
+        <td><%= medium.id %></td>
+        <td><%= medium.name %></td>
         <td class="text-center"><span class="label label-success">有効</span></td>
-        <td><%= campaign.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S") %></td>
+        <td><%= medium.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S") %></td>
+
         <td class="text-center">
           <div class="btn-group">
-            <%= link_to edit_campaign_path(campaign), class: 'btn btn-default' do %>
+            <%= link_to edit_medium_path(medium), class: 'btn btn-default' do %>
               <i class="fa fa-edit"></i>
             <% end %>
             <div class="btn-group">
@@ -41,7 +36,7 @@
               <ul class="dropdown-menu pull-right">
                 <li><a href="#">レポート</a></li>
                 <li>
-                  <%= link_to campaign, method: :delete, data: { confirm: 'Are you sure?' } do %>
+                  <%= link_to medium, method: :delete, data: { confirm: 'Are you sure?' } do %>
                     削除
                   <% end %>
                 </li>
@@ -51,24 +46,17 @@
         </td>
       </tr>
       <% end %>
+
       <tr>
         <td></td>
         <td></td>
         <td></td>
         <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
         <td class="text-center">
-          <%= link_to '新規登録', new_campaign_path, :class => 'btn btn-default' %>
+          <%= link_to '新規登録', new_medium_path, :class => 'btn btn-default' %>
         </td>
       </tr>
     </tbody>
   </table>
-
-<br>
-
-
 </section>
 
