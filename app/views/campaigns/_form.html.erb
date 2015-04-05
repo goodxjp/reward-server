@@ -18,6 +18,8 @@
       input_wrapper_html: { class: 'col-sm-8' } %>
   <%= f.input :icon_url, label: 'アイコン',
       input_wrapper_html: { class: 'col-sm-8' } %>
+  <%= f.input :url, label: 'URL',
+      input_wrapper_html: { class: 'col-sm-8' } %>
 
   <%= f.simple_fields_for @advertisement do |a| %>
   <%= a.input :price, label: '金額',

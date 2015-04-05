@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class CampaignsController < ApplicationController
   before_action :set_campaign, only: [:show, :edit, :update, :destroy]
 
@@ -72,6 +73,16 @@ class CampaignsController < ApplicationController
     end
   end
 
+  def execute
+    @campaign = Campaign.find(params[:id])
+
+    # TODO: ユーザー ID と署名のチェック
+
+    # TODO: クリック履歴の記録
+
+    redirect_to @campaign.url
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_campaign
@@ -80,6 +91,6 @@ class CampaignsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def campaign_params
-      params.require(:campaign).permit(:network_id, :name, :detail, :icon_url)
+      params.require(:campaign).permit(:network_id, :name, :detail, :icon_url, :url)
     end
 end

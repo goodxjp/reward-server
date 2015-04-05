@@ -9,7 +9,11 @@ Rails.application.routes.draw do
 
   resources :advertisements
 
-  resources :campaigns
+  resources :campaigns do
+    member do
+      get 'execute'
+    end
+  end
 
   resources :media_users
   post 'media_users/:id/notify' => 'media_users#notify'
