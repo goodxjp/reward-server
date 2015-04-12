@@ -4,7 +4,7 @@ class MediaUsersController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => [ :create ]
 
   def index
-    @media_users = MediaUser.all
+    @media_users = MediaUser.order(id: :desc)
   end
 
   def show

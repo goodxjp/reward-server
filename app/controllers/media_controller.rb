@@ -4,7 +4,7 @@ class MediaController < ApplicationController
   respond_to :html
 
   def index
-    @media = Medium.all
+    @media = Medium.order(:id)
     respond_with(@media)
   end
 

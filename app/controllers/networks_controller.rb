@@ -4,7 +4,7 @@ class NetworksController < ApplicationController
   respond_to :html
 
   def index
-    @networks = Network.all
+    @networks = Network.order(:id)
     respond_with(@networks)
   end
 
