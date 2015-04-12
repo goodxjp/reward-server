@@ -13,6 +13,9 @@ class MediaUsersController < ApplicationController
   def create
     @media_user = MediaUser.new(media_user_params)
 
+    terminal_info = params[:media_user][:terminal_info]
+    @media_user.terminal_info = terminal_info.to_json
+
     if @media_user.save
       render json: @media_user
       return

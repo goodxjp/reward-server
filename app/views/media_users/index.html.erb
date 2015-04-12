@@ -21,7 +21,12 @@
       <tr>
         <td><%= media_user.id %></td>
         <td><%= truncate(media_user.terminal_id, :length => 30) %></td>
-        <td><%= truncate(media_user.terminal_info, :length => 30) %></td>
+        <td>
+          <%= media_user.brand %><br>
+          <%= media_user.model %><br>
+          <% if not media_user.version.nil? %>
+            Android <%= media_user.version %></td>
+          <% end %>
         <td><%= truncate(media_user.android_registration_id, :length => 50) %></td>
         <td class="text-center"><span class="label label-success">有効</span></td>
         <td><%= media_user.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S") %></td>
