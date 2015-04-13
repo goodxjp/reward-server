@@ -22,13 +22,15 @@
       input_wrapper_html: { class: 'col-sm-8' } %>
 
   <%= f.simple_fields_for @advertisement do |a| %>
-  <%= a.input :price, label: '金額',
+  <%= a.input :price, label: '利用料金',
       input_wrapper_html: { class: 'col-sm-2' } %>
-  <%= a.input :payment, label: '報酬',
+  <%= a.input :payment, label: '報酬金額',
       input_wrapper_html: { class: 'col-sm-2' } %>
   <%= a.input :point, label: 'ポイント',
       input_wrapper_html: { class: 'col-sm-2' } %>
   <% end %>
+
+  <%= f.association :media, as: :check_boxes, label: '配信メディア', wrapper: :horizontal_radio_and_checkboxes, input_wrapper_html: { class: 'col-sm-4' }  %>
 
   <div class="form-group">
     <div class="col-sm-offset-3 col-sm-4">

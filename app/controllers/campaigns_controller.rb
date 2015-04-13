@@ -91,6 +91,10 @@ class CampaignsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def campaign_params
-      params.require(:campaign).permit(:network_id, :name, :detail, :icon_url, :url)
+      # 多対多関連のチェックボックスに対応
+      # http://qiita.com/gotohiro55/items/0d76ac9412b04a431e32
+      p = params.require(:campaign).permit(:network_id, :name, :detail, :icon_url, :url, :medium_ids => [])
+      p[:medium_ids] ||= []
+      p
     end
 end
