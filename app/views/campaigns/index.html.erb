@@ -26,7 +26,14 @@
         <td><%= image_tag campaign.icon_url, :size => '57x57' %></td>
         <td><%= campaign.name %></td>
         <td class="hidden-xs col-sm-2"><%= truncate(campaign.detail, :lenght => 30) %></td>
-        <td><%= campaign.advertisements[0].point %></td>
+        <td>
+          <% point = campaign.advertisements[0].point %>
+          <% if point.nil? %>
+            (デフォルト)
+          <% else %>
+            <%= point %>
+          <% end %>
+        </td>
         <td class="text-center"><span class="label label-success">有効</span></td>
         <td><%= campaign.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S") %></td>
         <td class="text-center">

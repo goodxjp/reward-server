@@ -30,36 +30,64 @@ class CampaignsController < ApplicationController
     @campaign = Campaign.new(campaign_params)
     @advertisement = Advertisement.new(params.require(:campaign).require(:advertisement).permit(:price, :payment, :point))
 
-    respond_to do |format|
-      if not @campaign.save
-        format.html { render :new }
-        format.json { render json: @campaign.errors, status: :unprocessable_entity }
-        return
-      end
+    begin
+      ActiveRecord::Base.transaction do
+        # 両方の Validation を実行しておく
+        campaign_invalid = @campaign.invalid?
+        advertisement_invalid = @advertisement.invalid?
 
-      @advertisement.campaign_id = @campaign.id
-      if not @advertisement.save
-        format.html { render :new }
-        format.json { render json: @campaign.errors, status: :unprocessable_entity }
-        return
-      end
+        if campaign_invalid or advertisement_invalid
+          render :new
+          return
+        end
 
-      format.html { redirect_to :action => 'index', notice: 'Campaign was successfully created.' }
-      format.json { render :show, status: :created, location: @campaign }
+        @campaign.save!
+        @advertisement.campaign_id = @campaign.id
+
+        @advertisement.save!
+
+        redirect_to :action => 'index', notice: 'Campaign was successfully created.'
+      end
+    rescue => e
+      logger.debug e
+      render :new
     end
   end
 
   # PATCH/PUT /campaigns/1
   # PATCH/PUT /campaigns/1.json
   def update
-    respond_to do |format|
-      if @campaign.update(campaign_params)
-        format.html { redirect_to :action => 'index', notice: 'Campaign was successfully updated.' }
-        format.json { render :show, status: :ok, location: @campaign }
-      else
-        format.html { render :edit }
-        format.json { render json: @campaign.errors, status: :unprocessable_entity }
+    advertisement_params = params.require(:campaign).require(:advertisement).permit(:price, :payment, :point)
+
+    begin
+      ActiveRecord::Base.transaction do
+        # 両方の Validation を実行しておく
+        campaign = Campaign.new(campaign_params)
+        campaign_invalid = campaign.invalid?
+        advertisement = Advertisement.new(advertisement_params)
+        advertisement_invalid = advertisement.invalid?
+
+        if campaign_invalid or advertisement_invalid
+          @advertisement = @campaign.advertisements[0]
+
+          @campaign.attributes = campaign_params
+          @campaign.valid?  # エラーメッセージを入れるため
+          @advertisement.attributes = advertisement_params
+          @advertisement.valid?  # エラーメッセージを入れるため
+
+          render :edit
+          return
+        end
+
+        @campaign.update!(campaign_params)
+        @advertisement = @campaign.advertisements[0]
+        @advertisement.update!(advertisement_params)
+
+        redirect_to :action => 'index', notice: 'Campaign was successfully created.'
       end
+    rescue => e
+      logger.debug e
+      render :edit
     end
   end
 
@@ -73,6 +101,7 @@ class CampaignsController < ApplicationController
     end
   end
 
+  # 案件実行
   def execute
     @campaign = Campaign.find(params[:id])
 
