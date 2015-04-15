@@ -122,7 +122,7 @@ class CampaignsController < ApplicationController
     def campaign_params
       # 多対多関連のチェックボックスに対応
       # http://qiita.com/gotohiro55/items/0d76ac9412b04a431e32
-      p = params.require(:campaign).permit(:network_id, :name, :detail, :icon_url, :url, :medium_ids => [])
+      p = params.require(:campaign).permit(:network_id, :campaign_category_id, :name, :detail, :icon_url, :url, :requirement, :requirement_detail, :period, :medium_ids => [])
       p[:medium_ids] ||= []
       p
     end

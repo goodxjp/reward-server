@@ -36,6 +36,8 @@
   <% end %>
 
   <%= f.association :network, label: 'ネットワーク', input_wrapper_html: { class: 'col-sm-3' } %>
+
+  <%= f.association :campaign_category, label: 'カテゴリー', input_wrapper_html: { class: 'col-sm-3' } %>
   <%= f.input :name, label: 'キャンペーン名',
       input_wrapper_html: { class: 'col-sm-8' } %>
   <%= f.input :detail, label: '詳細',
@@ -43,6 +45,13 @@
   <%= f.input :icon_url, label: 'アイコン',
       input_wrapper_html: { class: 'col-sm-8' } %>
   <%= f.input :url, label: 'URL',
+      input_wrapper_html: { class: 'col-sm-8' } %>
+
+  <%= f.input :requirement, label: '成果条件',
+      input_wrapper_html: { class: 'col-sm-8' } %>
+  <%= f.input :requirement_detail, label: '成果条件詳細',
+      input_wrapper_html: { class: 'col-sm-8' } %>
+  <%= f.input :period, label: '反映時期',
       input_wrapper_html: { class: 'col-sm-8' } %>
 
   <%= f.simple_fields_for @advertisement do |a| %>
