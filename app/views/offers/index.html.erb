@@ -37,7 +37,13 @@
              (不明 (<%= offer.medium_id %>))
           <% end %>
         </td>
-        <td><%= offer.campaign_category.name %></td>
+        <td>
+          <% if not offer.campaign_category.nil? %>
+            <%= offer.campaign_category.name %>
+          <% else %>
+             (不明 (<%= offer.campaign_category_id %>))
+          <% end %>
+        </td>
         <td><%= image_tag offer.icon_url, :size => '57x57' %></td>
         <td><%= offer.name %></td>
         <td><%= offer.point %></td>
