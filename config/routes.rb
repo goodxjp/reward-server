@@ -20,6 +20,16 @@ Rails.application.routes.draw do
   resources :media_users
   post 'media_users/:id/notify' => 'media_users#notify'
 
+  #
+  # API
+  # - http://ruby-rails.hatenadiary.com/entry/20150108/1420675366
+  #
+  namespace :api, defaults: { format: 'json' } do
+    namespace :v1 do
+      resources :offers, :only => [ 'index' ]
+    end
+  end
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

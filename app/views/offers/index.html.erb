@@ -30,7 +30,13 @@
           <%= offer.id %><br>
           <%= link_to offer.campaign.id, edit_campaign_path(offer.campaign), class: 'btn btn-default btn-xs' %>
         </td>
-        <td><%= offer.medium.name %></td>
+        <td>
+          <% if not offer.medium.nil? %>
+             <%= offer.medium.name %>
+          <% else %>
+             (不明 (<%= offer.medium_id %>))
+          <% end %>
+        </td>
         <td><%= offer.campaign_category.name %></td>
         <td><%= image_tag offer.icon_url, :size => '57x57' %></td>
         <td><%= offer.name %></td>

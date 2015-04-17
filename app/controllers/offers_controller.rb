@@ -7,19 +7,8 @@ class OffersController < ApplicationController
   def index
     @offers = Offer.all
 
-    # TODO: メディアの特定
-    medium = Medium.first
-
-    # TODO: ユーザーの特定
-
-    # TODO: API は明確に処理を別けた方がよさげ
-
     # Devise のせいで Scaffold の生成コードが変わった。
-    #respond_with(@offers)
-    respond_to do |format|
-      format.html
-      format.json { @offers = Offer.where(:available => true, :medium => medium) }
-    end
+    respond_with(@offers)
   end
 
   def show
