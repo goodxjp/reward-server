@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 class Advertisement < ActiveRecord::Base
-  belongs_to :campaigns
+  belongs_to :campaign
 
   # ユーザーに意識させない
   #validates :campaigns, :presence => true

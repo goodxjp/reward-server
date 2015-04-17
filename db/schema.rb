@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150413041040) do
+ActiveRecord::Schema.define(version: 20150416023535) do
 
   create_table "admin_users", force: true do |t|
     t.string   "email",                  default: "", null: false
@@ -42,6 +42,12 @@ ActiveRecord::Schema.define(version: 20150413041040) do
 
   add_index "advertisements", ["campaign_id"], name: "index_advertisements_on_campaign_id"
 
+  create_table "campaign_categories", force: true do |t|
+    t.string   "name",       null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "campaigns", force: true do |t|
     t.string   "name"
     t.text     "detail"
@@ -50,8 +56,13 @@ ActiveRecord::Schema.define(version: 20150413041040) do
     t.datetime "updated_at"
     t.integer  "network_id"
     t.string   "url"
+    t.integer  "campaign_category_id"
+    t.string   "requirement"
+    t.text     "requirement_detail"
+    t.string   "period"
   end
 
+  add_index "campaigns", ["campaign_category_id"], name: "index_campaigns_on_campaign_category_id"
   add_index "campaigns", ["network_id"], name: "index_campaigns_on_network_id"
 
   create_table "campaigns_media", id: false, force: true do |t|
@@ -81,5 +92,28 @@ ActiveRecord::Schema.define(version: 20150413041040) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "offers", force: true do |t|
+    t.integer  "campaign_id",                         null: false
+    t.integer  "medium_id",                           null: false
+    t.integer  "campaign_category_id"
+    t.string   "name"
+    t.text     "detail"
+    t.string   "icon_url"
+    t.string   "url"
+    t.string   "requirement"
+    t.text     "requirement_detail"
+    t.string   "period"
+    t.integer  "price"
+    t.integer  "payment"
+    t.integer  "point"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "available",            default: true, null: false
+  end
+
+  add_index "offers", ["campaign_category_id"], name: "index_offers_on_campaign_category_id"
+  add_index "offers", ["campaign_id"], name: "index_offers_on_campaign_id"
+  add_index "offers", ["medium_id"], name: "index_offers_on_medium_id"
 
 end

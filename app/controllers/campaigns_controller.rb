@@ -46,6 +46,13 @@ class CampaignsController < ApplicationController
 
         @advertisement.save!
 
+        # オファー作成
+        @campaign.media.each do |medium|
+          #offer = Offer.new
+          offer = Offer.create_from_campaign(medium, @campaign)
+          offer.save!
+        end
+
         redirect_to :action => 'index', notice: 'Campaign was successfully created.'
       end
     rescue => e
@@ -59,6 +66,8 @@ class CampaignsController < ApplicationController
   def update
     advertisement_params = params.require(:campaign).require(:advertisement).permit(:price, :payment, :point)
 
+    # TODO: ここらへん見るものが多岐にわたるからキャンペーン単位でロックかけておく方が安全か？
+    # TODO: 本当に楽観的ロックで大丈夫か？
     begin
       ActiveRecord::Base.transaction do
         # 両方の Validation を実行しておく
@@ -82,6 +91,47 @@ class CampaignsController < ApplicationController
         @campaign.update!(campaign_params)
         @advertisement = @campaign.advertisements[0]
         @advertisement.update!(advertisement_params)
+
+        #
+        # 差分をチェックしてオファー更新、新規作成
+        #
+        media = Medium.all  # 今はメディアが少ないので全メディアに対して処理を行う。将来的には差分のみ実施
+        media.each do |medium|
+          # チェック対象となるオファーを取得
+          offers = Offer.where(:campaign => @campaign, :medium => medium)
+
+          if @campaign.media.include?(medium)
+            #
+            # 配信対象メディア
+            #
+            # すでにオファーがないかチェックしながら、有効、無効を切り替える
+            offer_exists = false
+            offers.each do |offer|
+              if offer.equal?(@campaign)
+                offer.available = true
+                offer_exists = true
+                # TODO: 万が一複数できたらどうするか？
+              else
+                offer.available = false
+              end
+              offer.save!  # TODO: 保存する必要がないものは保存しないようにしたい
+            end
+
+            # オファーがなければ新規作成
+            if not offer_exists
+              new_offer = Offer.create_from_campaign(medium, @campaign)
+              new_offer.save!
+            end
+          else
+            #
+            # 配信停止メディア
+            #
+            offers.each do |offer|
+              offer.available = false
+              offer.save!  # TODO: 保存する必要がないものは保存しないようにしたい
+            end
+          end
+        end
 
         redirect_to :action => 'index', notice: 'Campaign was successfully created.'
       end

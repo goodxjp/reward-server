@@ -1,0 +1,23 @@
+<%= simple_form_for(@offer) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :campaign %>
+    <%= f.input :medium %>
+    <%= f.input :campaign_category %>
+    <%= f.input :name %>
+    <%= f.input :detail %>
+    <%= f.input :icon_url %>
+    <%= f.input :url %>
+    <%= f.input :requirement %>
+    <%= f.input :requirement_detail %>
+    <%= f.input :period %>
+    <%= f.input :price %>
+    <%= f.input :payment %>
+    <%= f.input :point %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>
