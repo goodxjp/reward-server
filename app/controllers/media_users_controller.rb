@@ -10,6 +10,7 @@ class MediaUsersController < ApplicationController
   def show
   end
 
+  # TODO: 廃止
   def create
     @media_user = MediaUser.new(media_user_params)
 

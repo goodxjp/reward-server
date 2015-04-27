@@ -1,4 +1,8 @@
 class MediaUser < ActiveRecord::Base
+  validates :terminal_id,
+    :presence => true,
+    :uniqueness => true
+
   def version
     begin
       json = JSON.parse(terminal_info)
