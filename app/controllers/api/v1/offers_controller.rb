@@ -2,6 +2,7 @@
 module Api
   module V1
     class OffersController < ApplicationController
+      helper_method :make_execute_url
 
       def index
         mid = params[:mid]
@@ -16,6 +17,8 @@ module Api
         #medir_user = MediaUser.find(uid)
 
         @offers = Offer.where(:available => true, :medium => medium)
+        @mid = mid
+        @uid = uid
       end
 
       # 厳密にはブラウザから呼ばれるので API ではない
@@ -33,6 +36,11 @@ module Api
         logger.debug("remote_ip = #{request.remote_ip}")
 
         redirect_to offer.url
+      end
+
+      # ブラウザで叩かれる案件実行 URL を生成
+      def make_execute_url(offer, mid, uid)
+        return execute_api_v1_offer_url(offer, :mid => mid, :uid => uid)
       end
     end
   end
