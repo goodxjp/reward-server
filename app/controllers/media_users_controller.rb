@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 class MediaUsersController < ApplicationController
+  before_action :authenticate_admin_user!
   before_action :set_media_user, only: [:show, :edit, :update, :destroy]
   skip_before_filter :verify_authenticity_token, :only => [ :create ]
 

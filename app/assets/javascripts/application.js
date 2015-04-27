@@ -17,5 +17,5 @@
 //= require plugins/slimScroll/jquery.slimscroll.min
 //= require plugins/fastclick/fastclick.min
 //= require dist/js/app
-//= require dist/js/demo
+// require dist/js/demo
 //= require_tree .

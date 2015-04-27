@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 class OffersController < ApplicationController
+  before_action :authenticate_admin_user!
   before_action :set_offer, only: [:show, :edit, :update, :destroy]
 
   respond_to :html

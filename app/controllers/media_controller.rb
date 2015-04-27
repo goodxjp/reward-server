@@ -1,4 +1,5 @@
 class MediaController < ApplicationController
+  before_action :authenticate_admin_user!
   before_action :set_medium, only: [:show, :edit, :update, :destroy]
 
   respond_to :html

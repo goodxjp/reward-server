@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 class CampaignsController < ApplicationController
+  before_action :authenticate_admin_user!
   before_action :set_campaign, only: [:show, :edit, :update, :destroy]
 
   # GET /campaigns
