@@ -9,6 +9,13 @@ module Api
       # ユーザー登録 API
       #
       def create
+        # すでに端末が登録されていないかチェック
+        @media_user = MediaUser.find_by_terminal_id(params[:terminal_id])
+        if not @media_user.nil?
+          logger.debug "Registered terminal_id = #{@media_user.terminal_id}."
+          render "show" and return
+        end
+
         @media_user = MediaUser.new(media_user_params)
 
         # TODO: (ユーザーが特定できていないときの) 署名のチェック

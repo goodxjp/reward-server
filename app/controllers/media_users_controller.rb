@@ -9,6 +9,8 @@ class MediaUsersController < ApplicationController
   end
 
   def show
+    # クリック履歴取得
+    @click_histories = ClickHistory.where(media_user: @media_user).order(created_at: :desc)
   end
 
   # TODO: 廃止

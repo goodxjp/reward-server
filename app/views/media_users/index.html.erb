@@ -19,7 +19,9 @@
     <tbody>
       <% @media_users.each do |media_user| %>
       <tr>
-        <td><%= media_user.id %></td>
+        <td>
+          <%= link_to media_user.id, media_user, class: 'btn btn-default btn-xs' %>
+        </td>
         <td><%= truncate(media_user.terminal_id, :length => 30) %></td>
         <td>
           <%= media_user.brand %><br>
