@@ -1,7 +1,15 @@
+# -*- coding: utf-8 -*-
 class MediaUser < ActiveRecord::Base
+  has_many :points
+
   validates :terminal_id,
     :presence => true,
     :uniqueness => true
+
+  # キャンペーンに対応した成果数
+  def count_points_by_campaign(campaign)
+    return Point.where(media_user: self).where(source_type: "Campaign", source: campaign).size
+  end
 
   def version
     begin

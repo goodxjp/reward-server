@@ -170,7 +170,9 @@
                 <th class="col-sm-1">IP</th>
                 <th class="col-sm-3">クリック情報</th>
                 <th class="col-sm-2">クリック日時</th>
-                <th class="col-sm-2"></th>
+                <th class="col-sm-2">
+                  <small class="text-muted">※括弧内の数字は成果件数。通常は 1。</small>
+                </th>
                 <th class="col-sm-1"></th>
               </tr>
             </thead>
@@ -190,7 +192,12 @@
                   <%= l click_history.created_at, :format => :default %>
                 </td>
                 <td class="text-center">
+                  <% points_size = @media_user.count_points_by_campaign(click_history.offer.campaign) %>
+                  <% if points_size > 0 %>
+                  <span class="label label-success">達成 (<%= points_size %>)</span>
+                  <% else %>
                   <span class="label label-default">未達成</span>
+                  <% end %>
                 </td>
                 <td class="text-center">
                   <div class="btn-group">
