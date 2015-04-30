@@ -9,7 +9,10 @@
         <th class="col-sm-1">ID</th>
         <th class="col-sm-2">端末 ID</th>
         <th class="col-sm-2">端末情報</th>
-        <th class="col-sm-2">Android 登録 ID</th>
+        <th class="col-sm-2">
+          総獲得ポイント<br>
+          <small class="text-muted">※過去に獲得した総ポイント数</small>
+        </th>
         <th class="col-sm-1">状態</th>
         <th class="col-sm-2">登録日時</th>
         <th class="col-sm-2 text-center"></th>
@@ -29,7 +32,7 @@
           <% if not media_user.version.nil? %>
             Android <%= media_user.version %></td>
           <% end %>
-        <td><%= truncate(media_user.android_registration_id, :length => 50) %></td>
+        <td class="text-right"><%= number_with_delimiter(media_user.total_point) %></td>
         <td class="text-center"><span class="label label-success">有効</span></td>
         <td><%= media_user.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S") %></td>
         <td class="text-center">

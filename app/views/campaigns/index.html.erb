@@ -6,15 +6,15 @@
   <table class="table table-striped table-bordered table-hover">
     <thead>
       <tr>
-        <th class="col-sm-1">ID</th>
-        <th class="col-sm-1">ネットワーク</th>
-        <th class="col-sm-1">アイコン</th>
-        <th class="col-sm-2">名称</th>
-        <th class="hidden-xs col-sm-2">詳細</th>
-        <th class="col-sm-1">ポイント</th>
-        <th class="col-sm-1">状態</th>
-        <th class="col-sm-1">登録日時</th>
-        <th class="col-sm-2 text-center"></th>
+        <th class="col-md-1">ID</th>
+        <th class="col-xs-2 col-md-1">ネットワーク</th>
+        <th class="col-md-1">アイコン</th>
+        <th class="col-xs-3 col-md-2">名称</th>
+        <th class="hidden-xs col-md-2">詳細</th>
+        <th class="col-md-1">ポイント</th>
+        <th class="col-md-1">状態</th>
+        <th class="col-md-1">登録日時</th>
+        <th class="col-md-2 text-center"></th>
       </tr>
     </thead>
 
@@ -25,7 +25,7 @@
         <td><%= campaign.network.name %></td>
         <td><%= image_tag campaign.icon_url, :size => '57x57' %></td>
         <td><%= campaign.name %></td>
-        <td class="hidden-xs col-sm-2"><%= truncate(campaign.detail, :length => 30) %></td>
+        <td class="hidden-xs col-md-2"><%= truncate(campaign.detail, :length => 30) %></td>
         <td>
           <% point = campaign.advertisements[0].point %>
           <% if point.nil? %>
@@ -59,14 +59,14 @@
       </tr>
       <% end %>
       <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td class="col-md-1"></td>
+        <td class="col-xs-2 col-md-1"></td>
+        <td class="col-md-1"></td>
+        <td class="col-xs-3 col-md-2"></td>
+        <td class="hidden-xs col-md-2"></td>
+        <td class="col-md-1"></td>
+        <td class="col-md-1"></td>
+        <td class="col-md-1"></td>
         <td class="text-center">
           <%= link_to '新規登録', new_campaign_path, :class => 'btn btn-default' %>
         </td>

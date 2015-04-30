@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150429062131) do
+ActiveRecord::Schema.define(version: 20150430093500) do
 
   create_table "admin_users", force: true do |t|
     t.string   "email",                  default: "", null: false
@@ -97,6 +97,8 @@ ActiveRecord::Schema.define(version: 20150429062131) do
     t.string   "android_registration_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "point",                   default: 0, null: false
+    t.integer  "total_point",             default: 0, null: false
   end
 
   create_table "networks", force: true do |t|

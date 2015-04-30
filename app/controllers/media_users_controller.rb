@@ -49,19 +49,33 @@ class MediaUsersController < ApplicationController
   def add_point_by_campaign
     @campaign = Campaign.find(params[:campaign_id])
 
+    # TODO: 他のポイント追加、ポイント消化が被ったときにダメダメ
+    # TODO: 楽観的ロックじゃなく、ユーザーでロックかける。
     point = Point.new()
     point.media_user = @media_user
-    point.source = @campaign
-    point.point = @campaign.advertisements[0].point  # オファーベースがよい？
-    point.type = PointType::MANUAL
+    point.source     = @campaign
+    point.point      = @campaign.advertisements[0].point  # オファーベースでよい？
+    point.type       = PointType::MANUAL
 
-    if point.save
+    @media_user.point       = @media_user.point       + point.point
+    @media_user.total_point = @media_user.total_point + point.point
+
+    # ポイント交換の機能を実装するまではトータルの成果を合計する
+    sum_point = @media_user.points.sum(:point)
+    @media_user.point       = sum_point + point.point
+    @media_user.total_point = sum_point + point.point
+
+    # TODO: ポイント追加処理を共通化 (ネットワーク経由の成果通知でも使用する)
+    ActiveRecord::Base.transaction do
+      point.save!
+      @media_user.save!
+    end
       # TODO: このメソッドを Ajax でできないか
       redirect_to :action => :show
-    else
+    rescue => e
       # TODO: エラー処理
+      logger.debug e
       redirect_to :action => :show
-    end
   end
 
   private

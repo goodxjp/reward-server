@@ -21,7 +21,13 @@
             <div class="form-group">
               <label class="col-md-4 control-label">ポイント</label>
               <div class="col-md-8">
-                <div class="form-control">1283</div>
+                <div class="form-control"><%= @media_user.point %></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-4 control-label">総獲得ポイント</label>
+              <div class="col-md-8">
+                <div class="form-control"><%= @media_user.total_point %></div>
               </div>
             </div>
             <div class="form-group">
