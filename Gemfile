@@ -48,3 +48,7 @@ gem 'gcm'
 
 # http://railsgirls.jp/devise/
 gem 'devise'
+
+# http://labs.timedia.co.jp/2014/01/activehashrails.html
+gem 'active_hash'
+

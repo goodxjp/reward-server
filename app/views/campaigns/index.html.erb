@@ -25,7 +25,7 @@
         <td><%= campaign.network.name %></td>
         <td><%= image_tag campaign.icon_url, :size => '57x57' %></td>
         <td><%= campaign.name %></td>
-        <td class="hidden-xs col-sm-2"><%= truncate(campaign.detail, :lenght => 30) %></td>
+        <td class="hidden-xs col-sm-2"><%= truncate(campaign.detail, :length => 30) %></td>
         <td>
           <% point = campaign.advertisements[0].point %>
           <% if point.nil? %>

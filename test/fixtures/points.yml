@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  media_user_id: 
+  source_type: MyString
+  source_id: 1
+  point: 1
+  type: 1
+
+two:
+  media_user_id: 
+  source_type: MyString
+  source_id: 1
+  point: 1
+  type: 1

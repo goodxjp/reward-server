@@ -18,7 +18,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :media_users
+  resources :media_users do
+    member do
+      get 'add_point_by_campaign'
+    end
+  end
   post 'media_users/:id/notify' => 'media_users#notify'
 
   #

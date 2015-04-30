@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class MediaUsersController < ApplicationController
   before_action :authenticate_admin_user!
-  before_action :set_media_user, only: [:show, :edit, :update, :destroy]
+  before_action :set_media_user, only: [:show, :edit, :update, :destroy, :add_point_by_campaign]
   skip_before_filter :verify_authenticity_token, :only => [ :create ]
 
   def index
@@ -11,6 +11,7 @@ class MediaUsersController < ApplicationController
   def show
     # クリック履歴取得
     @click_histories = ClickHistory.where(media_user: @media_user).order(created_at: :desc)
+    @points = Point.where(media_user: @media_user).order(created_at: :desc)
   end
 
   # TODO: 廃止
@@ -40,6 +41,27 @@ class MediaUsersController < ApplicationController
     response = gcm.send_notification(registration_ids, options)
 
     head :no_content
+  end
+
+  # クリック履歴に対してポイントをつけようとも思ったが、
+  # クリック履歴に無関係な成果を付ける可能性もあるので、ここに定義
+  # TODO: Point モデルの POST にした方がいいかも。
+  def add_point_by_campaign
+    @campaign = Campaign.find(params[:campaign_id])
+
+    point = Point.new()
+    point.media_user = @media_user
+    point.source = @campaign
+    point.point = @campaign.advertisements[0].point  # オファーベースがよい？
+    point.type = PointType::MANUAL
+
+    if point.save
+      # TODO: このメソッドを Ajax でできないか
+      redirect_to :action => :show
+    else
+      # TODO: エラー処理
+      redirect_to :action => :show
+    end
   end
 
   private

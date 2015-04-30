@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150428092200) do
+ActiveRecord::Schema.define(version: 20150429062131) do
 
   create_table "admin_users", force: true do |t|
     t.string   "email",                  default: "", null: false
@@ -127,5 +127,17 @@ ActiveRecord::Schema.define(version: 20150428092200) do
   add_index "offers", ["campaign_category_id"], name: "index_offers_on_campaign_category_id"
   add_index "offers", ["campaign_id"], name: "index_offers_on_campaign_id"
   add_index "offers", ["medium_id"], name: "index_offers_on_medium_id"
+
+  create_table "points", force: true do |t|
+    t.integer  "media_user_id"
+    t.string   "source_type"
+    t.integer  "source_id"
+    t.integer  "point"
+    t.integer  "type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "points", ["media_user_id"], name: "index_points_on_media_user_id"
 
 end

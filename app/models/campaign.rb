@@ -3,6 +3,8 @@ class Campaign < ActiveRecord::Base
   belongs_to :campaign_category
   has_many :advertisements
 
+  has_many :points, :as => :resource
+
   has_and_belongs_to_many :media
 
   validates :name, :presence => true
