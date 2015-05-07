@@ -37,7 +37,9 @@ Rails.application.routes.draw do
           get 'execute', format: 'html'  # 厳密にはブラウザから呼ばれるので API ではない
         end
       end
-      resources :media_users, :only => [ 'show', 'create' ]
+      resources :media_users, :only => [ 'show', 'create' ] do
+        resources :point_histories, :only => [ 'index' ]
+      end
     end
   end
 
