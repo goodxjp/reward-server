@@ -11,7 +11,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150430093500) do
+ActiveRecord::Schema.define(version: 20150507024222) do
+
+  create_table "achievements", force: true do |t|
+    t.integer  "media_user_id"
+    t.integer  "payment",                       null: false
+    t.boolean  "payment_include_tax"
+    t.integer  "campaign_id"
+    t.integer  "point_id"
+    t.string   "accrual_date",        limit: 8, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "achievements", ["accrual_date"], name: "index_achievements_on_accrual_date"
+  add_index "achievements", ["campaign_id"], name: "index_achievements_on_campaign_id"
+  add_index "achievements", ["media_user_id"], name: "index_achievements_on_media_user_id"
+  add_index "achievements", ["point_id"], name: "index_achievements_on_point_id"
 
   create_table "admin_users", force: true do |t|
     t.string   "email",                  default: "", null: false
@@ -130,6 +146,19 @@ ActiveRecord::Schema.define(version: 20150430093500) do
   add_index "offers", ["campaign_id"], name: "index_offers_on_campaign_id"
   add_index "offers", ["medium_id"], name: "index_offers_on_medium_id"
 
+  create_table "point_histories", force: true do |t|
+    t.integer  "media_user_id"
+    t.integer  "point_change"
+    t.string   "detail"
+    t.integer  "source_id"
+    t.string   "source_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "point_histories", ["media_user_id"], name: "index_point_histories_on_media_user_id"
+  add_index "point_histories", ["source_id", "source_type"], name: "index_point_histories_on_source_id_and_source_type"
+
   create_table "points", force: true do |t|
     t.integer  "media_user_id"
     t.string   "source_type"
@@ -138,6 +167,8 @@ ActiveRecord::Schema.define(version: 20150430093500) do
     t.integer  "type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "remains",       null: false
+    t.datetime "expiration_at"
   end
 
   add_index "points", ["media_user_id"], name: "index_points_on_media_user_id"

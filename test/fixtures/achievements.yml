@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  payment: 1
+  payment_include_tax: false
+  campaign_id: 
+  point_id: 
+  accrual_date: MyString
+
+two:
+  payment: 1
+  payment_include_tax: false
+  campaign_id: 
+  point_id: 
+  accrual_date: MyString

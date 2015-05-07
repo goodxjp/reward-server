@@ -20,6 +20,7 @@ Rails.application.routes.draw do
 
   resources :media_users do
     member do
+      get 'add_point_by_offer'
       get 'add_point_by_campaign'
     end
   end
@@ -36,7 +37,7 @@ Rails.application.routes.draw do
           get 'execute', format: 'html'  # 厳密にはブラウザから呼ばれるので API ではない
         end
       end
-      resources :media_users, :only => [ 'create' ]
+      resources :media_users, :only => [ 'show', 'create' ]
     end
   end
 

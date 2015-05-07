@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class MediaUsersController < ApplicationController
   before_action :authenticate_admin_user!
-  before_action :set_media_user, only: [:show, :edit, :update, :destroy, :add_point_by_campaign]
+  before_action :set_media_user, only: [:show, :edit, :update, :destroy, :add_point_by_campaign, :add_point_by_offer]
   skip_before_filter :verify_authenticity_token, :only => [ :create ]
 
   def index
@@ -9,8 +9,11 @@ class MediaUsersController < ApplicationController
   end
 
   def show
-    # クリック履歴取得
+    # 各履歴取得
+    @point_histories = PointHistory.where(media_user: @media_user).order(created_at: :desc)
     @click_histories = ClickHistory.where(media_user: @media_user).order(created_at: :desc)
+
+    # ポイント資産 (ここは案件管理者には見せない？！)
     @points = Point.where(media_user: @media_user).order(created_at: :desc)
   end
 
@@ -43,39 +46,59 @@ class MediaUsersController < ApplicationController
     head :no_content
   end
 
-  # クリック履歴に対してポイントをつけようとも思ったが、
-  # クリック履歴に無関係な成果を付ける可能性もあるので、ここに定義
-  # TODO: Point モデルの POST にした方がいいかも。
+  def add_point_by_offer
+    offer = Offer.find(params[:offer_id])
+    campaign = offer.campaign
+
+    # TODO: エラー処理
+    add_point(@media_user, offer.point, PointType::MANUAL, campaign)
+
+    redirect_to :action => :show
+  end
+
   def add_point_by_campaign
-    @campaign = Campaign.find(params[:campaign_id])
+    campaign = Campaign.find(params[:campaign_id])
 
-    # TODO: 他のポイント追加、ポイント消化が被ったときにダメダメ
-    # TODO: 楽観的ロックじゃなく、ユーザーでロックかける。
-    point = Point.new()
-    point.media_user = @media_user
-    point.source     = @campaign
-    point.point      = @campaign.advertisements[0].point  # オファーベースでよい？
-    point.type       = PointType::MANUAL
+    # TODO: エラー処理
+    add_point(@media_user, campaign.advertisements[0].point, PointType::MANUAL, campaign)
 
-    @media_user.point       = @media_user.point       + point.point
-    @media_user.total_point = @media_user.total_point + point.point
+    redirect_to :action => :show
+  end
 
-    # ポイント交換の機能を実装するまではトータルの成果を合計する
-    sum_point = @media_user.points.sum(:point)
-    @media_user.point       = sum_point + point.point
-    @media_user.total_point = sum_point + point.point
+  # ポイント追加の処理はメディアユーザーに共通化
+  # メディアユーザーの変更は許さない。
+  # キャンペーンが途中で変わってることがあるので注意。
+  def add_point(media_user, point, type, campaign)
+    media_user.lock!
+    # TODO: 悲観的ロックに失敗した場合の処理
 
-    # TODO: ポイント追加処理を共通化 (ネットワーク経由の成果通知でも使用する)
+    p = Point.new()  # 数値の point と被るので、変数名を p に
+    p.media_user    = media_user
+    p.type          = type
+    p.source        = campaign  # 手動の時はキャンペーンに対してつける。自動の時は成果に対して付けた方がいい？
+    p.point         = point
+    p.remains       = p.point
+    p.expiration_at = nil  # TODO: 現在は期限なし
+
+    point_history = PointHistory.new()
+    point_history.media_user   = media_user
+    point_history.point_change = point
+    point_history.detail       = campaign.name
+    point_history.source       = p
+
+    media_user.point       = media_user.point       + point
+    media_user.total_point = media_user.total_point + point
+
     ActiveRecord::Base.transaction do
-      point.save!
-      @media_user.save!
+      p.save!
+      point_history.save!
+      media_user.save!
     end
-      # TODO: このメソッドを Ajax でできないか
-      redirect_to :action => :show
+      return
     rescue => e
       # TODO: エラー処理
       logger.debug e
-      redirect_to :action => :show
+      return
   end
 
   private

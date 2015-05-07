@@ -2,8 +2,14 @@
 module Api
   module V1
     class MediaUsersController < ApplicationController
-      before_action :set_media_user, only: [ :update ]
+      before_action :set_media_user, only: [ :show, :update ]
       skip_before_filter :verify_authenticity_token, :only => [ :create ]
+
+      def show
+        # TODO: 署名のチェック
+
+        # TODO: 自分しか参照できないように
+      end
 
       #
       # ユーザー登録 API
