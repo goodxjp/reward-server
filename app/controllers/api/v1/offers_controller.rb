@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
 module Api
   module V1
-    class OffersController < ApplicationController
+    class OffersController < ApiController
+      before_action :check_signature, only: [ :execute ]
+
       helper_method :make_execute_url
 
       def index
         mid = params[:mid]
         uid = params[:uid]
 
-        # TODO: 将来的にはメディア、ユーザーの特定を共通化
-
         # メディアの特定
         medium = Medium.find(mid)  # 署名チェックをしていれば mid は必ず存在するはず
 
         # ユーザーの特定
-        #medir_user = MediaUser.find(uid)
+        media_user = MediaUser.find(uid)
+
+        # TODO: 将来的にはメディア、ユーザーの特定を共通化
+        # before_action check_signature
 
         @offers = Offer.where(:available => true, :medium => medium)
         @mid = mid
@@ -65,7 +68,11 @@ module Api
 
       # ブラウザで叩かれる案件実行 URL を生成
       def make_execute_url(offer, mid, uid)
-        return execute_api_v1_offer_url(offer, :mid => mid, :uid => uid)
+        medium = Medium.find(mid)
+        media_user = MediaUser.find(uid)
+        sig = make_signature(medium, media_user, "GET", execute_api_v1_offer_path(offer), { mid: mid, uid: uid })
+
+        return execute_api_v1_offer_url(offer, mid: mid, uid: uid, sig: sig)
       end
     end
   end

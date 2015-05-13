@@ -28,7 +28,11 @@
       <tr>
         <td class="col-sm-1 text-center">
           <%= offer.id %><br>
-          <%= link_to offer.campaign.id, edit_campaign_path(offer.campaign), class: 'btn btn-default btn-xs' %>
+          <% if not offer.campaign.nil? %>
+            <%= link_to offer.campaign.id, edit_campaign_path(offer.campaign), class: 'btn btn-default btn-xs' %>
+          <% else %>
+             (不明)
+          <% end %>
         </td>
         <td>
           <% if not offer.medium.nil? %>
