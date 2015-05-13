@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150507024222) do
+ActiveRecord::Schema.define(version: 20150513025108) do
 
   create_table "achievements", force: true do |t|
     t.integer  "media_user_id"
@@ -105,6 +105,7 @@ ActiveRecord::Schema.define(version: 20150507024222) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "key",        default: "", null: false
   end
 
   create_table "media_users", force: true do |t|

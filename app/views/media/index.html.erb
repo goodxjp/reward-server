@@ -9,7 +9,8 @@
     <thead>
       <tr>
         <th class="col-sm-1">ID</th>
-        <th class="col-sm-6">名前</th>
+        <th class="col-sm-3">名前</th>
+        <th class="col-sm-3">メディアキー</th>
         <th class="col-sm-1">状態</th>
         <th class="col-sm-2">登録日時</th>
         <th class="col-sm-2 text-center"></th>
@@ -21,6 +22,7 @@
       <tr>
         <td><%= medium.id %></td>
         <td><%= medium.name %></td>
+        <td><%= medium.key %></td>
         <td class="text-center"><span class="label label-success">有効</span></td>
         <td><%= medium.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S") %></td>
 
@@ -48,10 +50,7 @@
       <% end %>
 
       <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td colspan="5"></td>
         <td class="text-center">
           <%= link_to '新規登録', new_medium_path, :class => 'btn btn-default' %>
         </td>

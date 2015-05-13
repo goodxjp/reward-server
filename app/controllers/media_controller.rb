@@ -23,18 +23,27 @@ class MediaController < ApplicationController
 
   def create
     @medium = Medium.new(medium_params)
-    @medium.save
-    respond_with(@medium)
+    if @medium.save
+      #respond_with(@medium)
+      redirect_to :action => 'index', notice: 'Campaign was successfully created.'
+    else
+      render :new
+    end
   end
 
   def update
-    @medium.update(medium_params)
-    respond_with(@medium)
+    if @medium.update(medium_params)
+      #respond_with(@medium)
+      redirect_to :action => 'index', notice: 'Campaign was successfully created.'
+    else
+      render :edit
+    end
   end
 
   def destroy
     @medium.destroy
-    respond_with(@medium)
+    #respond_with(@medium)
+    redirect_to :action => 'index', notice: 'Campaign was successfully created.'
   end
 
   private
@@ -43,6 +52,6 @@ class MediaController < ApplicationController
     end
 
     def medium_params
-      params.require(:medium).permit(:name)
+      params.require(:medium).permit(:name, :key)
     end
 end
