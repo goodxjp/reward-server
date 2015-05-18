@@ -39,16 +39,12 @@
                 <ul class="dropdown-menu">
                   <li class="user-body">
                     <div class="col-xs-6">
-                      <%= link_to 'ユーザー更新', edit_admin_user_registration_path, :class => 'btn btn-default btn-flat' %>
-                    </div>
-                    <div class="col-xs-6">
                       <%= link_to 'ログアウト', destroy_admin_user_session_path, method: :delete, :class => 'btn btn-default btn-flat' %>
                     </div>
                   </li>
                 </ul>
               </li>
             <% else %>
-              <!--<li><%= link_to 'ユーザー登録', new_admin_user_registration_path %></li>-->
               <li><%= link_to 'ログイン', new_admin_user_session_path %></li>
             <% end %>
           </ul>
