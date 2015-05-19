@@ -71,43 +71,41 @@
 
     <div class="content-wrapper">
 
-<!--
       <% if notice or alert %>
       <div class="content-header row">
-        <div class="col-md-10">
+        <div class="col-md-8">
 
-      <% if notice %>
-      <div class="box box-default">
-        <div class="box-header with-border">
-          <h3 class="box-title">Notice</h3>
-          <div class="box-tools pull-right">
-            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        <% if notice %>
+        <div class="box box-default">
+          <div class="box-header with-border">
+            <h3 class="box-title">Notice</h3>
+            <div class="box-tools pull-right">
+              <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>
+          </div>
+          <div class="box-body">
+            <p><%= notice %></p>
           </div>
         </div>
-        <div class="box-body">
-          <p><%= notice %></p>
-        </div>
-      </div>
-      <% end %>
+        <% end %>
 
-      <% if alert %>
-      <div class="box box-default">
-        <div class="box-header with-border">
-          <h3 class="box-title">Alert</h3>
-          <div class="box-tools pull-right">
-            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        <% if alert %>
+        <div class="box box-default">
+          <div class="box-header with-border">
+            <h3 class="box-title">Alert</h3>
+            <div class="box-tools pull-right">
+              <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>
+          </div>
+          <div class="box-body">
+            <p><%= alert %></p>
           </div>
         </div>
-        <div class="box-body">
-          <p><%= alert %></p>
-        </div>
-      </div>
-      <% end %>
+        <% end %>
 
         </div>
       </div>
       <% end %>
--->
 
       <%= yield %>
     </div>
