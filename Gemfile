@@ -56,3 +56,6 @@ gem 'active_hash'
 # https://github.com/heroku/rails_12factor
 gem 'rails_12factor', group: :production
 
+# https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server
+# http://fiveteesixone.lackland.io/2015/01/27/migrate-from-unicorn-to-puma-on-heroku/
+gem 'puma'
