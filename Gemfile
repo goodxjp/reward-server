@@ -52,3 +52,7 @@ gem 'devise'
 # http://labs.timedia.co.jp/2014/01/activehashrails.html
 gem 'active_hash'
 
+# https://devcenter.heroku.com/articles/rails-integration-gems
+# https://github.com/heroku/rails_12factor
+gem 'rails_12factor', group: :production
+
