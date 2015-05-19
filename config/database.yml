@@ -25,7 +25,3 @@ production:
 #  database: db/production.sqlite3
   adapter: postgresql
   encoding: utf8
-  database: ec2-107-21-118-56.compute-1.amazonaws.com
-  port: 5432
-  username: fmgzdtnnavnzfs
-  password: 6WgLBdhxJeMo7DjjGvbtMl6KNX
