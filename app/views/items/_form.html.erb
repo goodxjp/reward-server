@@ -1,0 +1,62 @@
+<%= simple_form_for @item,
+    wrapper: :horizontal_form,
+    html: { class: 'form-horizontal' } do |f| %>
+
+  <% if @item.errors.any? %>
+    <div id="error_modal" class="modal fade" tabindex="-1" role="dialog" data-show="true">
+      <div class="modal-dialog">
+          <div class="box box-solid box-danger">
+            <div class="box-header">
+              <h3 class="box-title">
+                <%= pluralize(@item.errors.count, "error") %> prohibited this item from being saved:
+              </h3>
+              <div class="box-tools pull-right">
+                <button type="button" class="close" data-dismiss="modal">
+                  <i class="fa fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="box-body">
+              <ul>
+                <% @item.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <script>
+      // http://stackoverflow.com/questions/18855331/bootstrap-3-data-show-not-working
+      $(function() {
+        $('#error_modal').modal('show');
+      })
+    </script>
+  <% end %>
+
+  <%= f.error_notification %>
+
+  <%= f.input :name, label: '商品名',
+      input_wrapper_html: { class: 'col-sm-6' } %>
+  <%= f.input :point, label: 'ポイント',
+      input_wrapper_html: { class: 'col-sm-2' } %>
+
+  <%# horizontal_boolean が格好悪いので自前で %>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="item_available">
+      有効
+    </label>
+    <div class="col-sm-1">
+      <div class="form-control-static">
+        <%= f.check_box :available %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-3 col-sm-4">
+      <%= f.submit '登録', class: 'btn btn-primary' %>
+    </div>
+  </div>
+<% end %>

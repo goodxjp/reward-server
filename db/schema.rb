@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150513025108) do
+ActiveRecord::Schema.define(version: 20150529084851) do
 
   create_table "achievements", force: true do |t|
     t.integer  "media_user_id"
@@ -100,6 +100,14 @@ ActiveRecord::Schema.define(version: 20150513025108) do
 
   add_index "click_histories", ["media_user_id"], name: "index_click_histories_on_media_user_id"
   add_index "click_histories", ["offer_id"], name: "index_click_histories_on_offer_id"
+
+  create_table "items", force: true do |t|
+    t.string   "name",                      null: false
+    t.integer  "point",                     null: false
+    t.boolean  "available",  default: true, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "media", force: true do |t|
     t.string   "name"

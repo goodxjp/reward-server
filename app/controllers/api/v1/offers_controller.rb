@@ -2,7 +2,7 @@
 module Api
   module V1
     class OffersController < ApiController
-      before_action :check_signature, only: [ :execute ]
+      before_action :check_signature, only: [ :index, :execute ]
 
       helper_method :make_execute_url
 
