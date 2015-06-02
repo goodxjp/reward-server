@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 class ItemsController < ApplicationController
   before_action :authenticate_admin_user!
-  before_action :set_item, only: [:show, :edit, :update, :destroy]
+  before_action :set_item, only: [:show, :edit, :update, :destroy, :register_codes]
 
   respond_to :html
 
@@ -10,6 +11,12 @@ class ItemsController < ApplicationController
   end
 
   def show
+    @gifts = @item.gifts.order(id: :desc).page params[:page]
+    @form = GiftNewForm.new
+
+    # ギフト券登録用
+    @gift = Gift.new
+
     respond_with(@item)
   end
 
@@ -41,6 +48,23 @@ class ItemsController < ApplicationController
   def destroy
     @item.destroy
     respond_with(@item)
+  end
+
+  # ギフト券コード登録
+  def register_codes
+    @form = GiftNewForm.new(params[:gift_new_form])
+    codes = @form.codes
+
+    # ギフト券複数登録
+    codes.each_line do |code|
+      code.strip!
+      if not code.empty?
+        gift = Gift.new(item: @item, code: code, expiration_at: nil)
+        gift.save
+      end
+    end
+
+    redirect_to @item
   end
 
   private

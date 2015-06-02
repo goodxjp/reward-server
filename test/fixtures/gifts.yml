@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  item_id: 
+  code: MyString
+  expiration_at: 2015-06-01 19:23:44
+  purchase_id: 
+
+two:
+  item_id: 
+  code: MyString
+  expiration_at: 2015-06-01 19:23:44
+  purchase_id: 

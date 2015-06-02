@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 Rails.application.routes.draw do
-  resources :items
-
   resources :offers
 
   resources :media
@@ -27,6 +25,14 @@ Rails.application.routes.draw do
     end
   end
   post 'media_users/:id/notify' => 'media_users#notify'
+
+  # 商品
+  resources :items do
+    resources :gifts, :only => [ 'create' ]
+    member do
+      post 'register_codes'
+    end
+  end
 
   #
   # API

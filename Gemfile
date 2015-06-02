@@ -59,3 +59,7 @@ gem 'rails_12factor', group: :production
 # https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server
 # http://fiveteesixone.lackland.io/2015/01/27/migrate-from-unicorn-to-puma-on-heroku/
 gem 'puma'
+
+# http://ruby-rails.hatenadiary.com/entry/20141113/1415874683
+gem 'kaminari'
+

@@ -1,4 +1,6 @@
 class Item < ActiveRecord::Base
+  has_many :gifts
+
   validates :name, :presence => true
   validates :point,
     :presence => true,

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150529084851) do
+ActiveRecord::Schema.define(version: 20150601102344) do
 
   create_table "achievements", force: true do |t|
     t.integer  "media_user_id"
@@ -101,6 +101,18 @@ ActiveRecord::Schema.define(version: 20150529084851) do
   add_index "click_histories", ["media_user_id"], name: "index_click_histories_on_media_user_id"
   add_index "click_histories", ["offer_id"], name: "index_click_histories_on_offer_id"
 
+  create_table "gifts", force: true do |t|
+    t.integer  "item_id",       null: false
+    t.string   "code",          null: false
+    t.datetime "expiration_at"
+    t.integer  "purchase_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "gifts", ["item_id"], name: "index_gifts_on_item_id"
+  add_index "gifts", ["purchase_id"], name: "index_gifts_on_purchase_id"
+
   create_table "items", force: true do |t|
     t.string   "name",                      null: false
     t.integer  "point",                     null: false
@@ -181,5 +193,17 @@ ActiveRecord::Schema.define(version: 20150529084851) do
   end
 
   add_index "points", ["media_user_id"], name: "index_points_on_media_user_id"
+
+  create_table "purchases", force: true do |t|
+    t.integer  "media_user_id", null: false
+    t.integer  "item_id",       null: false
+    t.integer  "number",        null: false
+    t.integer  "point",         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "purchases", ["item_id"], name: "index_purchases_on_item_id"
+  add_index "purchases", ["media_user_id"], name: "index_purchases_on_media_user_id"
 
 end
