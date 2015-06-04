@@ -124,7 +124,12 @@
             <tbody>
               <% @point_histories.each do |point_history| %>
               <% point = point_history.source.kind_of?(Point) ? point_history.source : nil %>
-              <% campaign = point_history.source.source.kind_of?(Campaign) ? point_history.source.source : nil %>
+              <% if point_history.source.kind_of?(Point)
+                   campaign = point_history.source.source.kind_of?(Campaign) ? point_history.source.source : nil
+                 else
+                   campaign = nil
+                 end
+               %>
               <tr>
                 <td><%= point_history.id %></td>
                 <td class="text-center">
@@ -134,20 +139,18 @@
                 </td>
                 <td>
                   <% if not campaign.nil? %>
-                    <%= campaign.name %>
+                    <%= point_history.detail %>
+                    <%#= campaign.name %>
+                  <% else %>
+                    <%= point_history.detail %>
                   <% end %>
                 </td>
                 <td class="text-right">
-                  <% if point_history.point_change > 0 %>
-                    +
-                  <% else %>
-                    -
-                  <% end %>
                   <%= number_with_delimiter(point_history.point_change) %>
                 </td>
                 <td></td>
                 <td>
-                  <%= l point.created_at, :format => :default %>
+                  <%= l point_history.created_at, :format => :default %>
                 </td>
                 <td class="text-center">
                 </td>

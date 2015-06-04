@@ -63,7 +63,12 @@
                 <%= l gift.expiration_at.to_date, :format => :default %>
               <% end %>
             </td>
-            <td></td>
+            <td>
+              <% if not gift.purchase.nil? %>
+                <span class="label label-success">使用済</span>
+                <%= link_to "ユーザー #{gift.purchase.media_user_id}", gift.purchase.media_user, class: 'btn btn-default btn-xs' %>
+              <% end %>
+            </td>
           </tr>
           <% end %>
         </tbody>

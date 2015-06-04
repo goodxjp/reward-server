@@ -48,6 +48,7 @@ Rails.application.routes.draw do
       resources :media_users, :only => [ 'show', 'create' ] do
         resources :point_histories, :only => [ 'index' ]
       end
+      resources :purchases, :only => [ 'index', 'create' ]
     end
   end
 
