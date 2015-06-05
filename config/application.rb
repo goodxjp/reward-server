@@ -24,5 +24,10 @@ module RewardServer
 
     config.assets.paths << "#{Rails}/vender/assets/fonts"
     config.assets.precompile += %w(*.eot *.svg *.ttf *.woff)
+
+    # http://www.oiax.jp/rails/rspec_capybara_primer/rspec_capybara_the_first_step.html
+    config.generators do |g|
+      g.test_framework = "rspec"
+    end
   end
 end

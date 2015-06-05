@@ -63,3 +63,9 @@ gem 'puma'
 # http://ruby-rails.hatenadiary.com/entry/20141113/1415874683
 gem 'kaminari'
 
+# http://www.oiax.jp/rails/rspec_capybara_primer/rspec_capybara_the_first_step.html
+group :test do
+  gem 'rspec-rails'
+  gem 'capybara'
+end
+
