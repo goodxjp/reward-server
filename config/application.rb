@@ -27,7 +27,7 @@ module RewardServer
 
     # http://www.oiax.jp/rails/rspec_capybara_primer/rspec_capybara_the_first_step.html
     config.generators do |g|
-      g.test_framework = "rspec"
+      g.test_framework = :rspec
     end
   end
 end

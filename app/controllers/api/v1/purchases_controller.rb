@@ -36,17 +36,45 @@ module Api
         end
 
         # ポイントが正しいかチェック
+        # この後、商品のポイントが変更になったとしても、取得商品数と消費ポイント数はパラメータで来たとおりになる
+        if not (item.point * item_params[:number] == item_params[:point])
+          # 普通あり得ないので、頻繁に起こってないかログでチェック
+          logger.error "Point(#{item_params[:point]}) is incorrect. (item.point = #{item.point}, number = #{item_params[:number]})"
+
+          # TODO: エラーコードを全体的に要検討
+          render :nothing => true, :status => 400
+          return
+        end
 
         # 購入処理
-        begin
-          # モデルのトランザクションとの違いは？
-          ActiveRecord::Base.transaction do
-            purchase(media_user, item, item_params[:number], item_params[:point])
-          end
-        rescue => e
-          logger.error "Transaction rollback."
+        retry_count = 3
+        for count in 1..retry_count do
+          begin
+            # モデルのトランザクションとの違いは？
+            ActiveRecord::Base.transaction do
+              purchase(media_user, item, item_params[:number], item_params[:point])
+            end
+            break
+          rescue GiftPurchasedError => e
+            logger.error e.message
+            logger.error "Transaction rollback."
+            sleep(count * 1)
+            next
+          rescue => e
+            # リトライせずに即座にエラー
+            logger.error e.message
+            logger.error "Transaction rollback."
 
-          # TODO: エラーコードとレスポンスを全体的に要検討
+            # TODO: エラーコードとレスポンスを全体的に要検討
+            render :nothing => true, :status => 400
+            return
+          end
+        end
+
+        # リトライ回数を超えたとき
+        if count == retry_count
+          logger.error "Retry fail."
+            # TODO: エラーコードとレスポンスを全体的に要検討
           render :nothing => true, :status => 400
         end
       end
@@ -61,24 +89,24 @@ module Api
         media_user.lock!  # ポイント関連の一覧の更新する前にユーザーでロックしておく
 
         # ポイント資産から消費
-        tmp_point = point  # 消費すべきポイント
-        # TODO: 有効無効フラグは付けておいた方が効率いいかも
-        media_user.points.each do |p|  # TODO: 有効期限順で並べ替える必要あり、ID ぐらいでもいいかも
-          if tmp_point <= p.remains
-            p.remains = p.remains - tmp_point
-            tmp_point = 0
+        consumed_point = point  # 消費すべきポイント
+        # TODO: 有効なポイントだけ取得したほうがよい、有効無効フラグは付けておいた方が効率いいかも
+        media_user.points.order('expiration_at IS NULL', expiration_at: :asc).each do |p|
+          if consumed_point <= p.remains
+            p.remains = p.remains - consumed_point
+            consumed_point = 0
           else
             p.remains = 0
-            tmp_point = tmp_point - p.remains
+            consumed_point = consumed_point - p.remains
           end
 
           p.save!
 
-          break if tmp_point == 0
+          break if consumed_point == 0
         end
 
         # 資産が足りないかチェック
-        if not tmp_point == 0
+        if not consumed_point == 0
           message = "Point is not enough (media_user.id = #{media_user.id})."
           logger.error message
           raise message
@@ -99,16 +127,17 @@ module Api
         #
         # 商品取得
         #
-        # TODO: 複数同時に走ると絶対にギフトが被るので、繰り返し行う必要がある
 
         # TODO: 同時に購入がされる場合のテスト
         # 在庫をチェック
         # 順序を一定にしておかないとデッドロックが発生する
-        logger.error "-----> Gift.where start"  # TODO: ここでロックする？
-        gifts = Gift.where(item: item, purchase: nil).order(id: :asc).limit(number)
-        logger.error "-----> Gift.where end"
-        # TODO: 同時アクセスが多くなるとロールバックのケースが多くなってしまう気がする。
+        logger.debug "Gift.where start"  # TODO: ここでロックする？
+        gifts = Gift.where(item: item, purchase: nil).order('expiration_at IS NULL', expiration_at: :asc).limit(number)
+        logger.debug "Gift.where end"
+        # TODO: 同時アクセスが多くなるとここで複数のユーザーが同じギフト券を確保してしまうので、
+        #       ロールバックのケースが多くなってしまう気がする。
         #       ランダム性を持たせたり工夫した方がよさげ。
+        #       ランダムに数個飛ばすでよいかも。在庫が十分にあればそれほど問題にならない。
 
         # 在庫切れチェック
         if gifts.size != number
@@ -123,7 +152,7 @@ module Api
 
         # 複数個対応
         gifts.each do |gift|
-          logger.error "------------------- user = #{media_user.id}, gift = #{gift.id}"
+          logger.debug "Gift.lock! user = #{media_user.id}, gift = #{gift.id}"
 
           # 交換ギフト券確保
           gift.lock!  # TODO: 複数ギフト購入が走った場合に実際にはどこでロックしているかチェック
@@ -131,10 +160,11 @@ module Api
           # ほんとに交換済みでないか念のためチェック (参照時にロックされる？)
           if not gift.purchase.nil?
             # TODO: 起こりうる？
-            # A が先に 1 個とって 1 つ目をロックしている間に、B が同じ 1 個を取得しようとして待っている間に、A が購入すると起こるかな。
+            # A が先に 1 個とって 1 つ目をロックしている間に、
+            # B が同じ 1 個を取得しようとして待っていて、その後 A が購入すると起こるかな。
             message = "Gift(#{gift.if}) is purchased."
             logger.error message
-            raise message
+            raise GiftPurchasedError, message
           end
 
           # 無理やり時間をかけてみる
@@ -150,5 +180,10 @@ module Api
           params.require(:item).permit(:id, :number, :point)
         end
     end
+
+    # ギフトが購入済みだったときのエラー (ギフト券かぶり)
+    class GiftPurchasedError < StandardError
+    end
   end
 end
+
