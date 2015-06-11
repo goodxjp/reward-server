@@ -52,7 +52,8 @@ module Api
           begin
             # モデルのトランザクションとの違いは？
             ActiveRecord::Base.transaction do
-              purchase(media_user, item, item_params[:number], item_params[:point])
+              #purchase(media_user, item, item_params[:number], item_params[:point])
+              @purchase = Purchase.purchase(media_user, item, item_params[:number], item_params[:point])
             end
             break
           rescue GiftPurchasedError => e
@@ -151,6 +152,8 @@ module Api
         @purchase.save!
 
         # 複数個対応
+        # TODO: 事前にギフト券を取得しないで、
+        # ここで注文個数に達するまで一個ずつとってきて、エラーが起きたら次のギフト券を取りに言った方がいいかも。
         gifts.each do |gift|
           logger.debug "Gift.lock! user = #{media_user.id}, gift = #{gift.id}"
 
