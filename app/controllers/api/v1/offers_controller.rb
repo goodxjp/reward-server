@@ -70,7 +70,7 @@ module Api
       def make_execute_url(offer, mid, uid)
         medium = Medium.find(mid)
         media_user = MediaUser.find(uid)
-        sig = make_signature(medium, media_user, "GET", execute_api_v1_offer_path(offer), { mid: mid, uid: uid })
+        sig = Api::V1::ApiController.make_signature(medium, media_user, "GET", execute_api_v1_offer_path(offer), { mid: mid, uid: uid })
 
         return execute_api_v1_offer_url(offer, mid: mid, uid: uid, sig: sig)
       end

@@ -12,7 +12,7 @@ describe 'POST /api/v1/purchases.json' do
     Point::add_point(media_user, PointType::MANUAL, 100, "テスト用")
 
     query = { mid: "1", uid: "1" }
-    sig = make_signature(medium, media_user, "POST", "/api/v1/purchases.json", query)
+    sig = Api::V1::ApiController.make_signature(medium, media_user, "POST", "/api/v1/purchases.json", query)
 
     params = { item: { id: 1, number: 1, point: 100} }
     headers = { 'CONTENT_TYPE' => 'application/json' }
@@ -34,7 +34,7 @@ describe 'POST /api/v1/purchases.json' do
     Point::add_point(media_user, PointType::MANUAL, 100, "テスト用")
 
     query = { mid: "1", uid: "1" }
-    sig = make_signature(medium, media_user, "POST", "/api/v1/purchases.json", query)
+    sig = Api::V1::ApiController.make_signature(medium, media_user, "POST", "/api/v1/purchases.json", query)
 
     params = { item: { id: 1, number: 1, point: 100} }
     headers = { 'CONTENT_TYPE' => 'application/json' }
@@ -56,7 +56,7 @@ describe 'POST /api/v1/purchases.json' do
     Point::add_point(media_user, PointType::MANUAL, 1000, "テスト用")
 
     query = { mid: "1", uid: "1" }
-    sig = make_signature(medium, media_user, "POST", "/api/v1/purchases.json", query)
+    sig = Api::V1::ApiController.make_signature(medium, media_user, "POST", "/api/v1/purchases.json", query)
 
     params = { item: { id: 1, number: 1, point: 100} }
     headers = { 'CONTENT_TYPE' => 'application/json' }
@@ -87,7 +87,7 @@ describe 'POST /api/v1/purchases.json' do
     Point::add_point(media_user, PointType::MANUAL, 1000, "テスト用")
 
     query = { mid: "1", uid: "1" }
-    sig = make_signature(medium, media_user, "POST", "/api/v1/purchases.json", query)
+    sig = Api::V1::ApiController.make_signature(medium, media_user, "POST", "/api/v1/purchases.json", query)
 
     params = { item: { id: 1, number: 1, point: 100} }
     headers = { 'CONTENT_TYPE' => 'application/json' }
@@ -106,24 +106,5 @@ describe 'POST /api/v1/purchases.json' do
 
   it 'パラメータのポイントが実際の商品のポイントと違う場合はエラー' do
     # TODO
-  end
-
-  # TODO: RSpec 内共通化
-  # TODO: Rails と共通化
-  # 署名作成
-  def make_signature(medium, media_user, method, path, query)
-    sorted_query = query.sort
-    sorted_query_array = []
-    sorted_query.each do |i|
-      sorted_query_array << i.join('=')
-    end
-    sorted_query_string = sorted_query_array.join('&')
-
-    key = "#{medium.key}&#{media_user.terminal_id}"
-    data = "#{method}\n#{path}\n#{sorted_query_string}"
-
-    correct_sig = OpenSSL::HMAC.hexdigest('sha1', key, data)
-
-    return correct_sig
   end
 end

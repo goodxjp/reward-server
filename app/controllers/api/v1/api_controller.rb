@@ -3,7 +3,9 @@ require 'openssl'
 
 class Api::V1::ApiController < ApplicationController
 
+  #
   # 署名が正しいかチェック
+  #
   def check_signature
     logger.debug("request_method = #{request.request_method}")
     logger.debug("path = #{request.path}")
@@ -18,7 +20,7 @@ class Api::V1::ApiController < ApplicationController
     medium = Medium.find(mid)
     media_user = MediaUser.find(uid)
 
-    correct_sig = make_signature(medium, media_user, request.request_method, request.path, query)
+    correct_sig = self.class.make_signature(medium, media_user, request.request_method, request.path, query)
 
     if sig != correct_sig
       # TODO: 要ロギング
@@ -27,24 +29,26 @@ class Api::V1::ApiController < ApplicationController
     end
   end
 
+  #
   # 署名作成
-  def make_signature(medium, media_user, method, path, query)
-    sorted_query = query.sort  # => [["MID", "1"], ["Mid", "2"], ["mid", "1"], ["uid", "16"]]
-    sorted_query_array = []    # => ["MID=1", "Mid=2", "mid=1", "uid=16"]
+  #
+  def self.make_signature(medium, media_user, method, path, query)
+    sorted_query = query.sort  # => [["aaa", "1"], ["bbb", "2"], ["ccc", "1"], ["ddd", "16"]]
+    sorted_query_array = []    # => ["aaa=1", "bbb=2", "ccc=1", "ddd=16"]
     sorted_query.each do |i|
       sorted_query_array << i.join('=')
     end
     sorted_query_string = sorted_query_array.join('&')
-    logger.debug("sorted_query = #{sorted_query}")
-    logger.debug("sorted_query_string = #{sorted_query_string}")
+    #logger.debug("sorted_query = #{sorted_query}")
+    #logger.debug("sorted_query_string = #{sorted_query_string}")
 
     key = "#{medium.key}&#{media_user.terminal_id}"
     data = "#{method}\n#{path}\n#{sorted_query_string}"
-    logger.debug("key = #{key}")
-    logger.debug("data = #{data}")
+    #logger.debug("key = #{key}")
+    #logger.debug("data =vvvvv\n#{data}")
 
     correct_sig = OpenSSL::HMAC.hexdigest('sha1', key, data)
-    logger.info("correct_sig = #{correct_sig}")
+    #logger.info("correct_sig = #{correct_sig}")
 
     return correct_sig
   end
