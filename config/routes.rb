@@ -40,6 +40,9 @@ Rails.application.routes.draw do
   #
   namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
+      # ユーザー (サーバーにおけるメディアユーザー(自分))
+      resource :user, :only => [ 'show', 'create' ]
+
       resources :offers, :only => [ 'index' ] do
         member do
           get 'execute', format: 'html'  # 厳密にはブラウザから呼ばれるので API ではない

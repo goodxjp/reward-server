@@ -1,0 +1,1 @@
+json.extract! @media_user, :id, :point

@@ -6,10 +6,12 @@ class Api::V1::ApiController < ApplicationController
   #
   # 署名が正しいかチェック
   #
+  # - チェックが成功したら @medium と @media_user が設定されている。
+  #
   def check_signature
-    logger.debug("request_method = #{request.request_method}")
-    logger.debug("path = #{request.path}")
-    logger.debug("query_parameters = #{request.query_parameters}")
+    #logger.debug("request_method   = #{request.request_method}")
+    #logger.debug("path             = #{request.path}")
+    #logger.debug("query_parameters = #{request.query_parameters}")
 
     query = request.query_parameters
     sig = query.delete("sig")
@@ -17,10 +19,10 @@ class Api::V1::ApiController < ApplicationController
     mid = params[:mid]
     uid = params[:uid]
 
-    medium = Medium.find(mid)
-    media_user = MediaUser.find(uid)
+    @medium = Medium.find(mid)
+    @media_user = MediaUser.find(uid)
 
-    correct_sig = self.class.make_signature(medium, media_user, request.request_method, request.path, query)
+    correct_sig = self.class.make_signature(@medium, @media_user, request.request_method, request.path, query)
 
     if sig != correct_sig
       # TODO: 要ロギング
