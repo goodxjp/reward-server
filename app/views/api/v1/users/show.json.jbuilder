@@ -1,1 +1,1 @@
-json.extract! @media_user, :id, :point
+json.extract! @media_user, :id, :key, :point

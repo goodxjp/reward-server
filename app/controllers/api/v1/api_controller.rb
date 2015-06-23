@@ -57,7 +57,8 @@ class Api::V1::ApiController < ApplicationController
     if media_user.nil?
       key = "#{medium.key}&"
     else
-      key = "#{medium.key}&#{media_user.terminal_id}"
+      #key = "#{medium.key}&#{media_user.terminal_id}"
+      key = "#{medium.key}&#{media_user.key}"
     end
     data = "#{method}\n#{path}\n#{sorted_query_string}"
     #logger.debug("key = #{key}")
@@ -77,9 +78,12 @@ class Api::V1::ApiController < ApplicationController
       correct_sig = self.class.make_signature(medium, media_user, request.request_method, request.path, query)
 
       if sig != correct_sig
-        # TODO: 要ロギング
         # TODO: 回数が多かったら要通知
-        render status: :forbidden, text: "お手数ではございますが、最初からやり直してください。(エラー番号: 0101)"  # ユーザへの通知方法要検討
+        logger.error("Signature error.")
+        # TODO: ユーザへの通知方法要検討
+        render status: :forbidden, text: "お手数ではございますが、最初からやり直してください。(エラー番号: 0101)"
+        # before_～ で使うのが前提の処理だけど、まぁ、いっかな。
+        # http://techracho.bpsinc.jp/baba/2013_08_06/12650
       end
     end
 

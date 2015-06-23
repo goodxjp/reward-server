@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150601102344) do
+ActiveRecord::Schema.define(version: 20150623073456) do
 
   create_table "achievements", force: true do |t|
     t.integer  "media_user_id"
@@ -136,7 +136,11 @@ ActiveRecord::Schema.define(version: 20150601102344) do
     t.datetime "updated_at"
     t.integer  "point",                   default: 0, null: false
     t.integer  "total_point",             default: 0, null: false
+    t.integer  "medium_id"
+    t.string   "key"
   end
+
+  add_index "media_users", ["medium_id"], name: "index_media_users_on_medium_id"
 
   create_table "networks", force: true do |t|
     t.string   "name"

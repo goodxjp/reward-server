@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 class MediaUser < ActiveRecord::Base
   has_many :points
+  belongs_to :medium
 
   validates :terminal_id,
     :presence => true,
@@ -42,5 +43,10 @@ class MediaUser < ActiveRecord::Base
       return nil
     end
     return json["MODEL"]
+  end
+
+  # ユーザーキー生成
+  def self.make_user_key
+    return SecureRandom.hex(8)
   end
 end

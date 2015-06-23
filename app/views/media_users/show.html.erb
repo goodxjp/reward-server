@@ -19,6 +19,12 @@
               </div>
             </div>
             <div class="form-group">
+              <label class="col-md-4 control-label">メディア</label>
+              <div class="col-md-8">
+                <div class="form-control"><%= @media_user.medium.name %></div>
+              </div>
+            </div>
+            <div class="form-group">
               <label class="col-md-4 control-label">ポイント</label>
               <div class="col-md-8">
                 <div class="form-control"><%= @media_user.point %></div>
@@ -48,6 +54,12 @@
               <label class="col-md-4 control-label">更新日時</label>
               <div class="col-md-8">
                 <div class="form-control"><%= l @media_user.updated_at, :format => :default %></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-4 control-label">ユーザーキー</label>
+              <div class="col-md-8">
+                <div class="form-control"><%= @media_user.key %></div>
               </div>
             </div>
           </form>
