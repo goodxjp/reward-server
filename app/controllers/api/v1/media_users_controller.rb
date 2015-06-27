@@ -3,7 +3,6 @@ module Api
   module V1
     class MediaUsersController < ApiController
       before_action :set_media_user, only: [ :show, :update ]
-      skip_before_filter :verify_authenticity_token, :only => [ :create ]
 
       def show
         # TODO: 署名のチェック

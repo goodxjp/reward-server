@@ -2,6 +2,8 @@
 require 'openssl'
 
 class Api::V1::ApiController < ApplicationController
+  # Web API では CSRF トークン不要
+  skip_before_filter :verify_authenticity_token
 
   #
   # 署名が正しいかチェック
