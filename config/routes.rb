@@ -43,11 +43,16 @@ Rails.application.routes.draw do
       # ユーザー (サーバーにおけるメディアユーザー(自分))
       resource :user, :only => [ 'show', 'create' ]
 
+      # 案件
       resources :offers, :only => [ 'index' ] do
         member do
           get 'execute', format: 'html'  # 厳密にはブラウザから呼ばれるので API ではない
         end
       end
+
+      # ポイント履歴
+      resources :point_histories, :only => [ 'index' ]
+
       resources :media_users, :only => [ 'show', 'create' ] do
         resources :point_histories, :only => [ 'index' ]
       end

@@ -19,6 +19,7 @@ describe 'POST /api/v1/user.json' do
     # レスポンスチェック
     json = JSON.parse(response.body)
     expect(json["id"]).not_to eq nil
+    expect(json["key"]).to match(/.{10,}/)  # とりあえず、10 文字以上はあること
     expect(json["point"]).to eq 0
 
     # DB チェック
