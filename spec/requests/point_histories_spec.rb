@@ -18,7 +18,7 @@ describe 'GET /api/v1/point_histories.json' do
     sig = Api::V1::ApiController.make_signature(medium, media_user, "GET", "/api/v1/point_histories.json", query)
 
     get "/api/v1/point_histories.json?mid=1&uid=1&sig=#{sig}"
-    puts response.body
+    #puts response.body
     expect(response).to be_success
 
     # レスポンスチェック
