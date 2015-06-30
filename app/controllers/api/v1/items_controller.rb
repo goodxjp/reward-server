@@ -5,7 +5,7 @@ module Api
       before_action :check_signature
 
       def index
-        @items = Item.where(:available => true)
+        @items = Item.where(:available => true).order(:id)
       end
     end
   end

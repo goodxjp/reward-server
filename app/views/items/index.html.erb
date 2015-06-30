@@ -12,7 +12,8 @@
       <tr>
         <th class="col-md-1">ID</th>
         <th class="col-md-6">名称</th>
-        <th class="col-md-2">ポイント</th>
+        <th class="col-md-1">ポイント</th>
+        <th class="col-md-1">在庫</th>
         <th class="col-md-1">状態</th>
         <th class="col-md-2 text-center"></th>
       </tr>
@@ -26,6 +27,7 @@
         </td>
         <td><%= item.name %></td>
         <td class="text-right"><%= item.point %></td>
+        <td class="text-right"><%= item.gifts_count %></td>
         <td class="text-center">
           <% if item.available %>
           <span class="label label-success">有効</span>

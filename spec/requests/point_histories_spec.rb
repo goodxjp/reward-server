@@ -12,7 +12,6 @@ describe 'GET /api/v1/point_histories.json' do
     point_history2 = FactoryGirl.create(:point_history, media_user: media_user, point_change: 200, source: point)
     point_history3 = FactoryGirl.create(:point_history, media_user: media_user, point_change: 300, source: point)
 
-
     # HTTP リクエスト準備
     query = { mid: "1", uid: "1" }
     sig = Api::V1::ApiController.make_signature(medium, media_user, "GET", "/api/v1/point_histories.json", query)
