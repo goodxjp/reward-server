@@ -3,7 +3,19 @@ require 'openssl'
 
 class Api::V1::ApiController < ApplicationController
   # Web API では CSRF トークン不要
-  skip_before_filter :verify_authenticity_token
+  skip_before_action :verify_authenticity_token
+
+  before_action :api_initialize
+
+  #
+  # 全ての API で共通に行う処理
+  #
+  def api_initialize
+    @now = Time.zone.now
+
+    # アクセス日時を記録
+    # TODO: 将来的には NoSQL に記録
+  end
 
   #
   # 署名が正しいかチェック

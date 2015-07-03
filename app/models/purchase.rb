@@ -15,11 +15,28 @@ class Purchase < ActiveRecord::Base
   #
   # ギフト券購入処理
   #
-  def self.purchase(media_user, item, number, point)
+  def self.purchase(media_user, item, number, point, occurred_at)
+    media_user.lock!  # ポイント関連の一覧の更新や、ユーザーの状態をチェックする前にユーザーでロックしておく
+
+    #
+    # 各種チェック
+    #
+
+    # 1 日 1 回しか交換できない
+    from = Time.zone.local(occurred_at.year, occurred_at.month, occurred_at.day, 0, 0, 0)
+    next_day = occurred_at.tomorrow
+    to = Time.zone.local(next_day.year, next_day.month, next_day.day, 0, 0, 0)
+    purchases = Purchase.where("? <= occurred_at AND occurred_at < ?", from, to)
+
+    if purchases.size > 0
+      message = "User have already purchased today (media_user.id = #{media_user.id})."
+      logger.warn message
+      raise message
+    end
+
     #
     # ポイントの消費
     #
-    media_user.lock!  # ポイント関連の一覧の更新する前にユーザーでロックしておく
 
     # ポイント資産から消費
     consumed_point = point  # 消費すべきポイント
@@ -48,11 +65,13 @@ class Purchase < ActiveRecord::Base
     media_user.point = media_user.point - point
     media_user.save!
 
+    # TODO: 資産の再計算チェック
+
     # ポイント履歴の追加
     point_history = PointHistory.new()
     point_history.media_user   = media_user
     point_history.point_change = -point
-    point_history.detail       = "ポイント交換 (#{item.name} * #{number})"
+    point_history.detail       = "ポイント交換 (#{item.name} ×  #{number})"
     point_history.source       = @purchase
     point_history.save!
 
@@ -79,7 +98,7 @@ class Purchase < ActiveRecord::Base
     end
 
     # 購入作成
-    purchase = Purchase.new(media_user: media_user, item: item, number: number, point: point)
+    purchase = Purchase.new(media_user: media_user, item: item, number: number, point: point, occurred_at: occurred_at)
     purchase.save!
 
     # 複数個対応

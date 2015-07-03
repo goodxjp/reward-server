@@ -9,7 +9,7 @@ describe 'POST /api/v1/purchases.json' do
 
     gift = FactoryGirl.create(:gift)
 
-    Point::add_point(media_user, PointType::MANUAL, 100, "テスト用")
+    Point::add_point(media_user, PointType::MANUAL, 1000, "テスト用")
 
     query = { mid: "1", uid: "1" }
     sig = Api::V1::ApiController.make_signature(medium, media_user, "POST", "/api/v1/purchases.json", query)
@@ -19,6 +19,24 @@ describe 'POST /api/v1/purchases.json' do
 
     post "/api/v1/purchases.json?mid=1&uid=1&sig=#{sig}", params.to_json, headers
     expect(response).to be_success
+
+    # DB チェック
+    purchases = Purchase.all
+    expect(purchases.size).to eq 1
+
+    purchase = purchases[0]
+    #pp purchase
+    expect(purchase.media_user_id).to eq media_user.id
+    expect(purchase.item_id).to eq 1
+    expect(purchase.number).to eq 1
+    expect(purchase.point).to eq 100
+    expect(purchase.occurred_at).not_to eq nil
+
+    gift = Gift.find(gift.id)
+    expect(gift.purchase_id).to eq purchase.id
+
+    media_user = MediaUser.find(media_user.id)
+    expect(media_user.point).to eq 1000 - 100
   end
 
   it '購入済みのギフトしか残っていないときはエラー' do
@@ -31,7 +49,7 @@ describe 'POST /api/v1/purchases.json' do
     # 購入済みのギフト券
     gift = FactoryGirl.create(:gift_purchased, item: item, purchase: purchase)
 
-    Point::add_point(media_user, PointType::MANUAL, 100, "テスト用")
+    Point::add_point(media_user, PointType::MANUAL, 1000, "テスト用")
 
     query = { mid: "1", uid: "1" }
     sig = Api::V1::ApiController.make_signature(medium, media_user, "POST", "/api/v1/purchases.json", query)
@@ -106,5 +124,34 @@ describe 'POST /api/v1/purchases.json' do
 
   it 'パラメータのポイントが実際の商品のポイントと違う場合はエラー' do
     # TODO
+  end
+
+  # TODO: 日付のパターンを DRY にしてもっと増やしたい
+  it '1 日 1 回までしか購入ができない' do
+    medium = FactoryGirl.create(:medium)
+    media_user = FactoryGirl.create(:media_user)
+
+    item = FactoryGirl.create(:item)
+
+    gift1 = FactoryGirl.create(:gift, item: item, expiration_at: nil)
+    gift2 = FactoryGirl.create(:gift, item: item, expiration_at: nil)
+    gift3 = FactoryGirl.create(:gift, item: item, expiration_at: nil)
+
+    Point::add_point(media_user, PointType::MANUAL, 1000, "テスト用")
+
+    now = Time.zone.now
+    occurred_at = Time.zone.local(now.year, now.month, now.day, 0, 0, 0)
+    purchase = FactoryGirl.create(:purchase, media_user: media_user, item: item, occurred_at: occurred_at)
+
+    query = { mid: "1", uid: "1" }
+    sig = Api::V1::ApiController.make_signature(medium, media_user, "POST", "/api/v1/purchases.json", query)
+
+    params = { item: { id: 1, number: 1, point: 100} }
+    headers = { 'CONTENT_TYPE' => 'application/json' }
+
+    # 日付またぎのタイミングでやるとうまく成功しない
+    # TODO: テスト時に無理やり現在日時を設定できる仕組みを
+    post "/api/v1/purchases.json?mid=1&uid=1&sig=#{sig}", params.to_json, headers
+    expect(response).not_to be_success
   end
 end

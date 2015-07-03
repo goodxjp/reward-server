@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150623073456) do
+ActiveRecord::Schema.define(version: 20150703084137) do
 
   create_table "achievements", force: true do |t|
     t.integer  "media_user_id"
@@ -205,6 +205,7 @@ ActiveRecord::Schema.define(version: 20150623073456) do
     t.integer  "point",         null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "occurred_at"
   end
 
   add_index "purchases", ["item_id"], name: "index_purchases_on_item_id"
