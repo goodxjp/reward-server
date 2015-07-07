@@ -26,7 +26,7 @@ class Purchase < ActiveRecord::Base
     from = Time.zone.local(occurred_at.year, occurred_at.month, occurred_at.day, 0, 0, 0)
     next_day = occurred_at.tomorrow
     to = Time.zone.local(next_day.year, next_day.month, next_day.day, 0, 0, 0)
-    purchases = Purchase.where("? <= occurred_at AND occurred_at < ?", from, to)
+    purchases = Purchase.where(media_user: media_user).where("? <= occurred_at AND occurred_at < ?", from, to)
 
     if purchases.size > 0
       message = "User have already purchased today (media_user.id = #{media_user.id})."
