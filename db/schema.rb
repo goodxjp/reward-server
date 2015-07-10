@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150703084137) do
+ActiveRecord::Schema.define(version: 20150708093407) do
 
   create_table "achievements", force: true do |t|
     t.integer  "media_user_id"
@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(version: 20150703084137) do
   end
 
   create_table "campaigns", force: true do |t|
-    t.string   "name"
+    t.string   "name",                             null: false
     t.text     "detail"
     t.string   "icon_url"
     t.datetime "created_at"
@@ -76,6 +76,9 @@ ActiveRecord::Schema.define(version: 20150703084137) do
     t.string   "requirement"
     t.text     "requirement_detail"
     t.string   "period"
+    t.integer  "price",                default: 0, null: false
+    t.integer  "payment",              default: 0, null: false
+    t.integer  "point"
   end
 
   add_index "campaigns", ["campaign_category_id"], name: "index_campaigns_on_campaign_category_id"

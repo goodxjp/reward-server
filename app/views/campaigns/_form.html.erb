@@ -57,6 +57,15 @@
   <%= f.input :period, label: '反映時期',
       input_wrapper_html: { class: 'col-sm-8' } %>
 
+  <%= f.input :price, label: '利用料金',
+      input_wrapper_html: { class: 'col-sm-2' } %>
+  <%= f.input :payment, label: '報酬金額',
+      input_wrapper_html: { class: 'col-sm-2' } %>
+  <%= f.input :point, label: 'ポイント',hint: '将来的には空白でデフォルト還元率 (未実装)',
+      input_wrapper_html: { class: 'col-sm-2' } %>
+
+  <hr />
+
   <%= f.simple_fields_for @advertisement do |a| %>
   <%= a.input :price, label: '利用料金',
       input_wrapper_html: { class: 'col-sm-2' } %>

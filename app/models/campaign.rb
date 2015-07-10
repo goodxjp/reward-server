@@ -10,4 +10,13 @@ class Campaign < ActiveRecord::Base
   validates :name, :presence => true
   validates :network, :presence => true
   validates :url, :presence => true
+  validates :price,
+    :presence => true,
+    :numericality => { :only_integer => true, :greater_than_or_equal_to => 0 }
+  validates :payment,
+    :presence => true,
+    :numericality => { :only_integer => true, :greater_than_or_equal_to => 0 }
+  validates :point,
+    :numericality => { :only_integer => true, :greater_than_or_equal_to => 0 },
+    :allow_nil => true
 end
