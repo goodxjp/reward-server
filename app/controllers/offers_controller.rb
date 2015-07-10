@@ -6,7 +6,7 @@ class OffersController < ApplicationController
   respond_to :html
 
   def index
-    @offers = Offer.all
+    @offers = Offer.all.order(id: :desc).page params[:page]
 
     # Devise のせいで Scaffold の生成コードが変わった。
     respond_with(@offers)
