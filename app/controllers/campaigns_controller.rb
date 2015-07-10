@@ -6,7 +6,7 @@ class CampaignsController < ApplicationController
   # GET /campaigns
   # GET /campaigns.json
   def index
-    @campaigns = Campaign.order(id: :desc)
+    @campaigns = Campaign.order(id: :desc).page params[:page]
   end
 
   # GET /campaigns/1
@@ -29,23 +29,24 @@ class CampaignsController < ApplicationController
   # POST /campaigns.json
   def create
     @campaign = Campaign.new(campaign_params)
-    @advertisement = Advertisement.new(params.require(:campaign).require(:advertisement).permit(:price, :payment, :point))
+    #@advertisement = Advertisement.new(params.require(:campaign).require(:advertisement).permit(:price, :payment, :point))
 
     begin
       ActiveRecord::Base.transaction do
         # 両方の Validation を実行しておく
         campaign_invalid = @campaign.invalid?
-        advertisement_invalid = @advertisement.invalid?
+        #advertisement_invalid = @advertisement.invalid?
 
-        if campaign_invalid or advertisement_invalid
+        #if campaign_invalid or advertisement_invalid
+        if campaign_invalid
           render :new
           return
         end
 
         @campaign.save!
-        @advertisement.campaign_id = @campaign.id
+        #@advertisement.campaign_id = @campaign.id
 
-        @advertisement.save!
+        #@advertisement.save!
 
         # オファー作成
         @campaign.media.each do |medium|
@@ -57,7 +58,7 @@ class CampaignsController < ApplicationController
         redirect_to :action => 'index', notice: 'Campaign was successfully created.'
       end
     rescue => e
-      logger.debug e
+      logger.error e
       render :new
     end
   end
@@ -65,7 +66,7 @@ class CampaignsController < ApplicationController
   # PATCH/PUT /campaigns/1
   # PATCH/PUT /campaigns/1.json
   def update
-    advertisement_params = params.require(:campaign).require(:advertisement).permit(:price, :payment, :point)
+    #advertisement_params = params.require(:campaign).require(:advertisement).permit(:price, :payment, :point)
 
     # TODO: ここらへん見るものが多岐にわたるからキャンペーン単位でロックかけておく方が安全か？
     # TODO: 本当に楽観的ロックで大丈夫か？
@@ -74,24 +75,25 @@ class CampaignsController < ApplicationController
         # 両方の Validation を実行しておく
         campaign = Campaign.new(campaign_params)
         campaign_invalid = campaign.invalid?
-        advertisement = Advertisement.new(advertisement_params)
-        advertisement_invalid = advertisement.invalid?
+        #advertisement = Advertisement.new(advertisement_params)
+        #advertisement_invalid = advertisement.invalid?
 
-        if campaign_invalid or advertisement_invalid
-          @advertisement = @campaign.advertisements[0]
+        #if campaign_invalid or advertisement_invalid
+        if campaign_invalid
+          #@advertisement = @campaign.advertisements[0]
 
           @campaign.attributes = campaign_params
           @campaign.valid?  # エラーメッセージを入れるため
-          @advertisement.attributes = advertisement_params
-          @advertisement.valid?  # エラーメッセージを入れるため
+          #@advertisement.attributes = advertisement_params
+          #@advertisement.valid?  # エラーメッセージを入れるため
 
           render :edit
           return
         end
 
         @campaign.update!(campaign_params)
-        @advertisement = @campaign.advertisements[0]
-        @advertisement.update!(advertisement_params)
+        #@advertisement = @campaign.advertisements[0]
+        #@advertisement.update!(advertisement_params)
 
         #
         # 差分をチェックしてオファー更新、新規作成
@@ -137,7 +139,8 @@ class CampaignsController < ApplicationController
         redirect_to :action => 'index', notice: 'Campaign was successfully created.'
       end
     rescue => e
-      logger.debug e
+      # TODO: オファーの保存に失敗したときが検出できていない
+      logger.error e
       render :edit
     end
   end

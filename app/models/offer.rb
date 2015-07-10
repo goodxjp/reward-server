@@ -19,14 +19,14 @@ class Offer < ActiveRecord::Base
     offer.requirement_detail = campaign.requirement_detail
     offer.period             = campaign.period
 
-    advertisement = campaign.advertisements[0]
-    offer.price              = advertisement.price
-    offer.payment            = advertisement.payment
-    if advertisement.point.nil?
+    #advertisement = campaign.advertisements[0]
+    offer.price              = campaign.price
+    offer.payment            = campaign.payment
+    if campaign.point.nil?
       # TODO: デフォルト還元率の処理
       offer.point            = 10
     else
-      offer.point            = advertisement.point
+      offer.point            = campaign.point
     end
 
     return offer
@@ -66,18 +66,16 @@ class Offer < ActiveRecord::Base
       return false
     end
 
-    advertisement = campaign.advertisements[0]
-
-    if price != advertisement.price
+    if price != campaign.price
       return false
     end
 
-    if payment != advertisement.payment
+    if payment != campaign.payment
       return false
     end
 
     # TODO: デフォルト還元率の処理
-    if point != advertisement.point
+    if point != campaign.point
       return false
     end
 
