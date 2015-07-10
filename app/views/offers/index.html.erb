@@ -5,76 +5,10 @@
 <section class="content">
   <p>金額や条件などが変更された際に追跡できるように、掲載した全ての案件をオファーとして保持しておく。案件管理者は触らない。</p>
 
-  <table class="table table-striped table-bordered table-hover">
-    <thead>
-      <tr>
-        <th class="col-sm-1 text-center">
-          ID<br>
-          <button class="btn btn-default btn-xs">キャンペーン ID</button>
-        </th>
-        <th class="col-sm-1">配信メディア</th>
-        <th class="col-sm-1">カテゴリ</th>
-        <th class="col-sm-1">アイコン</th>
-        <th class="col-sm-2">名称</th>
-        <th class="col-sm-1">ポイント</th>
-        <th class="col-sm-1">状態</th>
-        <th class="col-sm-2">登録日時</th>
-        <th class="col-sm-1 text-center"></th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <% @offers.each do |offer| %>
-      <tr>
-        <td class="col-sm-1 text-center">
-          <%= offer.id %><br>
-          <% if not offer.campaign.nil? %>
-            <%= link_to offer.campaign.id, edit_campaign_path(offer.campaign), class: 'btn btn-default btn-xs' %>
-          <% else %>
-             (不明)
-          <% end %>
-        </td>
-        <td>
-          <% if not offer.medium.nil? %>
-             <%= offer.medium.name %>
-          <% else %>
-             (不明 (<%= offer.medium_id %>))
-          <% end %>
-        </td>
-        <td>
-          <% if not offer.campaign_category.nil? %>
-            <%= offer.campaign_category.name %>
-          <% else %>
-             (不明 (<%= offer.campaign_category_id %>))
-          <% end %>
-        </td>
-        <td><%= image_tag offer.icon_url, :size => '57x57' %></td>
-        <td><%= offer.name %></td>
-        <td><%= offer.point %></td>
-        <td class="text-center">
-          <% if offer.available %>
-          <span class="label label-success">有効</span>
-          <% else %>
-          <span class="label label-default">無効</span>
-          <% end %>
-        </td>
-        <td><%= offer.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S") %></td>
-        <td class="text-center">
-          <div class="btn-group">
-            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu pull-right">
-              <li><%= link_to 'Show', offer %></li>
-              <li><%= link_to 'Edit', edit_offer_path(offer) %></li>
-              <li><%= link_to 'Destroy', offer, method: :delete, data: { confirm: 'Are you sure?' } %></li>
-            </ul>
-          </div>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
+  <div class="box box-default">
+    <div class="box-body">
+      <%= render 'list' %>
+    </div><!-- /.box-body -->
+  </div><!-- /.box -->
 </section>
 
