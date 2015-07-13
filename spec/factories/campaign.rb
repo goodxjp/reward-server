@@ -4,7 +4,6 @@ FactoryGirl.define do
     name "テスト案件"
     detail "詳細はこんな感じ。"
     icon_url "http://png.findicons.com/files/icons/1681/siena/128/currency_dollar_yellow.png"
-    network_id "1"
     url "http://goodx.jp"
     campaign_category_id "1"
     requirement "何もしなくても OK"

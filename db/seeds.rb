@@ -31,6 +31,12 @@ end
 
 if Network.count == 0
   Network.create(id: 1, name: '自社')
+  Network.create(id: 2, name: '8crops')
+end
+
+if CampaignSource.count == 0
+  CampaignSource.create(id: 1, network_id: 1, name: '自社')
+  CampaignSource.create(id: 2, network_id: 2, name: 'adcrops (新メディア)')
 end
 
 if Item.find_by(id: 1) == nil

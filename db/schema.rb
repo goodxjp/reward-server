@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150708093407) do
+ActiveRecord::Schema.define(version: 20150713075913) do
 
   create_table "achievements", force: true do |t|
     t.integer  "media_user_id"
@@ -64,25 +64,38 @@ ActiveRecord::Schema.define(version: 20150708093407) do
     t.datetime "updated_at"
   end
 
+  create_table "campaign_sources", force: true do |t|
+    t.integer  "network_id", null: false
+    t.string   "name",       null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "campaign_sources", ["network_id"], name: "index_campaign_sources_on_network_id"
+
   create_table "campaigns", force: true do |t|
-    t.string   "name",                             null: false
+    t.string   "name",                                   null: false
     t.text     "detail"
     t.string   "icon_url"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "network_id"
     t.string   "url"
     t.integer  "campaign_category_id"
     t.string   "requirement"
     t.text     "requirement_detail"
     t.string   "period"
-    t.integer  "price",                default: 0, null: false
-    t.integer  "payment",              default: 0, null: false
+    t.integer  "price",                      default: 0, null: false
+    t.integer  "payment",                    default: 0, null: false
     t.integer  "point"
+    t.integer  "campaign_source_id"
+    t.string   "source_campaign_identifier"
+    t.integer  "source_id"
+    t.string   "source_type"
   end
 
   add_index "campaigns", ["campaign_category_id"], name: "index_campaigns_on_campaign_category_id"
-  add_index "campaigns", ["network_id"], name: "index_campaigns_on_network_id"
+  add_index "campaigns", ["campaign_source_id"], name: "index_campaigns_on_campaign_source_id"
+  add_index "campaigns", ["source_id", "source_type"], name: "index_campaigns_on_source_id_and_source_type"
 
   create_table "campaigns_media", id: false, force: true do |t|
     t.integer "campaign_id", null: false

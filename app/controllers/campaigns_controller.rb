@@ -155,17 +155,6 @@ class CampaignsController < ApplicationController
     end
   end
 
-  # 案件実行
-  def execute
-    @campaign = Campaign.find(params[:id])
-
-    # TODO: ユーザー ID と署名のチェック
-
-    # TODO: クリック履歴の記録
-
-    redirect_to @campaign.url
-  end
-
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_campaign
@@ -176,7 +165,7 @@ class CampaignsController < ApplicationController
     def campaign_params
       # 多対多関連のチェックボックスに対応
       # http://qiita.com/gotohiro55/items/0d76ac9412b04a431e32
-      p = params.require(:campaign).permit(:network_id, :campaign_category_id, :name, :detail, :icon_url, :url, :requirement, :requirement_detail, :period, :price, :payment, :point, :medium_ids => [])
+      p = params.require(:campaign).permit(:campaign_source_id, :source_campaign_identifier, :network_id, :campaign_category_id, :name, :detail, :icon_url, :url, :requirement, :requirement_detail, :period, :price, :payment, :point, :medium_ids => [])
       p[:medium_ids] ||= []
       p
     end

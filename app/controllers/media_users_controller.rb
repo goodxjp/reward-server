@@ -2,7 +2,6 @@
 class MediaUsersController < ApplicationController
   before_action :authenticate_admin_user!
   before_action :set_media_user, only: [:show, :edit, :update, :destroy, :add_point_by_campaign, :add_point_by_offer]
-  skip_before_filter :verify_authenticity_token, :only => [ :create ]
 
   def index
     @media_users = MediaUser.order(id: :desc).page params[:page]
@@ -15,19 +14,6 @@ class MediaUsersController < ApplicationController
 
     # ポイント資産 (ここは案件管理者には見せない？！)
     @points = Point.where(media_user: @media_user).order(created_at: :desc)
-  end
-
-  # TODO: 廃止
-  def create
-    @media_user = MediaUser.new(media_user_params)
-
-    terminal_info = params[:media_user][:terminal_info]
-    @media_user.terminal_info = terminal_info.to_json
-
-    if @media_user.save
-      render json: @media_user
-      return
-    end
   end
 
   def destroy

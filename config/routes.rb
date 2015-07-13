@@ -1,23 +1,11 @@
 # -*- coding: utf-8 -*-
 Rails.application.routes.draw do
-  resources :offers
-
-  resources :media
-
-  resources :networks
-
-  devise_for :admin_users
   get 'welcome/index'
   get 'welcome/admin'
 
-  resources :advertisements
+  devise_for :admin_users
 
-  resources :campaigns do
-    member do
-      get 'execute'
-    end
-  end
-
+  # ユーザー
   resources :media_users do
     member do
       get 'add_point_by_offer'
@@ -25,6 +13,19 @@ Rails.application.routes.draw do
     end
   end
   post 'media_users/:id/notify' => 'media_users#notify'
+
+  # キャンペーン
+  resources :campaigns
+  resources :advertisements  # TODO: 削除
+
+  # オファー
+  resources :offers
+
+  # ネットワーク
+  resources :networks
+
+  # メディア
+  resources :media
 
   # 商品
   resources :items do
