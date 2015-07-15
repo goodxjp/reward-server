@@ -23,4 +23,8 @@ class Campaign < ActiveRecord::Base
   validates :point,
     :numericality => { :only_integer => true, :greater_than_or_equal_to => 0 },
     :allow_nil => true
+
+  def network
+    self.campaign_source.network
+  end
 end

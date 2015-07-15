@@ -1,0 +1,45 @@
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+      <th class="col-sm-1">ID</th>
+      <th class="col-sm-2">日時</th>
+      <th class="col-sm-1">ポイント</th>
+      <th class="col-sm-6">詳細</th>
+      <th class="col-sm-2"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @point_histories.each do |point_history| %>
+    <% if point_history.source.kind_of?(Achievement)
+         campaign = point_history.source.campaign
+       else
+         campaign = nil
+       end
+     %>
+    <tr>
+      <td><%= point_history.id %></td>
+      <td>
+        <% if point_history.source.kind_of?(Achievement) %>
+          <%= l point_history.source.occurred_at, :format => :default %>
+        <% elsif point_history.source.kind_of?(Purchase) %>
+          <%= l point_history.source.occurred_at, :format => :default %>
+        <% else %>
+          <%= l point_history.created_at, :format => :default %>
+        <% end %>
+      </td>
+      <td class="text-right">
+        <%= number_with_delimiter(point_history.point_change) %>
+      </td>
+      <td>
+        <%= point_history.detail %>
+      </td>
+      <td class="text-center">
+        <% if not campaign.nil? %>
+          <%= link_to "キャンペーン #{campaign.id}" , edit_campaign_path(campaign), class: 'btn btn-default btn-xs' %>
+        <% end %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

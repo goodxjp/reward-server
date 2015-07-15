@@ -35,6 +35,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # 成果
+  resources :achievements
+
   #
   # API
   # - http://ruby-rails.hatenadiary.com/entry/20150108/1420675366

@@ -1,0 +1,66 @@
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+      <th class="col-sm-1">ID</th>
+      <th class="col-sm-2">日時</th>
+      <th class="col-sm-3">名前</th>
+      <th class="col-sm-1"></th>
+      <th class="col-sm-1">IP</th>
+      <th class="col-sm-2">クリック情報</th>
+      <th class="col-sm-1">
+        <small class="text-muted">※括弧内の数字は成果件数。通常は 1。</small>
+      </th>
+      <th class="col-sm-1"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @click_histories.each do |click_history| %>
+    <tr>
+      <td><%= click_history.id %></td>
+      <td>
+        <%= l click_history.created_at, :format => :default %>
+      </td>
+      <td>
+        <% if not click_history.offer.nil? %>
+          <%= click_history.offer.name %>
+        <% end %>
+      </td>
+      <td class="text-center">
+        オファー <%= click_history.offer_id %><br>
+        <% if not click_history.offer.nil? %>
+          <%= link_to "キャンペーン #{click_history.offer.campaign_id}", edit_campaign_path(click_history.offer.campaign), class: 'btn btn-default btn-xs' %>
+        <% end %>
+      </td>
+      <td><%= click_history.ip_address %></td>
+      <td><%= truncate(click_history.user_agent, :length => 35) %></td>
+      <td class="text-center">
+        <% if not click_history.offer.nil? %>
+          <% points_size = @media_user.count_achievement_by_campaign(click_history.offer.campaign) %>
+        <% else %>
+          <% points_size = 0 %>
+        <% end %>
+        <% if points_size > 0 %>
+        <span class="label label-success">達成 (<%= points_size %>)</span>
+        <% else %>
+        <span class="label label-default">未達成</span>
+        <% end %>
+      </td>
+      <td class="text-center">
+        <div class="btn-group">
+          <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu pull-right">
+            <% if not click_history.offer.nil? %>
+            <li><%= link_to '手動成果',
+                    add_point_by_offer_media_user_path(@media_user, { :offer_id => click_history.offer.id }),
+                    data: { confirm: 'Are you sure?' } %></li>
+            <% end %>
+          </ul>
+        </div>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

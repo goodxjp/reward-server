@@ -28,9 +28,9 @@ class Purchase < ActiveRecord::Base
     to = Time.zone.local(next_day.year, next_day.month, next_day.day, 0, 0, 0)
     purchases = Purchase.where(media_user: media_user).where("? <= occurred_at AND occurred_at < ?", from, to)
 
-    if purchases.size > 0
+    if purchases.size > 1
       message = "User have already purchased today (media_user.id = #{media_user.id})."
-      logger.warn message
+      logger.info message
       raise message
     end
 

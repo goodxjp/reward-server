@@ -37,16 +37,19 @@ class MediaUsersController < ApplicationController
     campaign = offer.campaign
 
     # TODO: エラー処理
-    add_point(@media_user, offer.point, PointType::MANUAL, campaign)
+    #add_point(@media_user, offer.point, PointType::MANUAL, campaign)
+    Achievement.add_achievement(@media_user, campaign, campaign.payment, false, campaign.point, Time.zone.now, nil)
 
     redirect_to :action => :show
   end
 
+  # 手動成果
   def add_point_by_campaign
     campaign = Campaign.find(params[:campaign_id])
 
     # TODO: エラー処理
-    add_point(@media_user, campaign.advertisements[0].point, PointType::MANUAL, campaign)
+    #add_point(@media_user, campaign.advertisements[0].point, PointType::MANUAL, campaign)
+    Achievement.add_achievement(@media_user, campaign, campaign.payment, false, campaign.point, Time.zone.now, nil)
 
     redirect_to :action => :show
   end

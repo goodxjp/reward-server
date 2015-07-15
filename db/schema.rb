@@ -11,23 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150713075913) do
+ActiveRecord::Schema.define(version: 20150715014943) do
 
   create_table "achievements", force: true do |t|
     t.integer  "media_user_id"
-    t.integer  "payment",                       null: false
+    t.integer  "payment",             null: false
     t.boolean  "payment_include_tax"
     t.integer  "campaign_id"
-    t.integer  "point_id"
-    t.string   "accrual_date",        limit: 8, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "occurred_at",         null: false
+    t.integer  "notification_id"
+    t.string   "notification_type"
   end
 
-  add_index "achievements", ["accrual_date"], name: "index_achievements_on_accrual_date"
   add_index "achievements", ["campaign_id"], name: "index_achievements_on_campaign_id"
   add_index "achievements", ["media_user_id"], name: "index_achievements_on_media_user_id"
-  add_index "achievements", ["point_id"], name: "index_achievements_on_point_id"
+  add_index "achievements", ["notification_id", "notification_type"], name: "index_achievements_on_notification_id_and_notification_type"
+  add_index "achievements", ["occurred_at"], name: "index_achievements_on_occurred_at"
 
   create_table "admin_users", force: true do |t|
     t.string   "email",                  default: "", null: false
@@ -205,7 +206,7 @@ ActiveRecord::Schema.define(version: 20150713075913) do
     t.string   "source_type"
     t.integer  "source_id"
     t.integer  "point"
-    t.integer  "type"
+    t.integer  "point_type_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "remains",       null: false
@@ -221,10 +222,11 @@ ActiveRecord::Schema.define(version: 20150713075913) do
     t.integer  "point",         null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.datetime "occurred_at"
+    t.datetime "occurred_at",   null: false
   end
 
   add_index "purchases", ["item_id"], name: "index_purchases_on_item_id"
   add_index "purchases", ["media_user_id"], name: "index_purchases_on_media_user_id"
+  add_index "purchases", ["occurred_at"], name: "index_purchases_on_occurred_at"
 
 end

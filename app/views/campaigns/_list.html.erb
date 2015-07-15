@@ -11,7 +11,9 @@
       <th class="col-md-1">ポイント</th>
       <th class="col-md-1">状態</th>
       <th class="col-md-1">登録日時</th>
-      <th class="col-md-2 text-center"></th>
+      <th class="col-md-2 text-center">
+        <%= link_to '新規登録', new_campaign_path, :class => 'btn btn-primary' %>
+      </th>
     </tr>
   </thead>
 
@@ -55,19 +57,6 @@
       </td>
     </tr>
     <% end %>
-    <tr>
-      <td class="col-md-1"></td>
-      <td class="col-xs-2 col-md-1"></td>
-      <td class="col-md-1"></td>
-      <td class="col-xs-3 col-md-2"></td>
-      <td class="hidden-xs col-md-2"></td>
-      <td class="col-md-1"></td>
-      <td class="col-md-1"></td>
-      <td class="col-md-1"></td>
-      <td class="text-center">
-        <%= link_to '新規登録', new_campaign_path, :class => 'btn btn-default' %>
-      </td>
-    </tr>
   </tbody>
 </table>
 

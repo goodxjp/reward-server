@@ -4,12 +4,17 @@ class MediaUser < ActiveRecord::Base
   belongs_to :medium
 
   validates :terminal_id,
-    :presence => true,
-    :uniqueness => true
+    :presence => true
+    #:uniqueness => true
 
-  # キャンペーンに対応した成果数
+  # キャンペーンに対応した成果数 TODO: 削除
   def count_points_by_campaign(campaign)
     return Point.where(media_user: self).where(source_type: "Campaign", source: campaign).size
+  end
+
+  # キャンペーンに対応した成果数
+  def count_achievement_by_campaign(campaign)
+    return Achievement.where(media_user: self).where(campaign: campaign).size
   end
 
   def version

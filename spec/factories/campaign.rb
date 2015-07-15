@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 FactoryGirl.define do
   factory :campaign do
+    campaign_source
     name "テスト案件"
     detail "詳細はこんな感じ。"
     icon_url "http://png.findicons.com/files/icons/1681/siena/128/currency_dollar_yellow.png"

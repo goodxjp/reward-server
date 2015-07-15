@@ -5,5 +5,6 @@ FactoryGirl.define do
     item
     number 1
     point 100
+    occurred_at Time.now
   end
 end

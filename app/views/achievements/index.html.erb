@@ -1,0 +1,88 @@
+<section class="content-header">
+  <h2>成果一覧</h2>
+</section>
+
+<section class="content">
+  <div class="box box-default">
+
+  <div class="box-body">
+
+  <%= paginate @achievements %>
+
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th class="col-md-1">ID</th>
+        <th class="col-md-2">日時</th>
+        <th class="col-md-2">ネットワーク</th>
+        <th class="col-md-2">キャンペーン</th>
+        <th class="col-md-1"></th>
+        <th class="col-md-1">ユーザー</th>
+        <th class="col-md-1">報酬金額</th>
+        <th class="col-md-1">通知</th>
+        <th class="col-md-1">状態</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @achievements.each do |achievement| %>
+      <tr>
+        <td class="text-center">
+          <%= achievement.id %>
+        </td>
+        <td>
+          <%= l achievement.occurred_at, :format => :default %>
+        </td>
+        <td>
+          <%= achievement.campaign.network.name %>
+        </td>
+        <td><%= achievement.campaign.name %></td>
+        <td class="text-center">
+          <%= link_to "キャンペーン #{achievement.campaign.id}", achievement.campaign, class: 'btn btn-default btn-xs' %>
+        </td>
+        <td class="text-center">
+          <%= link_to achievement.media_user.id, achievement.media_user, class: 'btn btn-default btn-xs' %>
+        </td>
+        <td class="text-right">
+          <%= number_with_delimiter(achievement.payment) %>
+          <% if achievement.payment_include_tax? %>
+            (税込)
+          <% else %>
+            (税抜)
+          <% end %>
+        </td>
+        <td class="text-center">
+          <% if not achievement.notification.nil? %>
+            <%= achievement.notification.class %><br />
+            <%= achievement.notification.id %>
+          <% else %>
+            <span class="label label-default">なし</span>
+          <% end %>
+        </td>
+        <td class="text-center">
+          <% if not achievement.media_user.nil? %>
+            <span class="label label-success">有効</span>
+          <% else %>
+            <span class="label label-default">無効</span>
+          <% end %>
+        </td>
+      </tr>
+      <% end %>
+    </tbody>
+
+    <tfoot>
+      <tr>
+        <td colspan="4"></td>
+        <td class="text-center">
+        </td>
+      </trd>
+    </tfoot>
+  </table>
+
+  <%= paginate @achievements %>
+
+    </div><!-- /.box-body -->
+  </div><!-- /.box -->
+
+</section>
+
