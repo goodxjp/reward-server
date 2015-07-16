@@ -2,7 +2,7 @@
 FactoryGirl.define do
   factory :point do
     media_user
-    type 1
+    point_type PointType::AUTO
     # TODO
     #association :source, factory: :campaign
     point 100
