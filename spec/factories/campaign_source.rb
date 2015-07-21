@@ -4,4 +4,9 @@ FactoryGirl.define do
     name "自社"
     network
   end
+
+  factory :adcrops, class: CampaignSource do
+    name "adcrops"
+    network
+  end
 end

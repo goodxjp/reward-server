@@ -66,6 +66,18 @@ Rails.application.routes.draw do
     end
   end
 
+  #
+  # 成果通知
+  #
+  namespace :notice do
+    resources :media, :only => [] do
+      member do
+        get 'adcrops'
+      end
+    end
+  end
+
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

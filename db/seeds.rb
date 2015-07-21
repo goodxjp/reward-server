@@ -35,6 +35,7 @@ if Network.count == 0
 end
 
 if CampaignSource.count == 0
+  # ここの値は成果通知のコードとあわせる必要あり。
   CampaignSource.create(id: 1, network_id: 1, name: '自社')
   CampaignSource.create(id: 2, network_id: 2, name: 'adcrops (新メディア)')
 end
