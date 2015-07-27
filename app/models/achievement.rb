@@ -19,6 +19,6 @@ class Achievement < ActiveRecord::Base
     achievement.notification        = notification
     achievement.save!
 
-    Point.add_point_by_achievement(media_user, PointType::MANUAL, point, achievement)
+    Point.add_point_by_achievement(media_user, PointType::AUTO, point, achievement)
   end
 end

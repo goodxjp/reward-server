@@ -15,6 +15,7 @@ module Api
           # TODO: 非表示のものをチェック
           #hiding = Hiding.where(media_user: @media_user, target: offer.campaign)
           next if (offer.point > 1000)
+
           @offers << offer
         end
       end
@@ -50,6 +51,10 @@ module Api
           render :text => "案件が終了したか、獲得条件、ポイント数などが変更になっている可能性があります。お手数ではございますが、最初からやり直してください。"  # 嘘ですけど
           return
         end
+
+        # URL 書き換え
+        offer.url.gsub!('$USER_ID$', @media_user.id.to_s)
+        offer.url.gsub!('$OFFER_ID$', offer.id.to_s)
 
         redirect_to offer.url
       end

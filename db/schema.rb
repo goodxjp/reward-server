@@ -11,7 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150715014943) do
+ActiveRecord::Schema.define(version: 20150726085300) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "achievements", force: true do |t|
     t.integer  "media_user_id"
@@ -25,10 +28,25 @@ ActiveRecord::Schema.define(version: 20150715014943) do
     t.string   "notification_type"
   end
 
-  add_index "achievements", ["campaign_id"], name: "index_achievements_on_campaign_id"
-  add_index "achievements", ["media_user_id"], name: "index_achievements_on_media_user_id"
-  add_index "achievements", ["notification_id", "notification_type"], name: "index_achievements_on_notification_id_and_notification_type"
-  add_index "achievements", ["occurred_at"], name: "index_achievements_on_occurred_at"
+  add_index "achievements", ["campaign_id"], name: "index_achievements_on_campaign_id", using: :btree
+  add_index "achievements", ["media_user_id"], name: "index_achievements_on_media_user_id", using: :btree
+  add_index "achievements", ["notification_id", "notification_type"], name: "index_achievements_on_notification_id_and_notification_type", using: :btree
+  add_index "achievements", ["occurred_at"], name: "index_achievements_on_occurred_at", using: :btree
+
+  create_table "adcrops_achievement_notices", force: true do |t|
+    t.integer  "campaign_source_id"
+    t.string   "suid"
+    t.string   "xuid"
+    t.string   "sad"
+    t.string   "xad"
+    t.string   "cv_id"
+    t.string   "reward"
+    t.string   "point"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "adcrops_achievement_notices", ["campaign_source_id"], name: "index_adcrops_achievement_notices_on_campaign_source_id", using: :btree
 
   create_table "admin_users", force: true do |t|
     t.string   "email",                  default: "", null: false
@@ -45,8 +63,8 @@ ActiveRecord::Schema.define(version: 20150715014943) do
     t.datetime "updated_at"
   end
 
-  add_index "admin_users", ["email"], name: "index_admin_users_on_email", unique: true
-  add_index "admin_users", ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
+  add_index "admin_users", ["email"], name: "index_admin_users_on_email", unique: true, using: :btree
+  add_index "admin_users", ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "advertisements", force: true do |t|
     t.integer  "campaign_id"
@@ -57,7 +75,7 @@ ActiveRecord::Schema.define(version: 20150715014943) do
     t.datetime "updated_at"
   end
 
-  add_index "advertisements", ["campaign_id"], name: "index_advertisements_on_campaign_id"
+  add_index "advertisements", ["campaign_id"], name: "index_advertisements_on_campaign_id", using: :btree
 
   create_table "campaign_categories", force: true do |t|
     t.string   "name",       null: false
@@ -66,13 +84,14 @@ ActiveRecord::Schema.define(version: 20150715014943) do
   end
 
   create_table "campaign_sources", force: true do |t|
-    t.integer  "network_id", null: false
-    t.string   "name",       null: false
+    t.integer  "network_id",        null: false
+    t.string   "name",              null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "network_system_id"
   end
 
-  add_index "campaign_sources", ["network_id"], name: "index_campaign_sources_on_network_id"
+  add_index "campaign_sources", ["network_id"], name: "index_campaign_sources_on_network_id", using: :btree
 
   create_table "campaigns", force: true do |t|
     t.string   "name",                                   null: false
@@ -94,17 +113,17 @@ ActiveRecord::Schema.define(version: 20150715014943) do
     t.string   "source_type"
   end
 
-  add_index "campaigns", ["campaign_category_id"], name: "index_campaigns_on_campaign_category_id"
-  add_index "campaigns", ["campaign_source_id"], name: "index_campaigns_on_campaign_source_id"
-  add_index "campaigns", ["source_id", "source_type"], name: "index_campaigns_on_source_id_and_source_type"
+  add_index "campaigns", ["campaign_category_id"], name: "index_campaigns_on_campaign_category_id", using: :btree
+  add_index "campaigns", ["campaign_source_id"], name: "index_campaigns_on_campaign_source_id", using: :btree
+  add_index "campaigns", ["source_id", "source_type"], name: "index_campaigns_on_source_id_and_source_type", using: :btree
 
   create_table "campaigns_media", id: false, force: true do |t|
     t.integer "campaign_id", null: false
     t.integer "medium_id",   null: false
   end
 
-  add_index "campaigns_media", ["campaign_id"], name: "index_campaigns_media_on_campaign_id"
-  add_index "campaigns_media", ["medium_id"], name: "index_campaigns_media_on_medium_id"
+  add_index "campaigns_media", ["campaign_id"], name: "index_campaigns_media_on_campaign_id", using: :btree
+  add_index "campaigns_media", ["medium_id"], name: "index_campaigns_media_on_medium_id", using: :btree
 
   create_table "click_histories", force: true do |t|
     t.integer  "media_user_id"
@@ -115,8 +134,8 @@ ActiveRecord::Schema.define(version: 20150715014943) do
     t.datetime "updated_at"
   end
 
-  add_index "click_histories", ["media_user_id"], name: "index_click_histories_on_media_user_id"
-  add_index "click_histories", ["offer_id"], name: "index_click_histories_on_offer_id"
+  add_index "click_histories", ["media_user_id"], name: "index_click_histories_on_media_user_id", using: :btree
+  add_index "click_histories", ["offer_id"], name: "index_click_histories_on_offer_id", using: :btree
 
   create_table "gifts", force: true do |t|
     t.integer  "item_id",       null: false
@@ -127,8 +146,8 @@ ActiveRecord::Schema.define(version: 20150715014943) do
     t.datetime "updated_at"
   end
 
-  add_index "gifts", ["item_id"], name: "index_gifts_on_item_id"
-  add_index "gifts", ["purchase_id"], name: "index_gifts_on_purchase_id"
+  add_index "gifts", ["item_id"], name: "index_gifts_on_item_id", using: :btree
+  add_index "gifts", ["purchase_id"], name: "index_gifts_on_purchase_id", using: :btree
 
   create_table "items", force: true do |t|
     t.string   "name",                      null: false
@@ -157,7 +176,7 @@ ActiveRecord::Schema.define(version: 20150715014943) do
     t.string   "key"
   end
 
-  add_index "media_users", ["medium_id"], name: "index_media_users_on_medium_id"
+  add_index "media_users", ["medium_id"], name: "index_media_users_on_medium_id", using: :btree
 
   create_table "networks", force: true do |t|
     t.string   "name"
@@ -184,9 +203,9 @@ ActiveRecord::Schema.define(version: 20150715014943) do
     t.boolean  "available",            default: true, null: false
   end
 
-  add_index "offers", ["campaign_category_id"], name: "index_offers_on_campaign_category_id"
-  add_index "offers", ["campaign_id"], name: "index_offers_on_campaign_id"
-  add_index "offers", ["medium_id"], name: "index_offers_on_medium_id"
+  add_index "offers", ["campaign_category_id"], name: "index_offers_on_campaign_category_id", using: :btree
+  add_index "offers", ["campaign_id"], name: "index_offers_on_campaign_id", using: :btree
+  add_index "offers", ["medium_id"], name: "index_offers_on_medium_id", using: :btree
 
   create_table "point_histories", force: true do |t|
     t.integer  "media_user_id"
@@ -198,8 +217,8 @@ ActiveRecord::Schema.define(version: 20150715014943) do
     t.datetime "updated_at"
   end
 
-  add_index "point_histories", ["media_user_id"], name: "index_point_histories_on_media_user_id"
-  add_index "point_histories", ["source_id", "source_type"], name: "index_point_histories_on_source_id_and_source_type"
+  add_index "point_histories", ["media_user_id"], name: "index_point_histories_on_media_user_id", using: :btree
+  add_index "point_histories", ["source_id", "source_type"], name: "index_point_histories_on_source_id_and_source_type", using: :btree
 
   create_table "points", force: true do |t|
     t.integer  "media_user_id"
@@ -213,7 +232,7 @@ ActiveRecord::Schema.define(version: 20150715014943) do
     t.datetime "expiration_at"
   end
 
-  add_index "points", ["media_user_id"], name: "index_points_on_media_user_id"
+  add_index "points", ["media_user_id"], name: "index_points_on_media_user_id", using: :btree
 
   create_table "purchases", force: true do |t|
     t.integer  "media_user_id", null: false
@@ -225,8 +244,8 @@ ActiveRecord::Schema.define(version: 20150715014943) do
     t.datetime "occurred_at",   null: false
   end
 
-  add_index "purchases", ["item_id"], name: "index_purchases_on_item_id"
-  add_index "purchases", ["media_user_id"], name: "index_purchases_on_media_user_id"
-  add_index "purchases", ["occurred_at"], name: "index_purchases_on_occurred_at"
+  add_index "purchases", ["item_id"], name: "index_purchases_on_item_id", using: :btree
+  add_index "purchases", ["media_user_id"], name: "index_purchases_on_media_user_id", using: :btree
+  add_index "purchases", ["occurred_at"], name: "index_purchases_on_occurred_at", using: :btree
 
 end

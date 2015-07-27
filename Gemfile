@@ -71,3 +71,5 @@ end
 
 gem 'factory_girl_rails'
 
+gem 'quiet_assets', group: :development
+

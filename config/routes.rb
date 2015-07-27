@@ -70,11 +70,7 @@ Rails.application.routes.draw do
   # 成果通知
   #
   namespace :notice do
-    resources :media, :only => [] do
-      member do
-        get 'adcrops'
-      end
-    end
+    get 'omotesando/adcrops'
   end
 
 

@@ -25,20 +25,41 @@ if CampaignCategory.find_by(id: 4) == nil
   CampaignCategory.create(id: 4, name: '買い物')
 end
 
-if Medium.count == 0
-  Medium.create(name: 'リワードアプリ（仮）', key: '6Fk810vbM3')
-end
+#
+# メディア
+# - ID は成果通知のコードとあわせる必要あり。
+#
+medium = Medium.find_or_create_by(id: 1)
+medium.name = 'リワードアプリ (仮)'
+medium.key = '6Fk810vbM3'
+medium.save!
 
 if Network.count == 0
   Network.create(id: 1, name: '自社')
   Network.create(id: 2, name: '8crops')
 end
 
-if CampaignSource.count == 0
-  # ここの値は成果通知のコードとあわせる必要あり。
-  CampaignSource.create(id: 1, network_id: 1, name: '自社')
-  CampaignSource.create(id: 2, network_id: 2, name: 'adcrops (新メディア)')
-end
+#
+# キャンペーンソース
+# - ID は成果通知のコードとあわせる必要あり。
+#
+campaign_source = CampaignSource.find_or_create_by(id: 1)
+campaign_source.network_system = NetworkSystem::ADCROPS
+campaign_source.name = "adcrops (一つ目のメディア)"
+campaign_source.network_id = 2
+campaign_source.save!
+
+campaign_source = CampaignSource.find_or_create_by(id: 2)
+campaign_source.network_system = NetworkSystem::GREE
+campaign_source.name = "GREE (一つ目のメディア)"
+campaign_source.network_id = 2
+campaign_source.save!
+
+campaign_source = CampaignSource.find_or_create_by(id: 3)
+campaign_source.network_system = NetworkSystem::ADCROPS
+campaign_source.name = "adcrops (Reward Pro)"
+campaign_source.network_id = 2
+campaign_source.save!
 
 if Item.find_by(id: 1) == nil
   Item.create(id: 1, name: 'Amazon ギフト券 (100 円分)', point: 100)
