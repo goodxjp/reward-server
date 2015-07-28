@@ -12,9 +12,9 @@ module Api
 
         @offers = []
         offers.each do |offer|
-          # TODO: 非表示のものをチェック
-          #hiding = Hiding.where(media_user: @media_user, target: offer.campaign)
-          next if (offer.point > 1000)
+          # 非表示のものをチェック
+          hidings = Hiding.where(media_user: @media_user, target: offer.campaign)
+          next if (hidings.size > 0)
 
           @offers << offer
         end

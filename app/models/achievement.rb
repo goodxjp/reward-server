@@ -19,6 +19,9 @@ class Achievement < ActiveRecord::Base
     achievement.notification        = notification
     achievement.save!
 
+    # 成果が上がったものは非表示にする
+    Hiding.create!(media_user: media_user, target: campaign)
+
     Point.add_point_by_achievement(media_user, PointType::AUTO, point, achievement)
   end
 end

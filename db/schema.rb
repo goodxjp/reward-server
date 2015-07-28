@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150726085300) do
+ActiveRecord::Schema.define(version: 20150728001929) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -148,6 +148,17 @@ ActiveRecord::Schema.define(version: 20150726085300) do
 
   add_index "gifts", ["item_id"], name: "index_gifts_on_item_id", using: :btree
   add_index "gifts", ["purchase_id"], name: "index_gifts_on_purchase_id", using: :btree
+
+  create_table "hidings", force: true do |t|
+    t.integer  "media_user_id"
+    t.integer  "target_id"
+    t.string   "target_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "hidings", ["media_user_id"], name: "index_hidings_on_media_user_id", using: :btree
+  add_index "hidings", ["target_id", "target_type"], name: "index_hidings_on_target_id_and_target_type", using: :btree
 
   create_table "items", force: true do |t|
     t.string   "name",                      null: false

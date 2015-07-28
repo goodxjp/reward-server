@@ -41,6 +41,13 @@ describe 'GET /notice/omotesando/adcrops' do
     expect(achievement.occurred_at).not_to eq nil
     expect(achievement.notification).to eq notice
 
+    hidings = Hiding.all
+    expect(hidings.size).to eq 1
+    hiding = hidings[0]
+    expect(hiding.media_user.id).to eq 2
+    expect(hiding.target_type).to eq "Campaign"
+    expect(hiding.target.source_campaign_identifier).to eq "3"
+
     points = Point.all
     expect(points.size).to eq 1
     point = points[0]
