@@ -4,7 +4,7 @@ require 'pp'
 
 describe 'POST /api/v1/user.json' do
   it '超正常系' do
-    medium = FactoryGirl.create(:medium)
+    medium = FactoryGirl.create(:medium, id: 1)
 
     query = { mid: "1" }
     sig = Api::V1::ApiController.make_signature(medium, nil, "POST", "/api/v1/user.json", query)
@@ -37,8 +37,8 @@ end
 
 describe 'GET /api/v1/user.json' do
   it '超正常系' do
-    medium = FactoryGirl.create(:medium)
-    media_user = FactoryGirl.create(:media_user)
+    medium = FactoryGirl.create(:medium, id: 1)
+    media_user = FactoryGirl.create(:media_user, id: 1)
 
     query = { mid: "1", uid: "1" }
     sig = Api::V1::ApiController.make_signature(medium, media_user, "GET", "/api/v1/user.json", query)

@@ -5,8 +5,8 @@ require 'pp'
 describe 'GET /api/v1/gifts.json' do
   it '超正常系' do
     # DB 準備
-    medium = FactoryGirl.create(:medium)
-    media_user = FactoryGirl.create(:media_user)
+    medium = FactoryGirl.create(:medium, id: 1)
+    media_user = FactoryGirl.create(:media_user, id: 1)
 
     item = FactoryGirl.create(:item)
     gift1 = FactoryGirl.create(:gift, item: item, expiration_at: Time.zone.parse('2008-02-10 15:30:45'))
@@ -27,8 +27,8 @@ describe 'GET /api/v1/gifts.json' do
 
   it '他の人のギフト券は返さない' do
     # DB 準備
-    medium = FactoryGirl.create(:medium)
-    media_user = FactoryGirl.create(:media_user, medium: medium, terminal_id: "xxx")
+    medium = FactoryGirl.create(:medium, id: 1)
+    media_user = FactoryGirl.create(:media_user, id: 1, medium: medium, terminal_id: "xxx")
     media_user_other = FactoryGirl.create(:media_user, medium: medium, terminal_id: "yyy")
 
     item = FactoryGirl.create(:item)

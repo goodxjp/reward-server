@@ -5,8 +5,8 @@ require 'pp'
 describe 'GET /api/v1/items.json' do
   it '超正常系' do
     # DB 準備
-    medium = FactoryGirl.create(:medium)
-    media_user = FactoryGirl.create(:media_user)
+    medium = FactoryGirl.create(:medium, id: 1)
+    media_user = FactoryGirl.create(:media_user, id: 1)
     item = FactoryGirl.create(:item)
     gift1 = FactoryGirl.create(:gift, item: item)
     gift2 = FactoryGirl.create(:gift, item: item)
@@ -28,8 +28,8 @@ describe 'GET /api/v1/items.json' do
 
   it '在庫切れ' do
     # DB 準備
-    medium = FactoryGirl.create(:medium)
-    media_user = FactoryGirl.create(:media_user)
+    medium = FactoryGirl.create(:medium, id: 1)
+    media_user = FactoryGirl.create(:media_user, id: 1)
     item = FactoryGirl.create(:item)
     purchase = FactoryGirl.create(:purchase, media_user: media_user, item: item)
     gift1 = FactoryGirl.create(:gift, item: item, purchase: purchase)  # 使用済みギフト券
@@ -50,8 +50,8 @@ describe 'GET /api/v1/items.json' do
 
   it '在庫あり' do
     # DB 準備
-    medium = FactoryGirl.create(:medium)
-    media_user = FactoryGirl.create(:media_user)
+    medium = FactoryGirl.create(:medium, id: 1)
+    media_user = FactoryGirl.create(:media_user, id: 1)
     item = FactoryGirl.create(:item)
     gift1 = FactoryGirl.create(:gift, item: item, purchase: nil)  # 未使用ギフト券
 

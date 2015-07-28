@@ -5,8 +5,8 @@ require 'pp'
 describe 'GET /api/v1/point_histories.json' do
   it '超正常系' do
     # DB 準備
-    medium = FactoryGirl.create(:medium)
-    media_user = FactoryGirl.create(:media_user)
+    medium = FactoryGirl.create(:medium, id: 1)
+    media_user = FactoryGirl.create(:media_user, id: 1)
     point = FactoryGirl.create(:point, media_user: media_user)
     point_history1 = FactoryGirl.create(:point_history, media_user: media_user, point_change: 100, source: point)
     point_history2 = FactoryGirl.create(:point_history, media_user: media_user, point_change: 200, source: point)

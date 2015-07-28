@@ -4,8 +4,8 @@ require 'pp'
 
 describe 'POST /api/v1/purchases.json' do
   it '超正常系' do
-    medium = FactoryGirl.create(:medium)
-    media_user = FactoryGirl.create(:media_user)
+    medium = FactoryGirl.create(:medium, id: 1)
+    media_user = FactoryGirl.create(:media_user, id: 1)
 
     gift = FactoryGirl.create(:gift)
 
@@ -40,8 +40,8 @@ describe 'POST /api/v1/purchases.json' do
   end
 
   it '購入済みのギフトしか残っていないときはエラー' do
-    medium = FactoryGirl.create(:medium)
-    media_user = FactoryGirl.create(:media_user)
+    medium = FactoryGirl.create(:medium, id: 1)
+    media_user = FactoryGirl.create(:media_user, id: 1)
 
     item = FactoryGirl.create(:item)
     purchase = FactoryGirl.create(:purchase, media_user: media_user, item: item)
@@ -62,8 +62,8 @@ describe 'POST /api/v1/purchases.json' do
   end
 
   it '購入されるギフト券は有効期限が古いのが優先される' do
-    medium = FactoryGirl.create(:medium)
-    media_user = FactoryGirl.create(:media_user)
+    medium = FactoryGirl.create(:medium, id: 1)
+    media_user = FactoryGirl.create(:media_user, id: 1)
 
     item = FactoryGirl.create(:item)
 
@@ -93,8 +93,8 @@ describe 'POST /api/v1/purchases.json' do
   end
 
   it '購入されるギフト券は有効期限が設定されていないものが最後に使われる' do
-    medium = FactoryGirl.create(:medium)
-    media_user = FactoryGirl.create(:media_user)
+    medium = FactoryGirl.create(:medium, id: 1)
+    media_user = FactoryGirl.create(:media_user, id: 1)
 
     item = FactoryGirl.create(:item)
 
@@ -128,8 +128,8 @@ describe 'POST /api/v1/purchases.json' do
 
   # TODO: 日付のパターンを DRY にしてもっと増やしたい
   it '1 日 1 回までしか購入ができない' do
-    medium = FactoryGirl.create(:medium)
-    media_user = FactoryGirl.create(:media_user)
+    medium = FactoryGirl.create(:medium, id: 1)
+    media_user = FactoryGirl.create(:media_user, id: 1)
 
     item = FactoryGirl.create(:item)
 
