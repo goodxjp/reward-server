@@ -120,6 +120,13 @@ module Notice
         render :nothing => true, :status => 404 and return
       end
 
+      # クリック履歴の確認
+      click_histories = ClickHistory.where(media_user: media_user, offer: offer)
+      if not click_histories.size > 0
+        logger.error "Not found ClickHisotry (media_user.id = #{media_user.id}, offer.id = #{offer.id})."
+        render :nothing => true, :status => 404 and return
+      end
+
       # 成果を付ける
       # TODO: トランザクションのテスト
       ActiveRecord::Base.transaction do

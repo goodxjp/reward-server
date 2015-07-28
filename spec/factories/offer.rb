@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 FactoryGirl.define do
   factory :offer do
+    medium
     campaign
     name "オファー名"
     detail "詳細はこんな感じ。"

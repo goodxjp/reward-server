@@ -53,8 +53,8 @@
         </td>
         <td class="text-center">
           <% if not achievement.notification.nil? %>
-            <%= achievement.notification.class %><br />
-            <%= achievement.notification.id %>
+            <%= achievement.notification_type_name %>
+            (<%= achievement.notification.id %>)
           <% else %>
             <span class="label label-default">なし</span>
           <% end %>
