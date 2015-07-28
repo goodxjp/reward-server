@@ -56,6 +56,36 @@ describe 'GET /notice/omotesando/adcrops' do
     # あとは Point.add_point_by_achievement が正しいことを他の所でテスト
   end
 
+  it '同じ cv_id で処理済みの場合は成果を付けない' do
+    # DB 準備
+    medium = FactoryGirl.create(:medium, id: 1)
+    campaign_source = FactoryGirl.create(:adcrops, id: 1)
+
+    media_user = FactoryGirl.create(:media_user, id: 2, medium: medium)
+    campaign = FactoryGirl.create(:campaign, campaign_source: campaign_source, source_campaign_identifier: "3")
+    offer = FactoryGirl.create(:offer, id: 4, campaign: campaign, medium: medium, payment: 5)
+
+    # 1 回目
+    get "/notice/omotesando/adcrops?suid=2&xuid=7&sad=4&xad=3&cv_id=8&reward=5&point=6"
+    #puts response.body
+    expect(response).to be_success
+
+    # 2 回目
+    get "/notice/omotesando/adcrops?suid=2&xuid=7&sad=4&xad=3&cv_id=8&reward=5&point=6"
+    #puts response.body
+    expect(response).to be_success
+
+    # DB チェック
+    notices = AdcropsAchievementNotice.all
+    expect(notices.size).to eq 2
+
+    achievements = Achievement.all
+    expect(achievements.size).to eq 1  # 1 つしか成果がついていないこと
+
+    points = Point.all
+    expect(points.size).to eq 1
+  end
+
   it 'キャンペーンが見つからない' do
   end
 

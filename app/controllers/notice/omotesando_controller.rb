@@ -62,9 +62,24 @@ module Notice
         render :nothing => true, :status => 404 and return
       end
 
-      # 一意性の確認 (同一のもののパラメータは全て同じはず)
-      # - すでに同じ ID の通知を処理していたら、処理しない。
-      # TODO
+      #
+      # 同一成果の確認
+      # - すでに同じ cv_id の通知を処理していたら、処理しない。
+      #
+      notices = AdcropsAchievementNotice.where(campaign_source: campaign_source, cv_id: cv_id)
+      if notices.size > 1  # 保存した直後なので通常は 1 (無駄に成果を検索しないためにここでチェック)
+        notices.each do |notice|
+          achievements = Achievement.where(notification: notice)
+          if achievements.size > 0
+            logger.info "Retry notification achieved. (cv_id = #{cv_id})"
+            logger.fatal "Too many Achievement notice.id = #{notice.id}." if achievements.size > 1
+            render :nothing => true, :status => 200 and return
+          else
+            # 直前に保存した通知をチェックしてしまうので 1 回はこの表示がされてしまう。うーん、微妙。
+            logger.info "Retry notification not achieved. (cv_id = #{cv_id})"
+          end
+        end
+      end
 
       # キャンペーンとオファーの特定
       campaigns = Campaign.where(campaign_source: campaign_source, source_campaign_identifier: xad)
