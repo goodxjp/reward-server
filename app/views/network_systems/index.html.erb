@@ -1,0 +1,32 @@
+<section class="content-header">
+  <h2>ネットワークシステム一覧</h2>
+</section>
+
+<section class="content">
+  <div class="box box-default">
+    <div class="box-body">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th class="col-md-1">ID</th>
+            <th class="col-md-9">名称</th>
+            <th class="col-md-2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @network_systems.each do |network_system| %>
+          <tr>
+            <td><%= network_system.id %></td>
+            <td><%= network_system.name %></td>
+            <td class="text-center">
+              <%= link_to network_system, class: 'btn btn-default' do %>
+              <i class="fa fa-book"></i>
+              <% end %>
+            </td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div><!-- /.box-body -->
+  </div><!-- /.box -->
+</section>

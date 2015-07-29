@@ -3,13 +3,25 @@
 </section>
 
 <section class="content">
-  <h3>管理ユーザー管理</h3>
-
-  <div class="row">
-    <div class="col-md-4">
+  <div class="box box-default">
+    <div class="box-header with-border">
+      <h3 class="box-title">管理ユーザー管理</h3>
+    </div>
+    <div class="box-body">
       <p>ログインしている状態でユーザー登録ができるようにする。</p>
-    </div><!-- /.col-* -->
-  </div><!-- /.row -->
+    </div><!-- /.box-body -->
+  </div><!-- /.box -->
 
+  <div class="box box-default">
+    <div class="box-header with-border">
+      <h3 class="box-title">その他</h3>
+    </div>
+    <div class="box-body">
+      <ul>
+        <li><%= link_to 'ネットワークシステム一覧', network_systems_path %></li>
+        <li><%= link_to '管理画面 (ステージング環境)', 'https://reward-staging.herokuapp.com/', target: '_blank' %></li>
+      </ul>
+    </div><!-- /.box-body -->
+  </div><!-- /.box -->
 </section>
 
