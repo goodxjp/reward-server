@@ -3,7 +3,8 @@ require 'factory_girl'
 namespace :sample do
   desc "Add many sample data"
   task :add_data => :environment do
-    Dir[Rails.root.join('spec/factories/*.rb')].each { |f| require f }
+#    Dir[Rails.root.join('spec/factories/*.rb')].each { |f| require f }
+# なぜか、このコードで FactoryGirl::DuplicateDefinitionError: Factory already registered: point_history が発生するようになった。
 
     medium = Medium.find(1)
     campaign_source = CampaignSource.find(1)
