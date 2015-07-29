@@ -74,6 +74,7 @@ Rails.application.routes.draw do
   #
   namespace :notice do
     get 'omotesando/adcrops'
+    get 'omotesando/gree'
   end
 
 

@@ -29,9 +29,13 @@ class Achievement < ActiveRecord::Base
       return nil
     end
 
-    case notification.class
-    when AdcropsAchievementNotice.class then
+    # case 文でうまくかけない？
+    # notification.class.kind_of?(AdcropsAchievementNotice.class) ではダメ。
+    # 要調査。
+    if notification.kind_of?(AdcropsAchievementNotice)
       return "adcrop"
+    elsif notification.kind_of?(GreeAchievementNotice)
+      return "GREE"
     else
       return "不明"
     end

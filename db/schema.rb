@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150728021831) do
+ActiveRecord::Schema.define(version: 20150729072345) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -149,6 +149,22 @@ ActiveRecord::Schema.define(version: 20150728021831) do
 
   add_index "gifts", ["item_id"], name: "index_gifts_on_item_id", using: :btree
   add_index "gifts", ["purchase_id"], name: "index_gifts_on_purchase_id", using: :btree
+
+  create_table "gree_achievement_notices", force: true do |t|
+    t.integer  "campaign_source_id"
+    t.string   "identifier"
+    t.string   "achieve_id"
+    t.string   "point"
+    t.string   "campaign_id"
+    t.string   "advertisement_id"
+    t.string   "media_session"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "gree_achievement_notices", ["campaign_source_id", "achieve_id"], name: "index_gree_an_on_campaign_source_id_and_achieve_id", using: :btree
+  add_index "gree_achievement_notices", ["campaign_source_id", "identifier", "advertisement_id"], name: "index_gree_an_on_cs_id_and_identifier_and_ad_id", using: :btree
+  add_index "gree_achievement_notices", ["campaign_source_id"], name: "index_gree_achievement_notices_on_campaign_source_id", using: :btree
 
   create_table "hidings", force: true do |t|
     t.integer  "media_user_id"
