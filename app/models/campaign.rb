@@ -5,12 +5,12 @@ class Campaign < ActiveRecord::Base
   belongs_to :source, polymorphic: true
 
   belongs_to :campaign_category
-  has_many :advertisements
 
   has_many :points, :as => :source
 
   has_and_belongs_to_many :media
 
+  # Validations
   validates :campaign_source, :presence => true
   validates :name, :presence => true
   validates :url, :presence => true

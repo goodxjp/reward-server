@@ -19,7 +19,6 @@ class Offer < ActiveRecord::Base
     offer.requirement_detail = campaign.requirement_detail
     offer.period             = campaign.period
 
-    #advertisement = campaign.advertisements[0]
     offer.price              = campaign.price
     offer.payment            = campaign.payment
     if campaign.point.nil?

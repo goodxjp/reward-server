@@ -35,7 +35,10 @@
 
   <%= f.error_notification %>
 
-  <%= f.association :campaign_source, label: 'ネットワーク (入手元)', input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.association :campaign_source,
+      label: 'ネットワーク (入手元)',
+      collection: CampaignSource.all.order(:id),
+      input_wrapper_html: { class: 'col-sm-3' } %>
   <%= f.input :source_campaign_identifier, label: 'ネットワークによる ID',
       input_wrapper_html: { class: 'col-sm-3' } %>
   <hr />
@@ -47,6 +50,11 @@
       input_wrapper_html: { class: 'col-sm-8' } %>
   <%= f.input :icon_url, label: 'アイコン',
       input_wrapper_html: { class: 'col-sm-8' } %>
+  <div class="form-group">
+    <div class="col-sm-offset-3 col-sm-4">
+      <a href="http://masterpeace21.com/iTunes2.php" target="_blank">AppStore アイコン取得</a>
+    </div>
+  </div>
   <%= f.input :url, label: 'URL',
       input_wrapper_html: { class: 'col-sm-8' } %>
 
@@ -64,20 +72,6 @@
   <%= f.input :point, label: 'ポイント',hint: '将来的には空白でデフォルト還元率 (未実装)',
       input_wrapper_html: { class: 'col-sm-2' } %>
 
-  <% if not @advertisement.nil? %>
-  <hr />
-
-  <%= f.simple_fields_for @advertisement do |a| %>
-  <%= a.input :price, label: '利用料金',
-      input_wrapper_html: { class: 'col-sm-2' } %>
-  <%= a.input :payment, label: '報酬金額',
-      input_wrapper_html: { class: 'col-sm-2' } %>
-  <%= a.input :point, label: 'ポイント', hint: '将来的には空白でデフォルト還元率 (未実装)',
-      input_wrapper_html: { class: 'col-sm-2' } %>
-  <% end %>
-
-  <% end %>
-
   <%= f.association :media, as: :check_boxes, label: '配信メディア', wrapper: :horizontal_radio_and_checkboxes, input_wrapper_html: { class: 'col-sm-4' }  %>
 
   <div class="form-group">
@@ -86,9 +80,4 @@
     </div>
   </div>
 
-  <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-4">
-      <a href="http://masterpeace21.com/iTunes2.php" target="_blank">AppStore アイコン取得</a>
-    </div>
-  </div>
 <% end %>
