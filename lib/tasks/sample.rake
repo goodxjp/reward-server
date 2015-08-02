@@ -7,6 +7,7 @@ namespace :sample do
 # なぜか、このコードで FactoryGirl::DuplicateDefinitionError: Factory already registered: point_history が発生するようになった。
 
     medium = Medium.find(1)
+    network = Network.find(1)
     campaign_source = CampaignSource.find(1)
     ActiveRecord::Base.transaction do
       (1..10).each do |i|
@@ -14,7 +15,7 @@ namespace :sample do
       end
 
       (1..10).each do |i|
-        campaign = FactoryGirl.create(:campaign, campaign_source: campaign_source, name: "テスト案件 #{i}")
+        campaign = FactoryGirl.create(:campaign, network: network, campaign_source: campaign_source, name: "テスト案件 #{i}")
       end
     end
   end

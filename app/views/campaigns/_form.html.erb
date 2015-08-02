@@ -35,6 +35,9 @@
 
   <%= f.error_notification %>
 
+  <%= f.association :network,
+      label: 'ネットワーク (売上先)',
+      input_wrapper_html: { class: 'col-sm-3' } %>
   <%= f.association :campaign_source,
       label: 'ネットワーク (入手元)',
       collection: CampaignSource.all.order(:id),

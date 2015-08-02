@@ -137,8 +137,8 @@ class CampaignsController < ApplicationController
         redirect_to :action => 'index', notice: 'Campaign was successfully created.'
       end
     rescue => e
-      # TODO: オファーの保存に失敗したときが検出できていない
-      logger.error e
+      @campaign.errors[:base] << e.message
+      logger.error e.message
       render :edit
     end
   end

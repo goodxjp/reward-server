@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150729072345) do
+ActiveRecord::Schema.define(version: 20150802000129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -112,10 +112,12 @@ ActiveRecord::Schema.define(version: 20150729072345) do
     t.string   "source_campaign_identifier"
     t.integer  "source_id"
     t.string   "source_type"
+    t.integer  "network_id"
   end
 
   add_index "campaigns", ["campaign_category_id"], name: "index_campaigns_on_campaign_category_id", using: :btree
   add_index "campaigns", ["campaign_source_id"], name: "index_campaigns_on_campaign_source_id", using: :btree
+  add_index "campaigns", ["network_id"], name: "index_campaigns_on_network_id", using: :btree
   add_index "campaigns", ["source_id", "source_type"], name: "index_campaigns_on_source_id_and_source_type", using: :btree
 
   create_table "campaigns_media", id: false, force: true do |t|

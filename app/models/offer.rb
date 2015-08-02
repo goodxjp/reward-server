@@ -21,12 +21,7 @@ class Offer < ActiveRecord::Base
 
     offer.price              = campaign.price
     offer.payment            = campaign.payment
-    if campaign.point.nil?
-      # TODO: デフォルト還元率の処理
-      offer.point            = 10
-    else
-      offer.point            = campaign.point
-    end
+    offer.point              = proper_point(campaign)
 
     return offer
   end
@@ -73,11 +68,20 @@ class Offer < ActiveRecord::Base
       return false
     end
 
-    # TODO: デフォルト還元率の処理
-    if point != campaign.point
+    if point != Offer.proper_point(campaign)
       return false
     end
 
     return true
+  end
+
+  def self.proper_point(campaign)
+    if campaign.point.nil?
+      # TODO: デフォルト還元率の処理
+      # TOOD: 税金の処理
+      return (campaign.payment / 2).round
+    else
+      return campaign.point
+    end
   end
 end

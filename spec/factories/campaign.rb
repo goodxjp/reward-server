@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 FactoryGirl.define do
   factory :campaign do
+    network
     campaign_source
     name "テスト案件"
     detail "詳細はこんな感じ。"
