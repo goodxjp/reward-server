@@ -12,6 +12,9 @@ if AdminUser.count == 0
   AdminUser.create(email: 'goodx.jp@gmail.com', password: 'goodx123')
 end
 
+#
+# キャンペーンカテゴリ
+#
 if CampaignCategory.find_by(id: 1) == nil
   CampaignCategory.create(id: 1, name: 'アプリ DL')
 end
@@ -29,14 +32,23 @@ end
 # メディア
 # - ID は成果通知のコードとあわせる必要あり。
 #
+# まだ、確定していないので毎回変更してしまう。
 medium = Medium.find_or_create_by(id: 1)
 medium.name = 'リワードアプリ (仮)'
 medium.key = '6Fk810vbM3'
 medium.save!
 
-if Network.count == 0
+#
+# ネットワーク
+#
+if Network.find_by(id: 1) == nil
   Network.create(id: 1, name: '自社')
+end
+if Network.find_by(id: 2) == nil
   Network.create(id: 2, name: '8crops')
+end
+if Network.find_by(id: 3) == nil
+  Network.create(id: 3, name: 'Glossom')
 end
 
 #
@@ -45,22 +57,26 @@ end
 #
 campaign_source = CampaignSource.find_or_create_by(id: 1)
 campaign_source.network_system = NetworkSystem::ADCROPS
-campaign_source.name = "adcrops (一つ目のメディア)"
+campaign_source.name = "adcrops (Android)"
 campaign_source.network_id = 2
 campaign_source.save!
 
 campaign_source = CampaignSource.find_or_create_by(id: 2)
 campaign_source.network_system = NetworkSystem::GREE
-campaign_source.name = "GREE (一つ目のメディア)"
-campaign_source.network_id = 2
+campaign_source.name = "GREE (Android)"
+campaign_source.network_id = 3
 campaign_source.save!
 
+# 複数メディアの検証用
 campaign_source = CampaignSource.find_or_create_by(id: 3)
 campaign_source.network_system = NetworkSystem::ADCROPS
 campaign_source.name = "adcrops (Reward Pro)"
 campaign_source.network_id = 2
 campaign_source.save!
 
+#
+# 商品
+#
 if Item.find_by(id: 1) == nil
   Item.create(id: 1, name: 'Amazon ギフト券 (100 円分)', point: 100)
 end
