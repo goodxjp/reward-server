@@ -2,6 +2,9 @@
 require 'rails_helper'
 require 'pp'
 
+#
+# adcrops
+#
 describe 'GET /notice/omotesando/adcrops' do
   it '超正常系' do
     # DB 準備
@@ -122,8 +125,40 @@ describe 'GET /notice/omotesando/adcrops' do
 
   it 'ユーザーが見つからない' do
   end
+
+  it '報酬金額が変更になった' do
+    # DB 準備
+    medium = FactoryGirl.create(:medium, id: 1)
+    campaign_source = FactoryGirl.create(:adcrops, id: 1)
+
+    media_user = FactoryGirl.create(:media_user, id: 2, medium: medium)
+    campaign = FactoryGirl.create(:campaign, campaign_source: campaign_source, source_campaign_identifier: "3")
+    offer = FactoryGirl.create(:offer, id: 4, campaign: campaign, medium: medium, payment: 5)
+    click_history = FactoryGirl.create(:click_history, media_user: media_user, offer: offer)
+
+    get "/notice/omotesando/adcrops?suid=2&xuid=7&sad=4&xad=3&cv_id=8&reward=500&point=6"
+    #puts response.body
+    expect(response).to be_success
+
+    # レスポンスチェック
+    expect(response.body.strip).to eq ""
+
+    # DB チェック
+    achievements = Achievement.all
+    expect(achievements.size).to eq 1
+    achievement = achievements[0]
+    expect(achievement.payment).to eq 500  # パラメータの値で報酬金額をつける
+
+    points = Point.all
+    expect(points.size).to eq 1
+    point = points[0]
+    expect(point.point).to eq offer.point  # オファーの値でポイントをつける
+  end
 end
 
+#
+# GREE
+#
 describe 'GET /notice/omotesando/gree' do
   it '超正常系' do
     # DB 準備
@@ -140,7 +175,7 @@ describe 'GET /notice/omotesando/gree' do
     expect(response).to be_success
 
     # レスポンスチェック
-    expect(response.body.strip).to eq ""
+    expect(response.body).to eq "1"
 
     # DB チェック
     notices = GreeAchievementNotice.all
@@ -176,6 +211,125 @@ describe 'GET /notice/omotesando/gree' do
     expect(point.point).to eq offer.point
 
     # あとは Point.add_point_by_achievement が正しいことを他の所でテスト
+  end
+
+  it '同じ achieve_id で処理済みの場合は成果を付けない' do
+    # DB 準備
+    medium = FactoryGirl.create(:medium, id: 1)
+    campaign_source = FactoryGirl.create(:campaign_source, id: 2)
+
+    media_user = FactoryGirl.create(:media_user, id: 2, medium: medium)
+    campaign = FactoryGirl.create(:campaign, campaign_source: campaign_source, source_campaign_identifier: "3")
+    offer = FactoryGirl.create(:offer, id: 4, campaign: campaign, medium: medium, payment: 5)
+    click_history = FactoryGirl.create(:click_history, media_user: media_user, offer: offer)
+
+    # 1 回目
+    get "/notice/omotesando/gree?identifier=2&achieve_id=6&point=5&campaign_id=3&advertisement_id=7&media_session=4"
+    #puts response.body
+    expect(response).to be_success
+
+    # 2 回目
+    get "/notice/omotesando/gree?identifier=3&achieve_id=6&point=6&campaign_id=4&advertisement_id=8&media_session=9"
+    #puts response.body
+    expect(response).to be_success
+
+    # DB チェック
+    notices = GreeAchievementNotice.all
+    expect(notices.size).to eq 2
+
+    achievements = Achievement.all
+    expect(achievements.size).to eq 1  # 1 つしか成果がついていないこと
+
+    points = Point.all
+    expect(points.size).to eq 1
+  end
+
+  # TODO: テストで日付を自由に設定できるように (ちゃんとした、時刻のテストはしていない)
+  it '同じ advertisement_id, identifier で同日の 00:00 ～ 23:59 に処理済みの場合は成果を付けない' do
+    # DB 準備
+    medium = FactoryGirl.create(:medium, id: 1)
+    campaign_source = FactoryGirl.create(:campaign_source, id: 2)
+
+    media_user = FactoryGirl.create(:media_user, id: 2, medium: medium)
+    campaign = FactoryGirl.create(:campaign, campaign_source: campaign_source, source_campaign_identifier: "3")
+    offer = FactoryGirl.create(:offer, id: 4, campaign: campaign, medium: medium, payment: 5)
+    click_history = FactoryGirl.create(:click_history, media_user: media_user, offer: offer)
+
+    # 2 回目用のデータ
+    campaign2 = FactoryGirl.create(:campaign, campaign_source: campaign_source, source_campaign_identifier: "4")
+    offer2 = FactoryGirl.create(:offer, id: 9, campaign: campaign2, medium: medium, payment: 6)
+    click_history2 = FactoryGirl.create(:click_history, media_user: media_user, offer: offer2)
+
+    # 1 回目
+    get "/notice/omotesando/gree?identifier=2&achieve_id=6&point=5&campaign_id=3&advertisement_id=7&media_session=4"
+    #puts response.body
+    expect(response).to be_success
+    expect(response.body).to eq "1"
+
+    # 2 回目
+    get "/notice/omotesando/gree?identifier=2&achieve_id=7&point=6&campaign_id=4&advertisement_id=7&media_session=9"
+    #puts response.body
+    expect(response).to be_success
+    expect(response.body).to eq "0"
+
+    # DB チェック
+    notices = GreeAchievementNotice.all
+    expect(notices.size).to eq 2
+
+    achievements = Achievement.all
+    expect(achievements.size).to eq 1  # 1 つしか成果がついていないこと
+
+    points = Point.all
+    expect(points.size).to eq 1
+  end
+
+  it '同じ advertisement_id, identifier で前日に処理済みの場合は成果を付ける' do
+    # DB 準備
+    medium = FactoryGirl.create(:medium, id: 1)
+    campaign_source = FactoryGirl.create(:campaign_source, id: 2)
+
+    media_user = FactoryGirl.create(:media_user, id: 2, medium: medium)
+    campaign = FactoryGirl.create(:campaign, campaign_source: campaign_source, source_campaign_identifier: "3")
+    offer = FactoryGirl.create(:offer, id: 4, campaign: campaign, medium: medium, payment: 5)
+    click_history = FactoryGirl.create(:click_history, media_user: media_user, offer: offer)
+
+    # 2 回目用のデータ
+    campaign2 = FactoryGirl.create(:campaign, campaign_source: campaign_source, source_campaign_identifier: "4")
+    offer2 = FactoryGirl.create(:offer, id: 9, campaign: campaign2, medium: medium, payment: 6)
+    click_history2 = FactoryGirl.create(:click_history, media_user: media_user, offer: offer2)
+
+    # 1 回目
+    get "/notice/omotesando/gree?identifier=2&achieve_id=6&point=5&campaign_id=3&advertisement_id=7&media_session=4"
+    #puts response.body
+    expect(response).to be_success
+    expect(response.body).to eq "1"
+
+    # 受信日時を前日に変更
+    notices = GreeAchievementNotice.all
+    expect(notices.size).to eq 1
+    #puts notices[0].created_at
+    notices[0].created_at = notices[0].created_at - 1.days
+    notices[0].save!
+
+    # 2 回目
+    get "/notice/omotesando/gree?identifier=2&achieve_id=7&point=6&campaign_id=4&advertisement_id=7&media_session=9"
+    #puts response.body
+    expect(response).to be_success
+    expect(response.body).to eq "1"
+
+    # DB チェック
+    notices = GreeAchievementNotice.all
+    expect(notices.size).to eq 2
+
+    achievements = Achievement.all
+    expect(achievements.size).to eq 2
+
+    points = Point.all
+    expect(points.size).to eq 2
+  end
+
+  # TODO: テストで日付を自由に設定できるように
+  it '売上日は成果通知が到達した日時' do
   end
 end
 

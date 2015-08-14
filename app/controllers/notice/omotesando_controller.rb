@@ -5,8 +5,6 @@ module Notice
     # adcrops
     #
     def adcrops
-      #puts params
-
       #
       # 定数的なもの
       # - db/seeds.rb とあわせること
@@ -26,11 +24,14 @@ module Notice
         render :nothing => true, :status => 404 and return
       end
 
+      # TODO: 要確認
+      # 許可 IP アドレス
+      allow_from = [ "127.0.0.1", "1.21.148.73" ]
+
       #
       # IP アドレスのチェック
       #
-      # TODO: IP アドレス確認
-      if not (request.remote_ip == "127.0.0.1" or request.remote_ip == "1.21.148.73")
+      if not allow_from.include?(request.remote_ip)
         logger.fatal "remote_ip is incorrect(#{request.remote_ip})."
         render :nothing => true, :status => 404 and return
       end
@@ -81,70 +82,28 @@ module Notice
         end
       end
 
-      # キャンペーンとオファーの特定
-      campaigns = Campaign.where(campaign_source: campaign_source, source_campaign_identifier: xad)
-      if not campaigns.count == 1
-        logger.error "Not found campaign(#{xad}). count = #{campaigns.count}"
-        render :nothing => true, :status => 404 and return
-      end
-      campaign = campaigns[0]
+      # 値の対応関係
+      source_campaign_identifier = xad
+      offer_id = sad.to_i
+      payment = reward.to_i
+      media_user_id = suid.to_i
 
-      offer = Offer.find_by_id(sad)
-      if offer.nil?
-        logger.error "Not found offer(#{sad})."
-        render :nothing => true, :status => 404 and return
+      #
+      # 共通処理
+      #
+      if check_and_add_achievement(medium, campaign_source,
+                                   source_campaign_identifier, offer_id, payment,
+                                   media_user_id, @now, notice)
+        render :nothing => true, :status => 200
+      else
+        render :nothing => true, :status => 404
       end
-
-      # 念のためキャンペーンとオファーの関係をチェックしておく
-      if not offer.campaign.id == campaign.id
-        logger.error "Offer is inconsistent. offer.campaign.id = #{offer.campaign.id}, campaign.id = #{campaign.id}"
-        render :nothing => true, :status => 404 and return
-      end
-
-      # 念のためオファーの報酬金額をチェック
-      # TODO: いや、向こうで報酬金額の値を変更されて、うちで変更した値を取りにいってない場合は全然ありうる。
-      if not offer.payment == reward.to_i
-        logger.error "Offer is inconsistent. offer.payment = #{offer.payment}, reward = #{reward}"
-        render :nothing => true, :status => 404 and return
-      end
-
-      # ユーザーの特定
-      media_user = MediaUser.find_by_id(suid)
-      if media_user.nil?
-        logger.error "Not found MediaUser(#{suid})."
-        render :nothing => true, :status => 404 and return
-      end
-
-      # 念のためメディアのチェックをしておく
-      if not media_user.medium.id == medium.id
-        logger.error "MediaUser is inconsistent. media_user.medium.id = #{media_user.medium.id}, medium.id = #{medium.id}"
-        render :nothing => true, :status => 404 and return
-      end
-
-      # クリック履歴の確認
-      click_histories = ClickHistory.where(media_user: media_user, offer: offer)
-      if not click_histories.size > 0
-        logger.error "Not found ClickHisotry (media_user.id = #{media_user.id}, offer.id = #{offer.id})."
-        render :nothing => true, :status => 404 and return
-      end
-
-      # 成果を付ける
-      # TODO: トランザクションのテスト
-      ActiveRecord::Base.transaction do
-        # TODO: ロックのテスト
-        media_user.lock!
-        Achievement.add_achievement(media_user, campaign, reward.to_i, true, offer.point, @now, notice)
-      end
-
-      render :nothing => true, :status => 200
     end
 
     #
     # GREE Ads Reward
     #
     def gree
-      #puts params
-
       #
       # 定数的なもの
       # - db/seeds.rb とあわせること
@@ -164,11 +123,15 @@ module Notice
         render :nothing => true, :status => 404 and return
       end
 
+      # TODO: 余裕があったら、sandbox 環境と本番環境のチェックを厳密に
+      # 動作環境ごとに手軽に値を変える、管理できる仕組み
+      # 許可 IP アドレス
+      allow_from = [ "127.0.0.1", "1.21.148.73", "220.156.130.197", "220.156.130.193" ]
+
       #
       # IP アドレスのチェック
       #
-      # TODO: IP アドレス確認
-      if not (request.remote_ip == "127.0.0.1" or request.remote_ip == "1.21.148.73")
+      if not allow_from.include?(request.remote_ip)
         logger.fatal "remote_ip is incorrect(#{request.remote_ip})."
         render :nothing => true, :status => 404 and return
       end
@@ -209,7 +172,8 @@ module Notice
           if achievements.size > 0
             logger.info "Retry notification achieved. (achieve_id = #{achieve_id})"
             logger.fatal "Too many Achievement notice.id = #{notice.id}." if achievements.size > 1
-            render :nothing => true, :status => 200 and return
+            # 正常で返す
+            render_gree_added_point and return
           else
             # 直前に保存した通知をチェックしてしまうので 1 回はこの表示がされてしまう。うーん、微妙。
             logger.info "Retry notification not achieved. (achieve_id = #{achieve_id})"
@@ -218,78 +182,122 @@ module Notice
       end
 
       # achieve_id の処理だけでいいと思うが、
-      # identifier, advertisement_id でチェックしろと仕様書にあるので、
-      # 異なる achieve_id で identifier, advertisement_id が異なるというアホなものを
-      # 送ってきたときにエラーで返してやる。
+      # advertisement_id, itentifier でチェックしろと仕様書にあるので、重複の時にエラーで返す。
       notices = GreeAchievementNotice.where(identifier: identifier, advertisement_id: advertisement_id)
       if notices.size > 1  # 保存した直後なので通常は 1 (無駄に成果を検索しないためにここでチェック)
-        # TODO
         # 「 DBクリア案件（※2） 」に対応するために、重複をチェックする期間は「 1日（00:00～23:59）（※3） 」にご設定いただくことを推奨致します。
         # とあるので、その通り実装してやるか。
+        notices.each do |notice|
+          achievements = Achievement.where(notification: notice)
+          if achievements.size > 0 and @now.beginning_of_day <= notice.created_at and notice.created_at < @now.tomorrow.beginning_of_day
+            logger.info "Similar notification achieved. (identifier = #{identifier}, advertisement_id = #{advertisement_id})"
+            logger.fatal "Too many Achievement notice.id = #{notice.id}." if achievements.size > 1
+
+            # エラーで返す
+            render_gree_not_added_point and return
+          else
+            # 直前に保存した通知をチェックしてしまうので 1 回はこの表示がされてしまう。うーん、微妙。
+            logger.info "Similar notification not achieved or far away. (identifier = #{identifier}, advertisement_id = #{advertisement_id})"
+          end
+        end
+
+        # TODO: あまり厳密ではないが、どうせ、不要なチェックなので適当で OK
       end
 
+      # 値の対応関係
       source_campaign_identifier = campaign_id
       offer_id = media_session.to_i
       payment = point.to_i
       media_user_id = identifier.to_i
 
-      # キャンペーンとオファーの特定
-      campaigns = Campaign.where(campaign_source: campaign_source,
-                                 source_campaign_identifier: source_campaign_identifier)
-      if not campaigns.count == 1
-        logger.error "Not found campaign(#{source_campaign_identifier}). count = #{campaigns.count}"
-        render :nothing => true, :status => 404 and return
+      #
+      # 共通処理
+      #
+      if check_and_add_achievement(medium, campaign_source,
+                                   source_campaign_identifier, offer_id, payment,
+                                   media_user_id, @now, notice)
+        render_gree_added_point
+      else
+        render_gree_not_added_point
       end
-      campaign = campaigns[0]
-
-      offer = Offer.find_by_id(offer_id)
-      if offer.nil?
-        logger.error "Not found offer(#{offer_id})."
-        render :nothing => true, :status => 404 and return
-      end
-
-      # 念のためキャンペーンとオファーの関係をチェックしておく
-      if not offer.campaign.id == campaign.id
-        logger.error "Offer is inconsistent. offer.campaign.id = #{offer.campaign.id}, campaign.id = #{campaign.id}"
-        render :nothing => true, :status => 404 and return
-      end
-
-      # 念のためオファーの報酬金額をチェック
-      # TODO: いや、向こうで報酬金額の値を変更されて、うちで変更した値を取りにいってない場合は全然ありうる。
-      if not offer.payment == payment
-        logger.error "Offer is inconsistent. offer.payment = #{offer.payment}, reward = #{payment}"
-        render :nothing => true, :status => 404 and return
-      end
-
-      # ユーザーの特定
-      media_user = MediaUser.find_by_id(media_user_id)
-      if media_user.nil?
-        logger.error "Not found MediaUser(#{media_user_id})."
-        render :nothing => true, :status => 404 and return
-      end
-
-      # 念のためメディアのチェックをしておく
-      if not media_user.medium.id == medium.id
-        logger.error "MediaUser is inconsistent. media_user.medium.id = #{media_user.medium.id}, medium.id = #{medium.id}"
-        render :nothing => true, :status => 404 and return
-      end
-
-      # クリック履歴の確認
-      click_histories = ClickHistory.where(media_user: media_user, offer: offer)
-      if not click_histories.size > 0
-        logger.error "Not found ClickHisotry (media_user.id = #{media_user.id}, offer.id = #{offer.id})."
-        render :nothing => true, :status => 404 and return
-      end
-
-      # 成果を付ける
-      # TODO: トランザクションのテスト
-      ActiveRecord::Base.transaction do
-        # TODO: ロックのテスト
-        media_user.lock!
-        Achievement.add_achievement(media_user, campaign, payment, true, offer.point, @now, notice)
-      end
-
-      render :nothing => true, :status => 200
     end
+
+    private
+      #
+      # ネットワークシステムに依存しない処理 (オファーが特定できる場合)
+      #
+      def check_and_add_achievement(medium, campaign_source,
+                                    source_campaign_identifier, offer_id, payment,
+                                    media_user_id, occurred_at, notice)
+        # キャンペーンとオファーの特定
+        campaigns = Campaign.where(campaign_source: campaign_source,
+                                   source_campaign_identifier: source_campaign_identifier)
+        if not campaigns.count == 1
+          logger.error "Not found campaign(#{source_campaign_identifier}). count = #{campaigns.count}"
+          return false
+        end
+        campaign = campaigns[0]
+
+        offer = Offer.find_by_id(offer_id)
+        if offer.nil?
+          logger.error "Not found offer(#{offer_id})."
+          return false
+        end
+
+        # 念のためキャンペーンとオファーの関係をチェックしておく
+        if not offer.campaign.id == campaign.id
+          logger.error "Offer is inconsistent. offer.campaign.id = #{offer.campaign.id}, campaign.id = #{campaign.id}"
+          return false
+        end
+
+        # 念のためオファーの報酬金額をチェック
+        # 向こうで報酬金額を変更して、うちで変更した値を取りにいってないうちに、
+        # ユーザーが案件を実行してしまった場合はこういうことが起こりうる。
+        if not offer.payment == payment
+          logger.error "Offer is inconsistent. offer.payment = #{offer.payment}, payment = #{payment}"
+          # エラー表示のみで、payment の値で売上を立てて、offer.point の値でポイントをつける。
+        end
+
+        # ユーザーの特定
+        media_user = MediaUser.find_by_id(media_user_id)
+        if media_user.nil?
+          logger.error "Not found MediaUser(#{media_user_id})."
+          return false
+        end
+
+        # 念のためメディアのチェックをしておく
+        if not media_user.medium.id == medium.id
+          logger.error "MediaUser is inconsistent. media_user.medium.id = #{media_user.medium.id}, medium.id = #{medium.id}"
+          return false
+        end
+
+        # クリック履歴の確認
+        click_histories = ClickHistory.where(media_user: media_user, offer: offer)
+        if not click_histories.size > 0
+          logger.error "Not found ClickHisotry (media_user.id = #{media_user.id}, offer.id = #{offer.id})."
+          return false
+        end
+
+        # 成果を付ける
+        # TODO: トランザクションのテスト
+        ActiveRecord::Base.transaction do
+          # TODO: ロックのテスト
+          media_user.lock!
+          Achievement.add_achievement(media_user, campaign, payment, true, offer.point, occurred_at, notice)
+        end
+
+        return true
+      end
+
+      # GREE で「ポイント付与」の場合のレスポンス
+      def render_gree_added_point
+        render :text => "1", :status => 200
+      end
+
+      # GREE で「ポイント未付与」の場合のレスポンス (再送の必要がない)
+      # 再送がいる場合は 200 で返すべきではない
+      def render_gree_not_added_point
+        render :text => "0", :status => 200
+      end
   end
 end

@@ -67,6 +67,13 @@ campaign_source.name = "GREE (Android)"
 campaign_source.network_id = 3
 campaign_source.save!
 
+if GreeConfig.find_by(campaign_source: campaign_source) == nil
+  # テスト環境用
+  GreeConfig.create(campaign_source: campaign_source,
+                     media_identifier: 1318,
+                     site_key: "e77aa5facba56d6c331bb5a827705f18")
+end
+
 # 複数メディアの検証用
 campaign_source = CampaignSource.find_or_create_by(id: 3)
 campaign_source.network_system = NetworkSystem::ADCROPS

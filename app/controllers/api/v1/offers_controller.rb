@@ -55,6 +55,17 @@ module Api
         # URL 書き換え
         offer.url.gsub!('$USER_ID$', @media_user.id.to_s)
         offer.url.gsub!('$OFFER_ID$', offer.id.to_s)
+        if not offer.campaign.campaign_source.nil?
+          if offer.campaign.campaign_source.network_system == NetworkSystem::GREE
+            digest = NetworkSystemGree.make_gree_digest_for_redirect_url(offer.campaign, @media_user)
+            if digest == nil
+              logger.fatal("Cannot find GreeConfig (campaing_source_id = #{offer.campaign.campaign_source_id}")
+              render :text => "案件が終了したか、獲得条件、ポイント数などが変更になっている可能性があります。お手数ではございますが、最初からやり直してください。"  # 嘘ですけど
+              return
+            end
+            offer.url.gsub!('$GREE_DIGEST$', digest)
+          end
+        end
 
         redirect_to offer.url
       end
