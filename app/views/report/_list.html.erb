@@ -1,0 +1,48 @@
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+      <th class="col-sm-2" rowspan="2">日付</th>
+
+      <th class="col-sm-2" colspan="2">8crops</th>
+      <th class="col-sm-2" colspan="2">Glossom</th>
+
+      <th class="col-sm-2" rowspan="2">発行ポイント</th>
+      <th class="col-sm-2" rowspan="2">交換ポイント</th>
+      <th class="col-sm-2" rowspan="2">利益</th>
+    </tr>
+    <tr>
+      <th class="col-sm-1">売上</th>
+      <th class="col-sm-1">消費税</th>
+      <th class="col-sm-1">売上</th>
+      <th class="col-sm-1">消費税</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @sales.each do |sale| %>
+    <tr>
+      <td><%= sale[:day] %></td>
+      <td class="text-right"><%= sale["network_2"][:payment] %></td>
+      <td class="text-right"><%= sale["network_2"][:tax] %></td>
+      <td class="text-right"><%= sale["network_3"][:payment] %></td>
+      <td class="text-right"><%= sale["network_3"][:tax] %></td>
+      <td class="text-right"><%= sale[:published_point] %></td>
+      <td class="text-right"><%= sale[:exchanged_point] %></td>
+      <td class="text-right"><%= sale[:profit] %></td>
+    </tr>
+    <% end %>
+  </tbody>
+
+  <tfoot>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>

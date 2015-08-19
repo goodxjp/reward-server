@@ -226,6 +226,7 @@ module Notice
       #
       # ネットワークシステムに依存しない処理 (オファーが特定できる場合)
       #
+      # TODO: 税込前提になってしまっている
       def check_and_add_achievement(medium, campaign_source,
                                     source_campaign_identifier, offer_id, payment,
                                     media_user_id, occurred_at, notice)

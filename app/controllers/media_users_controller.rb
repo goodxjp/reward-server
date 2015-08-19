@@ -38,7 +38,8 @@ class MediaUsersController < ApplicationController
 
     # TODO: エラー処理
     #add_point(@media_user, offer.point, PointType::MANUAL, campaign)
-    Achievement.add_achievement(@media_user, campaign, campaign.payment, false, campaign.point, Time.zone.now, nil)
+    # TODO: キャンペーンの税込、税抜きに対応する
+    Achievement.add_achievement(@media_user, campaign, campaign.payment, true, campaign.point, Time.zone.now, nil)
 
     redirect_to :action => :show
   end
@@ -49,7 +50,8 @@ class MediaUsersController < ApplicationController
 
     # TODO: エラー処理
     #add_point(@media_user, campaign.advertisements[0].point, PointType::MANUAL, campaign)
-    Achievement.add_achievement(@media_user, campaign, campaign.payment, false, campaign.point, Time.zone.now, nil)
+    # TODO: キャンペーンの税込、税抜きに対応する
+    Achievement.add_achievement(@media_user, campaign, campaign.payment, true, campaign.point, Time.zone.now, nil)
 
     redirect_to :action => :show
   end

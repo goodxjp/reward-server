@@ -33,6 +33,10 @@ Rails.application.routes.draw do
     end
   end
 
+  # レポート
+  get 'report/sales'
+  get 'report/campaigns'
+
   # 成果
   resources :achievements
 

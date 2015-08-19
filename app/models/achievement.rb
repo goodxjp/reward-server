@@ -4,6 +4,8 @@ class Achievement < ActiveRecord::Base
   belongs_to :campaign
   belongs_to :notification, polymorphic: true
 
+  has_many :points, as: :source
+
   # メディアユーザーとキャンペーンを特定したあとに成果を上げる
   # - トランザクションは外部でかける
   # - メディアユーザーに対して、スレッドセーフではないので注意！
