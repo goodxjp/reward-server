@@ -28,6 +28,9 @@ if CampaignCategory.find_by(id: 4) == nil
   CampaignCategory.create(id: 4, name: '買い物')
 end
 
+# PostgreSQL 依存
+ActiveRecord::Base.connection.execute("SELECT setval('campaign_categories_id_seq', coalesce((SELECT MAX(id)+1 FROM campaign_categories), 1), false)")
+
 #
 # メディア
 # - ID は成果通知のコードとあわせる必要あり。
@@ -37,6 +40,9 @@ medium = Medium.find_or_create_by(id: 1)
 medium.name = 'リワードアプリ (仮)'
 medium.key = '6Fk810vbM3'
 medium.save!
+
+# PostgreSQL 依存
+ActiveRecord::Base.connection.execute("SELECT setval('media_id_seq', coalesce((SELECT MAX(id)+1 FROM media), 1), false)")
 
 #
 # ネットワーク
@@ -51,9 +57,13 @@ if Network.find_by(id: 3) == nil
   Network.create(id: 3, name: 'Glossom')
 end
 
+# PostgreSQL 依存
+ActiveRecord::Base.connection.execute("SELECT setval('networks_id_seq', coalesce((SELECT MAX(id)+1 FROM networks), 1), false)")
+
 #
 # キャンペーンソース
 # - ID は成果通知のコードとあわせる必要あり。
+# - キャンペーンソースは手動で ID を決める必要があるので、シーケンスのリセットはしない
 #
 campaign_source = CampaignSource.find_or_create_by(id: 1)
 campaign_source.network_system = NetworkSystem::ADCROPS
@@ -93,4 +103,7 @@ end
 if Item.find_by(id: 3) == nil
   Item.create(id: 3, name: 'Amazon ギフト券 (1000 円分)', point: 950)
 end
+
+# PostgreSQL 依存
+ActiveRecord::Base.connection.execute("SELECT setval('items_id_seq', coalesce((SELECT MAX(id)+1 FROM items), 1), false)")
 

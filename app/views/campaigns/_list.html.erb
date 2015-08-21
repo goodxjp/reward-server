@@ -35,7 +35,14 @@
         <% end %>
       </td>
       <td><%= campaign.achievements.count %></td>
-      <td class="text-center"><span class="label label-success">有効</span></td>
+      </td>
+      <td class="text-center">
+        <% if campaign.available %>
+        <span class="label label-success">有効</span>
+        <% else %>
+        <span class="label label-default">無効</span>
+        <% end %>
+      </td>
       <td><%= campaign.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S") %></td>
       <td class="text-center">
         <div class="btn-group">

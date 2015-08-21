@@ -27,7 +27,6 @@ class CampaignsController < ApplicationController
   # POST /campaigns.json
   def create
     @campaign = Campaign.new(campaign_params)
-    #@advertisement = Advertisement.new(params.require(:campaign).require(:advertisement).permit(:price, :payment, :point))
 
     begin
       ActiveRecord::Base.transaction do
@@ -47,10 +46,12 @@ class CampaignsController < ApplicationController
         #@advertisement.save!
 
         # オファー作成
-        @campaign.media.each do |medium|
-          #offer = Offer.new
-          offer = Offer.create_from_campaign(medium, @campaign)
-          offer.save!
+        if @campaign.available
+          @campaign.media.each do |medium|
+            #offer = Offer.new
+            offer = Offer.create_from_campaign(medium, @campaign)
+            offer.save!
+          end
         end
 
         redirect_to :action => 'index', notice: 'Campaign was successfully created.'
@@ -101,7 +102,7 @@ class CampaignsController < ApplicationController
           # チェック対象となるオファーを取得
           offers = Offer.where(:campaign => @campaign, :medium => medium)
 
-          if @campaign.media.include?(medium)
+          if @campaign.available and @campaign.media.include?(medium)
             #
             # 配信対象メディア
             #
@@ -163,7 +164,7 @@ class CampaignsController < ApplicationController
     def campaign_params
       # 多対多関連のチェックボックスに対応
       # http://qiita.com/gotohiro55/items/0d76ac9412b04a431e32
-      p = params.require(:campaign).permit(:campaign_source_id, :source_campaign_identifier, :network_id, :campaign_category_id, :name, :detail, :icon_url, :url, :requirement, :requirement_detail, :period, :price, :payment, :point, :medium_ids => [])
+      p = params.require(:campaign).permit(:campaign_source_id, :source_campaign_identifier, :network_id, :campaign_category_id, :name, :detail, :icon_url, :url, :requirement, :requirement_detail, :period, :price, :payment, :point, :available, :medium_ids => [])
       p[:medium_ids] ||= []
       p
     end

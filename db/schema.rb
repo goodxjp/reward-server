@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150821030354) do
+ActiveRecord::Schema.define(version: 20150821051928) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -84,7 +84,7 @@ ActiveRecord::Schema.define(version: 20150821030354) do
   add_index "campaign_sources", ["network_id"], name: "index_campaign_sources_on_network_id", using: :btree
 
   create_table "campaigns", force: true do |t|
-    t.string   "name",                                   null: false
+    t.string   "name",                                      null: false
     t.text     "detail"
     t.string   "icon_url"
     t.datetime "created_at"
@@ -94,14 +94,15 @@ ActiveRecord::Schema.define(version: 20150821030354) do
     t.string   "requirement"
     t.text     "requirement_detail"
     t.string   "period"
-    t.integer  "price",                      default: 0, null: false
-    t.integer  "payment",                    default: 0, null: false
+    t.integer  "price",                      default: 0,    null: false
+    t.integer  "payment",                    default: 0,    null: false
     t.integer  "point"
     t.integer  "campaign_source_id"
     t.string   "source_campaign_identifier"
     t.integer  "source_id"
     t.string   "source_type"
     t.integer  "network_id"
+    t.boolean  "available",                  default: true, null: false
   end
 
   add_index "campaigns", ["campaign_category_id"], name: "index_campaigns_on_campaign_category_id", using: :btree
