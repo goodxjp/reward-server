@@ -21,6 +21,7 @@ class Offer < ActiveRecord::Base
 
     offer.price              = campaign.price
     offer.payment            = campaign.payment
+    offer.payment_is_including_tax = campaign.payment_is_including_tax
     offer.point              = proper_point(campaign)
 
     return offer
@@ -65,6 +66,10 @@ class Offer < ActiveRecord::Base
     end
 
     if payment != campaign.payment
+      return false
+    end
+
+    if payment_is_including_tax != campaign.payment_is_including_tax
       return false
     end
 

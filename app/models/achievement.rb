@@ -9,14 +9,14 @@ class Achievement < ActiveRecord::Base
   # メディアユーザーとキャンペーンを特定したあとに成果を上げる
   # - トランザクションは外部でかける
   # - メディアユーザーに対して、スレッドセーフではないので注意！
-  def self.add_achievement(media_user, campaign, payment, payment_include_tax, point, occurred_at, notification)
+  def self.add_achievement(media_user, campaign, payment, payment_is_including_tax, point, occurred_at, notification)
     achievement = Achievement.new()
-    achievement.media_user          = media_user
-    achievement.campaign            = campaign
-    achievement.payment             = payment
-    achievement.payment_include_tax = payment_include_tax
-    achievement.occurred_at         = occurred_at
-    achievement.notification        = notification
+    achievement.media_user               = media_user
+    achievement.campaign                 = campaign
+    achievement.payment                  = payment
+    achievement.payment_is_including_tax = payment_is_including_tax
+    achievement.occurred_at              = occurred_at
+    achievement.notification             = notification
     achievement.save!
 
     # 成果が上がったものは非表示にする

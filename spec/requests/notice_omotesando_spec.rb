@@ -41,7 +41,7 @@ describe 'GET /notice/omotesando/adcrops' do
     expect(achievement.media_user.id).to eq 2
     expect(achievement.campaign.source_campaign_identifier).to eq "3"
     expect(achievement.payment).to eq 5
-    expect(achievement.payment_include_tax).to eq true
+    expect(achievement.payment_is_including_tax).to eq true
     expect(achievement.occurred_at).not_to eq nil
     expect(achievement.notification).to eq notice
 
@@ -194,7 +194,7 @@ describe 'GET /notice/omotesando/gree' do
     expect(achievement.media_user.id).to eq 2
     expect(achievement.campaign.source_campaign_identifier).to eq "3"
     expect(achievement.payment).to eq 5
-    expect(achievement.payment_include_tax).to eq true
+    expect(achievement.payment_is_including_tax).to eq true
     expect(achievement.occurred_at).not_to eq nil
     expect(achievement.notification).to eq notice
 

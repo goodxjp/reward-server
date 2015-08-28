@@ -11,19 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150821051928) do
+ActiveRecord::Schema.define(version: 20150828144155) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "achievements", force: true do |t|
     t.integer  "media_user_id"
-    t.integer  "payment",             null: false
-    t.boolean  "payment_include_tax"
+    t.integer  "payment",                  null: false
+    t.boolean  "payment_is_including_tax"
     t.integer  "campaign_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.datetime "occurred_at",         null: false
+    t.datetime "occurred_at",              null: false
     t.integer  "notification_id"
     t.string   "notification_type"
   end
@@ -84,7 +84,7 @@ ActiveRecord::Schema.define(version: 20150821051928) do
   add_index "campaign_sources", ["network_id"], name: "index_campaign_sources_on_network_id", using: :btree
 
   create_table "campaigns", force: true do |t|
-    t.string   "name",                                      null: false
+    t.string   "name",                                       null: false
     t.text     "detail"
     t.string   "icon_url"
     t.datetime "created_at"
@@ -94,15 +94,16 @@ ActiveRecord::Schema.define(version: 20150821051928) do
     t.string   "requirement"
     t.text     "requirement_detail"
     t.string   "period"
-    t.integer  "price",                      default: 0,    null: false
-    t.integer  "payment",                    default: 0,    null: false
+    t.integer  "price",                      default: 0,     null: false
+    t.integer  "payment",                    default: 0,     null: false
     t.integer  "point"
     t.integer  "campaign_source_id"
     t.string   "source_campaign_identifier"
     t.integer  "source_id"
     t.string   "source_type"
     t.integer  "network_id"
-    t.boolean  "available",                  default: true, null: false
+    t.boolean  "available",                  default: true,  null: false
+    t.boolean  "payment_is_including_tax",   default: false, null: false
   end
 
   add_index "campaigns", ["campaign_category_id"], name: "index_campaigns_on_campaign_category_id", using: :btree
@@ -215,8 +216,8 @@ ActiveRecord::Schema.define(version: 20150821051928) do
   end
 
   create_table "offers", force: true do |t|
-    t.integer  "campaign_id",                         null: false
-    t.integer  "medium_id",                           null: false
+    t.integer  "campaign_id",                              null: false
+    t.integer  "medium_id",                                null: false
     t.integer  "campaign_category_id"
     t.string   "name"
     t.text     "detail"
@@ -230,7 +231,8 @@ ActiveRecord::Schema.define(version: 20150821051928) do
     t.integer  "point"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "available",            default: true, null: false
+    t.boolean  "available",                default: true,  null: false
+    t.boolean  "payment_is_including_tax", default: false, null: false
   end
 
   add_index "offers", ["campaign_category_id"], name: "index_offers_on_campaign_category_id", using: :btree

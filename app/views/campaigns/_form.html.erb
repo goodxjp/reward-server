@@ -72,6 +72,17 @@
       input_wrapper_html: { class: 'col-sm-2' } %>
   <%= f.input :payment, label: '報酬金額',
       input_wrapper_html: { class: 'col-sm-2' } %>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="campaign_payment_is_including_tax">
+      報酬金額が税込みか？
+    </label>
+    <div class="col-sm-1">
+      <div class="form-control-static">
+        <%= f.check_box :payment_is_including_tax %>
+      </div>
+    </div>
+  </div>
+
   <%= f.input :point, label: 'ポイント',hint: '将来的には空白でデフォルト還元率 (未実装)',
       input_wrapper_html: { class: 'col-sm-2' } %>
 

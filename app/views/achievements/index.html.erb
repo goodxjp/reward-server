@@ -45,7 +45,7 @@
         </td>
         <td class="text-right">
           <%= number_with_delimiter(achievement.payment) %>
-          <% if achievement.payment_include_tax? %>
+          <% if achievement.payment_is_including_tax? %>
             (税込)
           <% else %>
             (税抜)

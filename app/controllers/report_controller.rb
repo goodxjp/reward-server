@@ -25,8 +25,8 @@ class ReportController < ApplicationController
       all_payment = 0  # 消費税も含めてしまう
       networks.each do |network|
         # 当日のネットワークの売上を集計
-        payment_included_tax = Achievement.joins(:campaign).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaigns.network_id = ?', network.id).where('payment_include_tax = ?', true).sum(:payment)
-        payment_not_included_tax = Achievement.joins(:campaign).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaigns.network_id = ?', network.id).where('payment_include_tax = ?', false).sum(:payment)
+        payment_included_tax = Achievement.joins(:campaign).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaigns.network_id = ?', network.id).where('achievements.payment_is_including_tax = ?', true).sum(:payment)
+        payment_not_included_tax = Achievement.joins(:campaign).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaigns.network_id = ?', network.id).where('achievements.payment_is_including_tax = ?', false).sum(:payment)
 
         # TODO: 消費税をテーブル化
         # TODO: 時間で変わる設定を汎用的に
@@ -77,8 +77,8 @@ class ReportController < ApplicationController
       campaign = Campaign.find(campaign_id.campaign_id)
 
       # 売上を集計
-      payment_included_tax = Achievement.where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).where('payment_include_tax = ?', true).sum(:payment)
-      payment_not_included_tax = Achievement.where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).where('payment_include_tax = ?', false).sum(:payment)
+      payment_included_tax = Achievement.where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).where('payment_is_including_tax = ?', true).sum(:payment)
+      payment_not_included_tax = Achievement.where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).where('payment_is_including_tax = ?', false).sum(:payment)
 
       # TODO: 消費税をテーブル化
       # TODO: 時間で変わる設定を汎用的に

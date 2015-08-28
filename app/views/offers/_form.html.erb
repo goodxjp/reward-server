@@ -1,23 +1,36 @@
-<%= simple_form_for(@offer) do |f| %>
+<%= simple_form_for @offer, wrapper: :horizontal_form, html: { class: 'form-horizontal' } do |f| %>
   <%= f.error_notification %>
 
-  <div class="form-inputs">
-    <%= f.input :campaign %>
-    <%= f.input :medium %>
-    <%= f.input :campaign_category %>
-    <%= f.input :name %>
-    <%= f.input :detail %>
-    <%= f.input :icon_url %>
-    <%= f.input :url %>
-    <%= f.input :requirement %>
-    <%= f.input :requirement_detail %>
-    <%= f.input :period %>
-    <%= f.input :price %>
-    <%= f.input :payment %>
-    <%= f.input :point %>
+  <div class="form-group">
+    <label class="col-sm-3 control-label">キャンペーン ID</label>
+    <div class="col-sm-3">
+      <%= link_to @offer.campaign.id, edit_campaign_path(@offer.campaign), class: 'btn btn-default btn-xs' %>
+    </div>
   </div>
-
-  <div class="form-actions">
-    <%= f.button :submit %>
-  </div>
+  <%= f.association :medium,
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.association :campaign_category,
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.input :name,
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.input :detail,
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.input :icon_url,
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.input :url,
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.input :requirement,
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.input :requirement_detail,
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.input :period,
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.input :price,
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.input :payment,
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.input :payment_is_including_tax,
+      input_wrapper_html: { class: 'col-sm-3' } %>
+  <%= f.input :point,
+      input_wrapper_html: { class: 'col-sm-3' } %>
 <% end %>
