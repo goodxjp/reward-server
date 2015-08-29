@@ -82,9 +82,18 @@ class Offer < ActiveRecord::Base
 
   def self.proper_point(campaign)
     if campaign.point.nil?
-      # TODO: デフォルト還元率の処理
-      # TOOD: 税金の処理
-      return (campaign.payment / 2).round
+      # デフォルト還元率
+      reduction_rate = Config.reduction_rate(Time.zone.now)
+
+      if campaign.payment_is_including_tax
+        # 税込み
+        return (campaign.payment * reduction_rate).round
+      else
+        # 税抜き
+        # TODO: 税の切り替えタイミング注意！そんなに気にしなくてもいいかも
+        ct_rate = Config.consumption_tax_rate(Time.zone.now)
+        return (campaign.payment * (1 + ct_rate) * reduction_rate).round
+      end
     else
       return campaign.point
     end

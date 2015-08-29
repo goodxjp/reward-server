@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 Rails.application.routes.draw do
+  resources :configs
   get 'welcome/index'
   devise_for :admin_users
 

@@ -19,6 +19,9 @@ class ReportController < ApplicationController
       next_d = d.tomorrow
       to = Time.zone.local(next_d.year, next_d.month, next_d.day, 0, 0, 0)
 
+      # 消費税率は日付によって異なる
+      ct_rate = Config.consumption_tax_rate(from)
+
       sale = { day: d }
 
       networks = Network.all
@@ -28,11 +31,9 @@ class ReportController < ApplicationController
         payment_included_tax = Achievement.joins(:campaign).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaigns.network_id = ?', network.id).where('achievements.payment_is_including_tax = ?', true).sum(:payment)
         payment_not_included_tax = Achievement.joins(:campaign).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaigns.network_id = ?', network.id).where('achievements.payment_is_including_tax = ?', false).sum(:payment)
 
-        # TODO: 消費税をテーブル化
-        # TODO: 時間で変わる設定を汎用的に
         # http://d.hatena.ne.jp/KEINOS/20130910
-        tax = (payment_included_tax * 8 / 108).round + (payment_not_included_tax * 8 / 100).round
-        payment = payment_included_tax - (payment_included_tax * 8 / 108).round + payment_not_included_tax
+        tax = (payment_included_tax * ct_rate / (1 + ct_rate)).round + (payment_not_included_tax * ct_rate).round
+        payment = payment_included_tax - (payment_included_tax * ct_rate / (1 + ct_rate)).round + payment_not_included_tax
 
         # TODO: 消費税関係の変数名統一
         sale["network_#{network.id}"] = {}
@@ -71,6 +72,9 @@ class ReportController < ApplicationController
     next_d = end_day.tomorrow
     to = Time.zone.local(next_d.year, next_d.month, next_d.day, 0, 0, 0)
 
+    # TODO: 今は全期間共通の消費税。将来的に日ごとに消費税の計算を事前に行っておく
+    ct_rate = Config.consumption_tax_rate(from)
+
     campaign_ids = Achievement.group(:campaign_id).where("? <= occurred_at AND occurred_at < ?", from, to).select('campaign_id, COUNT(*) AS count').order(:campaign_id)
 
     campaign_ids.each do |campaign_id|
@@ -80,11 +84,9 @@ class ReportController < ApplicationController
       payment_included_tax = Achievement.where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).where('payment_is_including_tax = ?', true).sum(:payment)
       payment_not_included_tax = Achievement.where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).where('payment_is_including_tax = ?', false).sum(:payment)
 
-      # TODO: 消費税をテーブル化
-      # TODO: 時間で変わる設定を汎用的に
       # http://d.hatena.ne.jp/KEINOS/20130910
-      tax = (payment_included_tax * 8 / 108).round + (payment_not_included_tax * 8 / 100).round
-      payment = payment_included_tax - (payment_included_tax * 8 / 108).round + payment_not_included_tax
+      tax = (payment_included_tax * ct_rate / (1 + ct_rate)).round + (payment_not_included_tax * ct_rate).round
+      payment = payment_included_tax - (payment_included_tax * ct_rate / (1 + ct_rate)).round + payment_not_included_tax
 
       # 発行ポイントを集計
       published_point = Achievement.joins(:points).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).sum('points.point')
