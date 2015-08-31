@@ -15,8 +15,8 @@
   </thead>
 
   <tbody>
-    <% @reports.each do |report| %>
-    <% campaign = report[:campaign] %>
+    <% @report_data.each do |row| %>
+    <% campaign = row[:campaign] %>
     <tr>
       <td><%= campaign.id %></td>
       <td>
@@ -24,11 +24,11 @@
       </td>
       <td><%= image_tag campaign.icon_url, :size => '57x57' %></td>
       <td><%= campaign.name %></td>
-      <td class="text-right"><%= report[:count] %></td>
-      <td class="text-right"><%= report[:payment] %></td>
-      <td class="text-right"><%= report[:tax] %></td>
-      <td class="text-right"><%= report[:published_point] %></td>
-      <td class="text-right"><%= report[:profit] %></td>
+      <td class="text-right"><%= number_with_delimiter(row[:count]) %></td>
+      <td class="text-right"><%= number_with_delimiter(row[:payment_excluding_tax]) %></td>
+      <td class="text-right"><%= number_with_delimiter(row[:payment_consumption_tax]) %></td>
+      <td class="text-right"><%= number_with_delimiter(row[:published_point]) %></td>
+      <td class="text-right"><%= number_with_delimiter(row[:profit]) %></td>
     </tr>
     <% end %>
   </tbody>

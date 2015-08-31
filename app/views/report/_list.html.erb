@@ -19,16 +19,16 @@
   </thead>
 
   <tbody>
-    <% @sales.each do |sale| %>
+    <% @report_data.each do |row| %>
     <tr>
-      <td><%= sale[:day] %></td>
-      <td class="text-right"><%= sale["network_2"][:payment] %></td>
-      <td class="text-right"><%= sale["network_2"][:tax] %></td>
-      <td class="text-right"><%= sale["network_3"][:payment] %></td>
-      <td class="text-right"><%= sale["network_3"][:tax] %></td>
-      <td class="text-right"><%= sale[:published_point] %></td>
-      <td class="text-right"><%= sale[:exchanged_point] %></td>
-      <td class="text-right"><%= sale[:profit] %></td>
+      <td><%= row[:day] %></td>
+      <td class="text-right"><%= number_with_delimiter(row["network_2"][:payment_excluding_tax]) %></td>
+      <td class="text-right"><%= number_with_delimiter(row["network_2"][:payment_consumption_tax]) %></td>
+      <td class="text-right"><%= number_with_delimiter(row["network_3"][:payment_excluding_tax]) %></td>
+      <td class="text-right"><%= number_with_delimiter(row["network_3"][:payment_consumption_tax]) %></td>
+      <td class="text-right"><%= number_with_delimiter(row[:published_point]) %></td>
+      <td class="text-right"><%= number_with_delimiter(row[:exchanged_point]) %></td>
+      <td class="text-right"><%= number_with_delimiter(row[:profit]) %></td>
     </tr>
     <% end %>
   </tbody>

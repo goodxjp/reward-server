@@ -3,7 +3,7 @@ class ReportController < ApplicationController
   before_action :authenticate_admin_user!
 
   def sales
-    @sales = []
+    @report_data = []
 
     # TODO: View をネットワークが増えても対応出来るように、または、ID 1 のネットワークに対応
 
@@ -22,39 +22,43 @@ class ReportController < ApplicationController
       # 消費税率は日付によって異なる
       ct_rate = Config.consumption_tax_rate(from)
 
-      sale = { day: d }
+      # 1 行分のデータ
+      row = { day: d }
 
       networks = Network.all
-      all_payment = 0  # 消費税も含めてしまう
+      all_payment_including_tax = 0  # 今のところ、all_payment に消費税も含めてしまう
       networks.each do |network|
-        # 当日のネットワークの売上を集計
-        payment_included_tax = Achievement.joins(:campaign).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaigns.network_id = ?', network.id).where('achievements.payment_is_including_tax = ?', true).sum(:payment)
-        payment_not_included_tax = Achievement.joins(:campaign).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaigns.network_id = ?', network.id).where('achievements.payment_is_including_tax = ?', false).sum(:payment)
+        # 当日 (d) のネットワークの売上を集計
+        sum_payment_including_tax = Achievement.joins(:campaign).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaigns.network_id = ?', network.id).where('achievements.payment_is_including_tax = ?', true).sum(:payment)
+        sum_payment_excluding_tax = Achievement.joins(:campaign).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaigns.network_id = ?', network.id).where('achievements.payment_is_including_tax = ?', false).sum(:payment)
 
         # http://d.hatena.ne.jp/KEINOS/20130910
-        tax = (payment_included_tax * ct_rate / (1 + ct_rate)).round + (payment_not_included_tax * ct_rate).round
-        payment = payment_included_tax - (payment_included_tax * ct_rate / (1 + ct_rate)).round + payment_not_included_tax
+        payment_consumption_tax =
+          (sum_payment_including_tax * ct_rate / (1 + ct_rate)).round
+        + (sum_payment_excluding_tax * ct_rate).round
+        payment_excluding_tax =
+          sum_payment_including_tax - (sum_payment_including_tax * ct_rate / (1 + ct_rate)).round
+        + sum_payment_excluding_tax
 
-        # TODO: 消費税関係の変数名統一
-        sale["network_#{network.id}"] = {}
-        sale["network_#{network.id}"][:payment] = payment
-        sale["network_#{network.id}"][:tax] = tax
-        all_payment += payment + tax  # 多分、しばらくは消費税も利益に上げちゃっていい。
+        row["network_#{network.id}"] = {}
+        row["network_#{network.id}"][:payment_excluding_tax] = payment_excluding_tax
+        row["network_#{network.id}"][:payment_consumption_tax] = payment_consumption_tax
+        all_payment_including_tax += payment_excluding_tax + payment_consumption_tax  # しばらくは消費税も利益に上げちゃう。
       end
 
       # 当日の発行ポイントを集計
       # TODO ポイントに発生日時追加
       published_point = Point.where("? <= created_at AND created_at < ?", from, to).sum(:point)
-      sale[:published_point] = published_point
+      row[:published_point] = published_point
 
       # 当日の交換ポイントを集計
       exchanged_point = Purchase.where("? <= occurred_at AND occurred_at < ?", from, to).sum(:point)
-      sale[:exchanged_point] = exchanged_point
+      row[:exchanged_point] = exchanged_point
 
       # 当日の利益 (売上 (税込) - 発行ポイント)
-      sale[:profit] = all_payment - published_point
+      row[:profit] = all_payment_including_tax - published_point
 
-      @sales << sale
+      @report_data << row
       d = d + 1.days
     end
   end
@@ -65,7 +69,7 @@ class ReportController < ApplicationController
     start_day = Date.new(2015, 1, 1)
     end_day   = Date.new(2100, 12, 31)
 
-    @reports = []
+    @report_data = []
 
     # SQL 用に Time を作成
     from = Time.zone.local(start_day.year, start_day.month, start_day.day, 0, 0, 0)
@@ -75,31 +79,36 @@ class ReportController < ApplicationController
     # TODO: 今は全期間共通の消費税。将来的に日ごとに消費税の計算を事前に行っておく
     ct_rate = Config.consumption_tax_rate(from)
 
+    # 対象期間に成果のあったキャンペーン ID を全て取得
     campaign_ids = Achievement.group(:campaign_id).where("? <= occurred_at AND occurred_at < ?", from, to).select('campaign_id, COUNT(*) AS count').order(:campaign_id)
 
     campaign_ids.each do |campaign_id|
       campaign = Campaign.find(campaign_id.campaign_id)
 
       # 売上を集計
-      payment_included_tax = Achievement.where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).where('payment_is_including_tax = ?', true).sum(:payment)
-      payment_not_included_tax = Achievement.where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).where('payment_is_including_tax = ?', false).sum(:payment)
+      sum_payment_including_tax = Achievement.where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).where('payment_is_including_tax = ?', true).sum(:payment)
+      sum_payment_excluding_tax = Achievement.where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).where('payment_is_including_tax = ?', false).sum(:payment)
 
       # http://d.hatena.ne.jp/KEINOS/20130910
-      tax = (payment_included_tax * ct_rate / (1 + ct_rate)).round + (payment_not_included_tax * ct_rate).round
-      payment = payment_included_tax - (payment_included_tax * ct_rate / (1 + ct_rate)).round + payment_not_included_tax
+      payment_consumption_tax =
+        (sum_payment_including_tax * ct_rate / (1 + ct_rate)).round
+      + (sum_payment_excluding_tax * ct_rate).round
+      payment_excluding_tax =
+        sum_payment_including_tax - (sum_payment_including_tax * ct_rate / (1 + ct_rate)).round 
+      + sum_payment_excluding_tax
 
       # 発行ポイントを集計
       published_point = Achievement.joins(:points).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).sum('points.point')
 
-      report = {}
-      report[:campaign] = campaign
-      report[:count] = campaign_id.count
-      report[:payment] = payment
-      report[:tax] = tax
-      report[:published_point] = published_point
-      report[:profit] = payment + tax - published_point
+      row= {}
+      row[:campaign] = campaign
+      row[:count] = campaign_id.count
+      row[:payment_excluding_tax] = payment_excluding_tax
+      row[:payment_consumption_tax] = payment_consumption_tax
+      row[:published_point] = published_point
+      row[:profit] = payment_excluding_tax + payment_consumption_tax - published_point
 
-      @reports << report
+      @report_data << row
     end
   end
 end
