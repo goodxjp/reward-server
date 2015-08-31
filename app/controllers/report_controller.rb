@@ -20,7 +20,7 @@ class ReportController < ApplicationController
       to = Time.zone.local(next_d.year, next_d.month, next_d.day, 0, 0, 0)
 
       # 消費税率は日付によって異なる
-      ct_rate = Config.consumption_tax_rate(from)
+      ct_rate = Setting.consumption_tax_rate(from)
 
       # 1 行分のデータ
       row = { day: d }
@@ -77,7 +77,7 @@ class ReportController < ApplicationController
     to = Time.zone.local(next_d.year, next_d.month, next_d.day, 0, 0, 0)
 
     # TODO: 今は全期間共通の消費税。将来的に日ごとに消費税の計算を事前に行っておく
-    ct_rate = Config.consumption_tax_rate(from)
+    ct_rate = Setting.consumption_tax_rate(from)
 
     # 対象期間に成果のあったキャンペーン ID を全て取得
     campaign_ids = Achievement.group(:campaign_id).where("? <= occurred_at AND occurred_at < ?", from, to).select('campaign_id, COUNT(*) AS count').order(:campaign_id)

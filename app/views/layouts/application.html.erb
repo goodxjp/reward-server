@@ -128,12 +128,12 @@
           <% end %>
             <a href="/achievements"><i class="fa fa-circle-o text-warning"></i>成果</a>
           </li>
-          <% if request.path_info.match(/^\/configs/) %>
+          <% if request.path_info.match(/^\/settings/) %>
           <li class="active">
           <% else %>
           <li>
           <% end %>
-            <a href="/configs"><i class="fa fa-circle-o text-danger"></i>設定</a>
+            <a href="/settings"><i class="fa fa-circle-o text-danger"></i>設定</a>
           </li>
           <% if request.path_info.match(/^\/welcome\/admin/) %>
           <li class="active">

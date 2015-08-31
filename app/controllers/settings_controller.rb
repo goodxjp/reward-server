@@ -1,10 +1,10 @@
-class ConfigsController < ApplicationController
+class SettingsController < ApplicationController
   before_action :set_config, only: [:show, :edit, :update, :destroy]
 
   # GET /configs
   # GET /configs.json
   def index
-    @configs = Config.all
+    #@configs = Config.all
   end
 
   # GET /configs/1

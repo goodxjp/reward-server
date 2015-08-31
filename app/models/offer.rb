@@ -91,7 +91,7 @@ class Offer < ActiveRecord::Base
       else
         # 税抜き
         # TODO: 税の切り替えタイミング注意！そんなに気にしなくてもいいかも
-        ct_rate = Config.consumption_tax_rate(Time.zone.now)
+        ct_rate = Setting.consumption_tax_rate(Time.zone.now)
         return (campaign.payment * (1 + ct_rate) * reduction_rate).round
       end
     else

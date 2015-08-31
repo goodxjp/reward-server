@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 Rails.application.routes.draw do
-  resources :configs
   get 'welcome/index'
   devise_for :admin_users
 
@@ -40,6 +39,9 @@ Rails.application.routes.draw do
 
   # 成果
   resources :achievements
+
+  # 設定
+  resources :settings
 
   # 管理
   get 'welcome/admin'

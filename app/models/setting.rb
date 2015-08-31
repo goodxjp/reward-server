@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Config < ActiveRecord::Base
+class Setting
   # 消費税
   def self.consumption_tax_rate(now)
     if now < Time.zone.local(2017, 4, 1, 0, 0, 0)  # この日まで消費税率 8%

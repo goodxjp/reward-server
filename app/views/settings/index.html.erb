@@ -1,0 +1,36 @@
+<p id="notice"><%= notice %></p>
+
+<section class="content-header">
+  <h2>設定</h2>
+</section>
+
+<section class="content">
+  <div class="box box-default">
+
+  <div class="box-body">
+
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th class="col-md-4">名称</th>
+        <th class="col-md-8">値</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>消費税率</th>
+        <td><%= Setting.consumption_tax_rate(Time.zone.now()) %></th>
+      </tr>
+      <tr>
+        <td>還元率</th>
+        <td><%= Setting.reduction_rate(Time.zone.now()) %></th>
+      </tr>
+    </tbody>
+  </table>
+
+    </div><!-- /.box-body -->
+  </div><!-- /.box -->
+
+</section>
+
