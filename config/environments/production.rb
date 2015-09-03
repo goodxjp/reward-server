@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -85,4 +86,7 @@ Rails.application.configure do
   config.serve_static_files = true
   config.assets.compile = true
   config.assets.digest = true
+
+  # Heroku のログにロガーのフォーマットを適用させるために
+  config.logger = Logger.new(STDOUT)
 end

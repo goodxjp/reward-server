@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class MediaUsersController < ApplicationController
   before_action :authenticate_admin_user!
-  before_action :set_media_user, only: [:show, :edit, :update, :destroy, :add_point_by_campaign, :add_point_by_offer]
+  before_action :set_media_user, only: [:show, :edit, :update, :destroy, :notify, :add_point_by_offer]
 
   def index
     @media_users = MediaUser.order(id: :desc).page params[:page]
@@ -12,7 +12,7 @@ class MediaUsersController < ApplicationController
     @point_histories = PointHistory.where(media_user: @media_user).order(created_at: :desc)
     @click_histories = ClickHistory.where(media_user: @media_user).order(created_at: :desc)
 
-    # ポイント資産 (ここは案件管理者には見せない？！)
+    # ポイント資産
     @points = Point.where(media_user: @media_user).order(created_at: :desc)
   end
 
@@ -21,8 +21,9 @@ class MediaUsersController < ApplicationController
     redirect_to media_users_url, notice: 'MediaUser was successfully destroyed.'
   end
 
+  # 通知のテスト用
+  # TODO: 未作成
   def notify
-    @media_user = MediaUser.find(params[:id])
     api_key = ENV['API_KEY']
     registration_ids = [ @media_user.android_registration_id ]
     gcm = GCM.new(api_key)
@@ -32,64 +33,16 @@ class MediaUsersController < ApplicationController
     head :no_content
   end
 
+  # 手動成果
   def add_point_by_offer
     offer = Offer.find(params[:offer_id])
-    campaign = offer.campaign
-
-    # TODO: エラー処理
-    #add_point(@media_user, offer.point, PointType::MANUAL, campaign)
-    # TODO: キャンペーンの税込、税抜きに対応する
-    Achievement.add_achievement(@media_user, campaign, campaign.payment, true, campaign.point, Time.zone.now, nil)
-
-    redirect_to :action => :show
-  end
-
-  # 手動成果
-  def add_point_by_campaign
-    campaign = Campaign.find(params[:campaign_id])
-
-    # TODO: エラー処理
-    #add_point(@media_user, campaign.advertisements[0].point, PointType::MANUAL, campaign)
-    # TODO: キャンペーンの税込、税抜きに対応する
-    Achievement.add_achievement(@media_user, campaign, campaign.payment, true, campaign.point, Time.zone.now, nil)
-
-    redirect_to :action => :show
-  end
-
-  # ポイント追加の処理はメディアユーザーに共通化
-  # メディアユーザーの変更は許さない。
-  # キャンペーンが途中で変わってることがあるので注意。
-  def add_point(media_user, point, type, campaign)
-    media_user.lock!
-    # TODO: 悲観的ロックに失敗した場合の処理
-
-    p = Point.new()  # 数値の point と被るので、変数名を p に
-    p.media_user    = media_user
-    p.type          = type
-    p.source        = campaign  # 手動の時はキャンペーンに対してつける。自動の時は成果に対して付けた方がいい？
-    p.point         = point
-    p.remains       = p.point
-    p.expiration_at = nil  # TODO: 現在は期限なし
-
-    point_history = PointHistory.new()
-    point_history.media_user   = media_user
-    point_history.point_change = point
-    point_history.detail       = campaign.name
-    point_history.source       = p
-
-    media_user.point       = media_user.point       + point
-    media_user.total_point = media_user.total_point + point
 
     ActiveRecord::Base.transaction do
-      p.save!
-      point_history.save!
-      media_user.save!
+      @media_user.lock!
+      Achievement.add_dummy_achievement(@media_user, offer, Time.zone.now)
     end
-      return
-    rescue => e
-      # TODO: エラー処理
-      logger.debug e
-      return
+
+    redirect_to action: :show
   end
 
   private

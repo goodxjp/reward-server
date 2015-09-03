@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+#
+# ポイント資産
+#
 class Point < ActiveRecord::Base
   extend ActiveHash::Associations::ActiveRecordExtensions
 
@@ -9,11 +12,11 @@ class Point < ActiveRecord::Base
   # 手動の時はキャンペーンがソース？nil がいい？となるとポリモフィリックの意味なくね？
   belongs_to :source, :polymorphic => true
 
-  # belongs_to_active_hash :point_type  # 古い？
+  # belongs_to_active_hash :point_type  # この書き方は古い？
   belongs_to :point_type
 
   # トランザクションは外部でかける
-  # メディアユーザーに対して、スレッドセーフではない
+  # メディアユーザーに対して、スレッドセーフではないので注意！
   def self.add_point_by_achievement(media_user, type, point, achievement)
     p = Point.new
     p.media_user    = media_user
@@ -28,7 +31,10 @@ class Point < ActiveRecord::Base
     point_history.point_change = point
     point_history.detail       = achievement.campaign.name
     point_history.source       = achievement
+    # point_history.source       = achievement  # 追加の時はポイント資産の方がいいかな。
+    # 手動のとき困るのと、あくまで補助的情報なので、遠くなっても OK
 
+    # メディアユーザーでロックをかけておく必要がある。
     media_user.point       = media_user.point       + point
     media_user.total_point = media_user.total_point + point
 
@@ -39,6 +45,7 @@ class Point < ActiveRecord::Base
 
   # トランザクションは外部でかける
   # メディアユーザーに対して、スレッドセーフではない
+  # 主にテストで使ってる？できれば廃止したい。
   def self.add_point(media_user, type, point, detail)
     p = Point.new
     p.media_user    = media_user

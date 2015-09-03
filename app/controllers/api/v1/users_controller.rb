@@ -24,6 +24,7 @@ module Api
         # すでに端末が登録されていないかチェック
         # TODO: 登録されているかどうかの端末チェックを厳密に (他人の端末で登録されてしまわないように)
         # 端末 ID はあまり信用しないこと。
+        # TODO: これだと別メディアで登録されちゃう。
         @media_user = MediaUser.find_by_terminal_id(params[:user][:terminal_id])
         if not @media_user.nil?
           logger.debug "Registered terminal_id = #{@media_user.terminal_id}."

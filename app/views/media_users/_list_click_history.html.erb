@@ -27,8 +27,9 @@
         <% end %>
       </td>
       <td class="text-center">
-        オファー <%= click_history.offer_id %><br>
+        <%= link_to "オファー #{click_history.offer_id}", offer_path(click_history.offer), class: 'btn btn-default btn-xs' %>
         <% if not click_history.offer.nil? %>
+          <br>
           <%= link_to "キャンペーン #{click_history.offer.campaign_id}", edit_campaign_path(click_history.offer.campaign), class: 'btn btn-default btn-xs' %>
         <% end %>
       </td>

@@ -6,26 +6,47 @@ class Achievement < ActiveRecord::Base
 
   has_many :points, as: :source
 
-  # メディアユーザーとキャンペーンを特定したあとに成果を上げる
-  # - トランザクションは外部でかける
-  # - メディアユーザーに対して、スレッドセーフではないので注意！
-  def self.add_achievement(media_user, campaign, payment, payment_is_including_tax, point, occurred_at, notification)
-    achievement = Achievement.new()
-    achievement.media_user               = media_user
-    achievement.campaign                 = campaign
-    achievement.payment                  = payment
-    achievement.payment_is_including_tax = payment_is_including_tax
-    achievement.occurred_at              = occurred_at
-    achievement.notification             = notification
-    achievement.save!
+  #
+  # メディアユーザーとキャンペーンを特定した後に成果を上げる
+  #
+  # * トランザクションは外部でかけること
+  # * メディアユーザーに対して、スレッドセーフではないので注意！
+  #
+  def self.add_achievement(media_user, campaign, payment, payment_is_including_tax, point,
+                           occurred_at, notification, point_type = PointType::AUTO)
+    achievement = Achievement.create!(media_user: media_user,
+                                      campaign: campaign,
+                                      payment: payment,
+                                      payment_is_including_tax: payment_is_including_tax,
+                                      occurred_at: occurred_at,
+                                      notification: notification)
 
     # 成果が上がったものは非表示にする
     Hiding.create!(media_user: media_user, target: campaign)
 
     # ポイント追加
-    Point.add_point_by_achievement(media_user, PointType::AUTO, point, achievement)
+    Point.add_point_by_achievement(media_user, point_type, point, achievement)
   end
 
+  # TODO: offer 用が必要かも
+
+  #
+  # ダミー成果用
+  #
+  # * 売上も上がってしまうので、使いどころ注意！
+  #
+  def self.add_dummy_achievement(media_user, offer, occurred_at)
+    campaign = offer.campaign
+    payment = offer.payment
+    payment_is_including_tax = offer.payment_is_including_tax
+    point = offer.point
+    notification = nil
+
+    self.add_achievement(media_user, campaign, payment, payment_is_including_tax, point,
+                         occurred_at, notification, PointType::MANUAL)
+  end
+
+  # TODO: 本来はモデルに書くものではない
   def notification_type_name
     if notification.nil?
       return nil

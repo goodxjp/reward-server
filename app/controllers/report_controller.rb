@@ -34,11 +34,11 @@ class ReportController < ApplicationController
 
         # http://d.hatena.ne.jp/KEINOS/20130910
         payment_consumption_tax =
-          (sum_payment_including_tax * ct_rate / (1 + ct_rate)).round
-        + (sum_payment_excluding_tax * ct_rate).round
+          (sum_payment_including_tax * ct_rate / (1 + ct_rate)).round +
+          (sum_payment_excluding_tax * ct_rate).round
         payment_excluding_tax =
-          sum_payment_including_tax - (sum_payment_including_tax * ct_rate / (1 + ct_rate)).round
-        + sum_payment_excluding_tax
+          sum_payment_including_tax - (sum_payment_including_tax * ct_rate / (1 + ct_rate)).round +
+          sum_payment_excluding_tax
 
         row["network_#{network.id}"] = {}
         row["network_#{network.id}"][:payment_excluding_tax] = payment_excluding_tax
@@ -91,11 +91,11 @@ class ReportController < ApplicationController
 
       # http://d.hatena.ne.jp/KEINOS/20130910
       payment_consumption_tax =
-        (sum_payment_including_tax * ct_rate / (1 + ct_rate)).round
-      + (sum_payment_excluding_tax * ct_rate).round
+        (sum_payment_including_tax * ct_rate / (1 + ct_rate)).round +
+        (sum_payment_excluding_tax * ct_rate).round
       payment_excluding_tax =
-        sum_payment_including_tax - (sum_payment_including_tax * ct_rate / (1 + ct_rate)).round 
-      + sum_payment_excluding_tax
+        sum_payment_including_tax - (sum_payment_including_tax * ct_rate / (1 + ct_rate)).round +
+        sum_payment_excluding_tax
 
       # 発行ポイントを集計
       published_point = Achievement.joins(:points).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).sum('points.point')
