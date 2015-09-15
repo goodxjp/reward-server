@@ -52,6 +52,6 @@ class MediaController < ApplicationController
     end
 
     def medium_params
-      params.require(:medium).permit(:name, :key)
+      params.require(:medium).permit(:name, :key, :media_type_id, :at_least_app_version_code)
     end
 end

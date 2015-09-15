@@ -9,7 +9,7 @@ describe 'POST /api/v1/user.json' do
     query = { mid: "1" }
     sig = Api::V1::ApiController.make_signature(medium, nil, "POST", "/api/v1/user.json", query)
 
-    params = { user: { terminal_id: "xxx", terminal_info: { "a" => "b" }, android_registration_id: "zzz"} }
+    params = { user: { terminal_id: "xxx", terminal_info: { "a": "b", "VERSION.RELEASE": "1.0.0" }, android_registration_id: "zzz"} }
     headers = { 'CONTENT_TYPE' => 'application/json' }
 
     post "/api/v1/user.json?mid=1&sig=#{sig}", params.to_json, headers
@@ -30,8 +30,21 @@ describe 'POST /api/v1/user.json' do
     expect(media_user.terminal_id).to eq "xxx"
     expect(media_user.android_registration_id).to eq "zzz"
 
+    terminal_androids = TerminalAndroid.all
+    expect(terminal_androids.size).to eq 1
+
     json = JSON.parse(media_user.terminal_info)
     expect(json["a"]).to eq "b"
+
+    terminal_android = terminal_androids[0]
+    expect(terminal_android.media_user).to eq media_user
+    expect(terminal_android.identifier).to eq "xxx"
+    expect(terminal_android.android_version).to eq "1.0.0"
+    expect(terminal_android.android_registration_id).to eq "zzz"
+
+    json = JSON.parse(terminal_android.info)
+    expect(json["a"]).to eq "b"
+    expect(json["VERSION.RELEASE"]).to eq "1.0.0"
   end
 end
 

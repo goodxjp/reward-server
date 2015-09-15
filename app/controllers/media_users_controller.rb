@@ -8,6 +8,15 @@ class MediaUsersController < ApplicationController
   end
 
   def show
+    if (@media_user.medium.media_type == MediaType::ANDROID)
+      terminal_androids = @media_user.terminal_androids.where(available: true)
+      if terminal_androids.size != 1
+        logger_fatal "Terminal is not 1(#{terminal_androids.size}). (MadiaUser.id = #{@media_user.id})"
+      else
+        @terminal_android = terminal_androids[0]
+      end
+    end
+
     # 各履歴取得
     @point_histories = PointHistory.where(media_user: @media_user).order(created_at: :desc)
     @click_histories = ClickHistory.where(media_user: @media_user).order(created_at: :desc)

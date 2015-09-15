@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150829052928) do
+ActiveRecord::Schema.define(version: 20150914190324) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -194,10 +194,12 @@ ActiveRecord::Schema.define(version: 20150829052928) do
   end
 
   create_table "media", force: :cascade do |t|
-    t.string   "name",       limit: 255
+    t.string   "name",                      limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "key",        limit: 255, default: "", null: false
+    t.string   "key",                       limit: 255, default: "", null: false
+    t.integer  "media_type_id"
+    t.integer  "at_least_app_version_code"
   end
 
   create_table "media_users", force: :cascade do |t|
@@ -285,4 +287,18 @@ ActiveRecord::Schema.define(version: 20150829052928) do
   add_index "purchases", ["media_user_id"], name: "index_purchases_on_media_user_id", using: :btree
   add_index "purchases", ["occurred_at"], name: "index_purchases_on_occurred_at", using: :btree
 
+  create_table "terminal_androids", force: :cascade do |t|
+    t.integer  "media_user_id"
+    t.string   "identifier"
+    t.text     "info"
+    t.string   "android_version"
+    t.string   "android_registration_id"
+    t.boolean  "available"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "terminal_androids", ["media_user_id"], name: "index_terminal_androids_on_media_user_id", using: :btree
+
+  add_foreign_key "terminal_androids", "media_users"
 end

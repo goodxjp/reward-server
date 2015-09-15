@@ -4,6 +4,15 @@
   <%= f.input :name, label: '名前', input_wrapper_html: { class: 'col-sm-3' } %>
   <%= f.input :key, label: 'メディアキー', input_wrapper_html: { class: 'col-sm-3' }  %>
 
+  <div class="form-group string optional medium_media_type">
+    <label class="string optional col-sm-3 control-label" for="medium_media_type">種別</label>
+    <div class="col-sm-3">
+      <%= f.collection_select :media_type_id, MediaType.all, :id, :name, {}, { class: 'select optional form-control' } %>
+    </div>
+  </div>
+
+  <%= f.input :at_least_app_version_code, label: '最低アプリバージョンコード', input_wrapper_html: { class: 'col-sm-3' }  %>
+
   <div class="form-group">
     <div class="col-sm-offset-3 col-sm-4">
       <%= f.submit '登録', class: 'btn btn-primary' %>

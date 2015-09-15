@@ -3,6 +3,8 @@ class MediaUser < ActiveRecord::Base
   has_many :points
   belongs_to :medium
 
+  has_many :terminal_androids
+
   validates :terminal_id,
     :presence => true
     #:uniqueness => true

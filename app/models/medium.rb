@@ -1,4 +1,8 @@
 class Medium < ActiveRecord::Base
+  extend ActiveHash::Associations::ActiveRecordExtensions
+
+  belongs_to :media_type
+
   has_and_belongs_to_many :campaigns
 
   validates :name,
