@@ -83,7 +83,7 @@ class Offer < ActiveRecord::Base
   def self.proper_point(campaign)
     if campaign.point.nil?
       # デフォルト還元率
-      reduction_rate = Config.reduction_rate(Time.zone.now)
+      reduction_rate = Setting.reduction_rate(Time.zone.now)
 
       if campaign.payment_is_including_tax
         # 税込み
