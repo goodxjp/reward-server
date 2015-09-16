@@ -6,13 +6,13 @@ describe 'POST /api/v1/user.json' do
   it '超正常系' do
     medium = FactoryGirl.create(:medium, id: 1)
 
-    query = { mid: "1" }
+    query = { mid: "1", avc: "29" }
     sig = Api::V1::ApiController.make_signature(medium, nil, "POST", "/api/v1/user.json", query)
 
     params = { user: { terminal_id: "xxx", terminal_info: { "a": "b", "VERSION.RELEASE": "1.0.0" }, android_registration_id: "zzz"} }
     headers = { 'CONTENT_TYPE' => 'application/json' }
 
-    post "/api/v1/user.json?mid=1&sig=#{sig}", params.to_json, headers
+    post "/api/v1/user.json?mid=1&avc=29&sig=#{sig}", params.to_json, headers
     #pp response.body
     expect(response).to be_success
 
@@ -29,6 +29,13 @@ describe 'POST /api/v1/user.json' do
     media_user = media_users[0]
     expect(media_user.terminal_id).to eq "xxx"
     expect(media_user.android_registration_id).to eq "zzz"
+
+    media_user_updates = MediaUserUpdate.all
+    expect(media_user_updates.size).to eq 1
+
+    media_user_udpate = media_user_updates[0]
+    expect(media_user_udpate.last_access_at).not_to eq nil
+    expect(media_user_udpate.app_version_code).to eq 29
 
     terminal_androids = TerminalAndroid.all
     expect(terminal_androids.size).to eq 1

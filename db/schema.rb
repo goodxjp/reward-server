@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150914190324) do
+ActiveRecord::Schema.define(version: 20150916035533) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -202,6 +202,16 @@ ActiveRecord::Schema.define(version: 20150914190324) do
     t.integer  "at_least_app_version_code"
   end
 
+  create_table "media_user_updates", force: :cascade do |t|
+    t.integer  "media_user_id"
+    t.datetime "last_access_at"
+    t.integer  "app_version_code"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  add_index "media_user_updates", ["media_user_id"], name: "index_media_user_updates_on_media_user_id", using: :btree
+
   create_table "media_users", force: :cascade do |t|
     t.string   "terminal_id",             limit: 255
     t.text     "terminal_info"
@@ -300,5 +310,6 @@ ActiveRecord::Schema.define(version: 20150914190324) do
 
   add_index "terminal_androids", ["media_user_id"], name: "index_terminal_androids_on_media_user_id", using: :btree
 
+  add_foreign_key "media_user_updates", "media_users"
   add_foreign_key "terminal_androids", "media_users"
 end

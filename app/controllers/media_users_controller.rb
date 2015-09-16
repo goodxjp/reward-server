@@ -17,6 +17,9 @@ class MediaUsersController < ApplicationController
       end
     end
 
+    # メディアユーザー更新情報
+    @media_user_update = MediaUserUpdate.find_by_media_user_id(@media_user.id)
+
     # 各履歴取得
     @point_histories = PointHistory.where(media_user: @media_user).order(created_at: :desc)
     @click_histories = ClickHistory.where(media_user: @media_user).order(created_at: :desc)

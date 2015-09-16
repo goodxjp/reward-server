@@ -29,9 +29,13 @@ class Api::V1::ApiController < ApplicationController
 
     mid = params[:mid]
     uid = params[:uid]
+    avc = params[:avc]
 
     @medium = Medium.find(mid)
     @media_user = MediaUser.find(uid)
+
+    # 署名チェックの前に MediaUserUpdate を更新
+    update_media_user_update(@media_user, avc)
 
     check_signature_with_model(@medium, @media_user)
   end
@@ -47,6 +51,7 @@ class Api::V1::ApiController < ApplicationController
     #logger.debug("query_parameters = #{request.query_parameters}")
 
     mid = params[:mid]
+    avc = params[:avc]
 
     @medium = Medium.find(mid)
 
@@ -85,6 +90,27 @@ class Api::V1::ApiController < ApplicationController
   end
 
   private
+    def update_media_user_update(media_user, app_version_code)
+      media_user_update = MediaUserUpdate.find_by_media_user_id(media_user.id)
+
+      # TODO: 移行期のためここでも作る
+      if media_user_update.nil?
+        media_user_update = MediaUserUpdate.new(media_user: media_user, last_access_at: @now, app_version_code: app_version_code)
+        if not media_user_update.save
+          logger_fatal "Cannot make MediaUserUpdate (#{@media_user.to_json})."
+          render :nothing => true, :status => 400
+        end
+      else
+        media_user_update.last_access_at = @now
+        media_user_update.app_version_code = app_version_code
+        if not media_user_update.save
+          # TODO: エラーコードを全体的に要検討。ロギングできるのであれば例外投げちゃってもいいかも
+          logger_fatal "Cannot update MediaUserUpdate (#{@media_user.to_json})."
+          render :nothing => true, :status => 400
+        end
+      end
+    end
+
     def check_signature_with_model(medium, media_user)
       query = request.query_parameters
       sig = query.delete("sig")

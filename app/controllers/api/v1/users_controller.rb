@@ -72,17 +72,22 @@ module Api
         # 端末情報
         #
         if (@medium.media_type == MediaType::ANDROID)
-          @terminal = TerminalAndroid.new
-          @terminal.media_user = @media_user
-          @terminal.identifier = params[:user][:terminal_id]
-          @terminal.info = terminal_info.to_json
-          @terminal.android_version = terminal_info["VERSION.RELEASE"]
-          @terminal.android_registration_id = params[:user][:android_registration_id]
-          @terminal.available = true
+          terminal = TerminalAndroid.new
+          terminal.media_user = @media_user
+          terminal.identifier = params[:user][:terminal_id]
+          terminal.info = terminal_info.to_json
+          terminal.android_version = terminal_info["VERSION.RELEASE"]
+          terminal.android_registration_id = params[:user][:android_registration_id]
+          terminal.available = true
         else
           logger_fatal "Media type is invalid (#{@medium.media_type_id})"
           render :nothing => true, :status => 400 and return
         end
+
+        #
+        # メディアユーザー更新情報
+        #
+        media_user_update = MediaUserUpdate.new(media_user: @media_user, last_access_at: @now, app_version_code: params[:avc])
 
         begin
           # モデルのトランザクションとの違いは？
@@ -90,7 +95,8 @@ module Api
 
             # TODO: key でユニーク制約をかけて、エラーのテスト
             @media_user.save!
-            @terminal.save!
+            terminal.save!
+            media_user_update.save!
           end
         rescue => e
           # 滅多に起こらないはずだが、ユーザーキーが被って失敗する可能性あり。
