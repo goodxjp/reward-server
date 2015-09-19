@@ -53,7 +53,7 @@ describe 'GET /api/v1/:id/execute.json' do
     sig = Api::V1::ApiController.make_signature(medium, media_user, "GET", "/api/v1/offers/4/execute", query)
 
     get "/api/v1/offers/4/execute?mid=1&uid=1&sig=#{sig}"
-    #puts response.body
+    puts response.body
     expect(response).to redirect_to(offer.url)
   end
 

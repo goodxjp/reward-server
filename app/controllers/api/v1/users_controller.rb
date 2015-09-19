@@ -28,17 +28,16 @@ module Api
         #
         # TODO: 登録されているかどうかの端末チェックを厳密に (他人の端末で登録されてしまわないように)
         # 端末 ID はあまり信用しないこと。
-        # TODO: これだと別メディアで登録されちゃう。
         if (@medium.media_type == MediaType::ANDROID)
           # 1 端末にインストールできるメディア数はたかがしれているので、全メディア分を取得してまわす
-          terminals = TerminalAndroid.where(identifier: params[:user][:terminal_id])
+          terminals = TerminalAndroid.where(identifier: params[:user][:terminal_id], available: true)
           terminals.each do |terminal|
             if (terminal.media_user.medium == @medium)
               # インストール済みの端末あり
 
-              # TODO: エラーコードを全体的に要検討
+              # TODO: しばらく、一度インストールされた端末に再インストールできないようにしておく。
               logger_fatal "Registered terminal_id = #{params[:user][:terminal_id]}."
-              render :nothing => true, :status => 400 and return
+              render_error(1999) and return
             end
           end
         end
@@ -50,6 +49,7 @@ module Api
         for count in 1..3 do
           key = MediaUser.make_user_key
           if MediaUser.find_by_key(key).nil?
+          #if not MediaUser.find_by_key(key).nil?  # 1001 エラーのテスト用
             @media_user.key = key
             break
           else
@@ -58,11 +58,15 @@ module Api
         end
 
         if @media_user.key.nil?
-          # 滅多に起こらないはずだが、ロギング
-          # TODO: エラーコードを全体的に要検討
-          logger.error "Registered key."
-          render :nothing => true, :status => 400 and return
+          # そんなに致命的ではないが、滅多に起こらないはずなので致命的でロギング。
+          logger_fatal "Cannot make user key."
+          render_error(1001) and return
         end
+
+        #
+        # メディアユーザー更新情報
+        #
+        media_user_update = MediaUserUpdate.new(media_user: @media_user, last_access_at: @now, app_version_code: params[:avc])
 
         # 端末情報は JSON で保存
         terminal_info = params[:user][:terminal_info]
@@ -75,19 +79,15 @@ module Api
           terminal = TerminalAndroid.new
           terminal.media_user = @media_user
           terminal.identifier = params[:user][:terminal_id]
+          #terminal.identifier = nil  # 1002 エラーのテスト用
           terminal.info = terminal_info.to_json
           terminal.android_version = terminal_info["VERSION.RELEASE"]
           terminal.android_registration_id = params[:user][:android_registration_id]
           terminal.available = true
         else
           logger_fatal "Media type is invalid (#{@medium.media_type_id})"
-          render :nothing => true, :status => 400 and return
+          render_error(9003) and return
         end
-
-        #
-        # メディアユーザー更新情報
-        #
-        media_user_update = MediaUserUpdate.new(media_user: @media_user, last_access_at: @now, app_version_code: params[:avc])
 
         begin
           # モデルのトランザクションとの違いは？
@@ -100,9 +100,8 @@ module Api
           end
         rescue => e
           # 滅多に起こらないはずだが、ユーザーキーが被って失敗する可能性あり。
-          # TODO: エラーコードを全体的に要検討
-          logger.error "Cannot make MediaUser (#{@media_user.to_json})."
-          render :nothing => true, :status => 400 and return
+          logger_fatal "Cannot make MediaUser (#{@media_user.to_json})."
+          render_error(1002) and return
         end
 
         render :show

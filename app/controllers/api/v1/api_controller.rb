@@ -7,6 +7,15 @@ class Api::V1::ApiController < ApplicationController
 
   before_action :api_initialize
 
+  # 例外ハンドリング
+  # http://morizyun.github.io/blog/custom-error-404-500-page/
+  # http://ruby-rails.hatenadiary.com/entry/20141111/1415707101
+  if not Rails.env.development?
+    rescue_from Exception, with: :render_500
+    rescue_from ActiveRecord::RecordNotFound, with: :render_404
+    rescue_from ActionController::RoutingError, with: :render_404
+  end
+
   #
   # 全ての API で共通に行う処理
   #
@@ -89,26 +98,85 @@ class Api::V1::ApiController < ApplicationController
     return correct_sig
   end
 
+  #
+  # API エラーコード関連
+  #
+  # - コード表はどこかに分割した方がよさげ。
+  #
+  def render_error(code)
+    error_code = ERROR_CODE[code]
+
+    if error_code.nil?
+      logger_fatal "Cannot find error code(#{code})."
+      render status: 400, json: { code: code, message: ERROR_CODE[0][:message] }
+    else
+      render status: 400, json: { code: code, message: error_code[:message] }
+    end
+  end
+
+  def render_500(e = nil)
+    logger_fatal "Rendering 500 with exception: #{e.message}" if e
+    code = 9001
+    render status: 500, json: { code: code, message: ERROR_CODE[code][:message] }
+  end
+
+  def render_404(e = nil)
+    logger_fatal "Rendering 404 with exception: #{e.message}" if e
+    code = 9002
+    render status: 404, json: { code: code, message: ERROR_CODE[code][:message] }
+  end
+
+  # message はユーザー向けのメッセージなので、ユーザーに不要な情報を記入しないこと！
+  # メッセージはアプリケーション埋め込みのものが優先。
+  ERROR_CODE = {
+    #
+    # メディアユーザー系
+    #
+    # ユーザーキーが作成できなかった
+    1001 => { message: "もう一度、起動し直すか、再インストールをお願いします。" },
+    # ユーザー関連のデータ保存に失敗 (滅多に起きないが、ユーザーキーの競合がありうる)
+    1002 => { message: "もう一度、起動し直すか、再インストールをお願いします。" },
+    # すでに使用している端末がある TODO: あとで削除
+    1999 => { message: "お使いの端末にはインストールできません。" },
+
+    #
+    # 案件系
+    #
+
+    #
+    # 購入系
+    #
+    2000 => { message: "購入できねぇよ！" },
+
+    #
+    # 共通
+    #
+    # 想定外の例外
+    9001 => { message: "Sorry for the inconvenience. Please wait for a while." },
+    # ActiveRecord::RecordNotFound, ActionController::RoutingError
+    9002 => { message: "Sorry for the inconvenience. Please wait for a while." },
+    # データベースのデータ不整合 (FATAL ログできちんと原因を検出できる用にしておくこと)
+    9003 => { message: "現在、復旧作業中です。今しばらくお待ちください" },
+    # 署名エラー
+    9004 => { message: "お手数ですが、最初からやり直していただけますか。" },
+
+    # このエラーコードのメッセージはアプリに埋め込まないこと。
+    0 => { message: "" }
+  }
+
   private
     def update_media_user_update(media_user, app_version_code)
       media_user_update = MediaUserUpdate.find_by_media_user_id(media_user.id)
 
       # TODO: 移行期のためここでも作る
       if media_user_update.nil?
-        media_user_update = MediaUserUpdate.new(media_user: media_user, last_access_at: @now, app_version_code: app_version_code)
-        if not media_user_update.save
-          logger_fatal "Cannot make MediaUserUpdate (#{@media_user.to_json})."
-          render :nothing => true, :status => 400
-        end
-      else
-        media_user_update.last_access_at = @now
-        media_user_update.app_version_code = app_version_code
-        if not media_user_update.save
-          # TODO: エラーコードを全体的に要検討。ロギングできるのであれば例外投げちゃってもいいかも
-          logger_fatal "Cannot update MediaUserUpdate (#{@media_user.to_json})."
-          render :nothing => true, :status => 400
-        end
+        media_user_update = MediaUserUpdate.new(media_user: media_user)
       end
+
+      media_user_update.last_access_at = @now
+      media_user_update.app_version_code = app_version_code
+
+      media_user_update.save!
     end
 
     def check_signature_with_model(medium, media_user)
@@ -118,11 +186,15 @@ class Api::V1::ApiController < ApplicationController
       correct_sig = self.class.make_signature(medium, media_user, request.request_method, request.path, query)
 
       if sig != correct_sig
-        # TODO: 回数が多かったら要通知
-        logger.error("Signature error.")
-        # TODO: ユーザへの通知方法要検討
-        render status: :forbidden, text: "お手数ではございますが、最初からやり直してください。(エラー番号: 0101)"
-        # before_～ で使うのが前提の処理だけど、まぁ、いっかな。
+        logger_fatal("Signature error. (#{media_user.to_s}")  # media_user = nil の場合あり
+
+        # 案件実行時には JSON ではなく HTML でエラー表示する必要がある。
+        # TODO: 案件実行の時に日本語前提になっちゃってる。まぁ、不正な処理なのでいいかな。
+        respond_to do |format|
+          format.json { render_error(9004) }
+          format.html { render status: :forbidden, text: "お手数ですが、最初からやり直していただけますか？" }
+        end
+        # ↑は before_～ で使うのが前提の処理になっちゃってるけど、まぁ、いっかな。
         # http://techracho.bpsinc.jp/baba/2013_08_06/12650
       end
     end

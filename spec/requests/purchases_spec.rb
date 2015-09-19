@@ -18,6 +18,7 @@ describe 'POST /api/v1/purchases.json' do
     headers = { 'CONTENT_TYPE' => 'application/json' }
 
     post "/api/v1/purchases.json?mid=1&uid=1&sig=#{sig}", params.to_json, headers
+    #puts response.body
     expect(response).to be_success
 
     # DB チェック

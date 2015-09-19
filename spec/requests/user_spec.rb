@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 require 'rails_helper'
-require 'pp'
 
 describe 'POST /api/v1/user.json' do
   it '超正常系' do
@@ -13,7 +12,7 @@ describe 'POST /api/v1/user.json' do
     headers = { 'CONTENT_TYPE' => 'application/json' }
 
     post "/api/v1/user.json?mid=1&avc=29&sig=#{sig}", params.to_json, headers
-    #pp response.body
+    #puts response.body
     expect(response).to be_success
 
     # レスポンスチェック
@@ -66,7 +65,7 @@ describe 'GET /api/v1/user.json' do
     Point::add_point(media_user, PointType::MANUAL, 1000, "テスト用")
 
     get "/api/v1/user.json?mid=1&uid=1&sig=#{sig}"
-    #pp response.body
+    #puts response.body
     expect(response).to be_success
   end
 end
