@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :gree_config do
-    campaign_source nil
-    media_identifier 1
-    site_key "MyString"
+    association :campaign_source
+    media_identifier 106
+    site_key "GREE_CONFIG_SITE_KEY"
   end
 end
