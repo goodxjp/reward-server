@@ -47,8 +47,7 @@ class ReportController < ApplicationController
       end
 
       # 当日の発行ポイントを集計
-      # TODO ポイントに発生日時追加
-      published_point = Point.where("? <= created_at AND created_at < ?", from, to).sum(:point)
+      published_point = Point.where("? <= occurred_at AND occurred_at < ?", from, to).sum(:point)
       row[:published_point] = published_point
 
       # 当日の交換ポイントを集計
@@ -98,7 +97,7 @@ class ReportController < ApplicationController
         sum_payment_excluding_tax
 
       # 発行ポイントを集計
-      published_point = Achievement.joins(:points).where("? <= occurred_at AND occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).sum('points.point')
+      published_point = Achievement.joins(:points).where("? <= points.occurred_at AND points.occurred_at < ?", from, to).where('campaign_id = ?', campaign.id).sum('points.point')
 
       row= {}
       row[:campaign] = campaign

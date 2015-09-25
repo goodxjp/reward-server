@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150916035533) do
+ActiveRecord::Schema.define(version: 20150925183155) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -277,11 +277,15 @@ ActiveRecord::Schema.define(version: 20150916035533) do
     t.integer  "point_type_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "remains",                   null: false
+    t.integer  "remains",                                                   null: false
     t.datetime "expiration_at"
+    t.datetime "occurred_at",               default: '2000-01-01 00:00:00', null: false
+    t.boolean  "available",                 default: true,                  null: false
   end
 
+  add_index "points", ["available"], name: "index_points_on_available", using: :btree
   add_index "points", ["media_user_id"], name: "index_points_on_media_user_id", using: :btree
+  add_index "points", ["occurred_at"], name: "index_points_on_occurred_at", using: :btree
 
   create_table "purchases", force: :cascade do |t|
     t.integer  "media_user_id", null: false

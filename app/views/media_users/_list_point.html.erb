@@ -6,7 +6,7 @@
       <th class="col-sm-1"></th>
       <th class="col-sm-1">ポイント</th>
       <th class="col-sm-1">未消化</th>
-      <th class="col-sm-2">取得日時</th>
+      <th class="col-sm-2">発生日時</th>
       <th class="col-sm-2">有効期限</th>
       <th class="col-sm-2">種別</th>
       <th class="col-sm-1"></th>
@@ -35,11 +35,7 @@
       <td class="text-right"><%= point.point %></td>
       <td class="text-right"><%= point.remains %></td>
       <td>
-        <% if point.source.kind_of?(Achievement) %>
-          <%= l point.source.occurred_at, :format => :default %>
-        <% else %>
-          <%= l point.created_at, :format => :default %>
-        <% end %>
+        <%= l point.occurred_at, :format => :default %>
       </td>
       <td>
         <% if not point.expiration_at.nil? %>
