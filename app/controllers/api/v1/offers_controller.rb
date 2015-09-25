@@ -6,8 +6,10 @@ module Api
 
       helper_method :make_execute_url
 
+      #
+      # 案件一覧
+      #
       def index
-        # TODO: ソート順検討
         offers = Offer.where(available: true, medium: @medium).order(id: :desc)
 
         @offers = []
@@ -23,7 +25,8 @@ module Api
       #
       # 案件実行
       #
-      # * 厳密にはブラウザから呼ばれるので API ではない
+      # - 厳密にはブラウザから呼ばれるので API ではない。
+      # - この URL は多言語化されていない。
       #
       def execute
         offer = Offer.find(params[:id])
@@ -41,7 +44,7 @@ module Api
           if offer.campaign.campaign_source.network_system == NetworkSystem::GREE
             digest = NetworkSystemGree.make_gree_digest_for_redirect_url(offer.campaign, @media_user)
             if digest == nil
-              logger.fatal("Cannot find GreeConfig (campaing_source_id = #{offer.campaign.campaign_source_id}")
+              logger_fatal("Cannot find GreeConfig (campaing_source_id = #{offer.campaign.campaign_source_id}")
               # TODO: クリックログに記録したい
               render :text => "案件が終了したか、獲得条件、ポイント数などが変更になっている可能性があります。お手数ではございますが、最初からやり直してください。"  # 嘘ですけど
               return
