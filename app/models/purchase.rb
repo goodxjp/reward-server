@@ -41,7 +41,7 @@ class Purchase < ActiveRecord::Base
     # ポイント資産から消費
     consumed_point = point  # 消費すべきポイント
     # TODO: 有効なポイントだけ取得したほうがよい、有効無効フラグは付けておいた方が効率いいかも
-    media_user.points.order('expiration_at IS NULL', expiration_at: :asc).each do |p|
+    media_user.points.order('expiration_at IS NULL', expiration_at: :asc, occurred_at: :asc).each do |p|
       # 今回、減らすポイント
       reduce_point = [consumed_point, p.remains].min
 

@@ -7,14 +7,14 @@ FactoryGirl.define do
   factory :gift do
     item
     code { FactoryGirl.generate(:gift_codes) }
-    expiration_at Time.now
+    expiration_at Time.zone.now
     purchase_id nil
   end
 
   factory :gift_purchased, class: Gift do
     item
     code "1234567890A"
-    expiration_at Time.now
+    expiration_at Time.zone.now
     purchase
   end
 end

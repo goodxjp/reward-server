@@ -4,8 +4,7 @@ require 'rails_helper'
 describe 'GET /api/v1/offers.json' do
   before :each do
     # mid = 1, uid = 1 のデータを用意する
-    @medium = create(:medium, id: 1)
-    @media_user = create(:media_user, id: 1, medium: @medium)
+    prepare_for_mid_1_uid_1
   end
 
   it '超正常系' do
