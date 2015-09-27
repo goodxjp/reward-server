@@ -40,14 +40,14 @@ class Purchase < ActiveRecord::Base
 
     # ポイント資産から消費
     consumed_point = point  # 消費すべきポイント
-    # TODO: 有効なポイントだけ取得したほうがよい、有効無効フラグは付けておいた方が効率いいかも
-    media_user.points.order('expiration_at IS NULL', expiration_at: :asc, occurred_at: :asc).each do |p|
+    media_user.points.where(available: true).order('expiration_at IS NULL', expiration_at: :asc, occurred_at: :asc).each do |p|
       # 今回、減らすポイント
       reduce_point = [consumed_point, p.remains].min
 
       # どっちかは 0 になる
       consumed_point = consumed_point - reduce_point
       p.remains = p.remains - reduce_point
+      p.available = false if p.remains == 0
 
       p.save!
 
@@ -71,7 +71,12 @@ class Purchase < ActiveRecord::Base
     point_history = PointHistory.new()
     point_history.media_user   = media_user
     point_history.point_change = -point
-    point_history.detail       = "ポイント交換 (#{item.name} ×  #{number})"
+    # TODO: ここも日本語前提
+    if (number == 1)
+      point_history.detail     = "ポイント交換 (#{item.name}})"
+    else
+      point_history.detail     = "ポイント交換 (#{item.name} × #{number})"
+    end
     point_history.source       = @purchase
     point_history.save!
 

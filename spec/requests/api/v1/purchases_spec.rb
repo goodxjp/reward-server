@@ -38,7 +38,10 @@ describe 'POST /api/v1/purchases.json' do
 
     point = add_point(@media_user, 1000)
 
+    Timecop.travel(Time.zone.local(1974, 9, 24, 1, 2, 3))
+    #puts Time.zone.now.usec
     post_purchases(1, 1, 100)
+    Timecop.return
     #puts response.body
     expect(response).to be_success
 
@@ -49,10 +52,13 @@ describe 'POST /api/v1/purchases.json' do
     purchase = purchases[0]
     #puts purchase
     expect(purchase.media_user_id).to eq @media_user.id
-    expect(purchase.item_id).to eq 1
+    expect(purchase.item_id).to eq item.id
     expect(purchase.number).to eq 1
     expect(purchase.point).to eq 100
-    expect(purchase.occurred_at).not_to eq nil
+    #puts purchase.occurred_at.usec
+    #expect(purchase.occurred_at).to eq Time.zone.local(1974, 9, 24, 1, 2, 3)
+    expect(purchase.occurred_at.to_i).to eq Time.zone.local(1974, 9, 24, 1, 2, 3).to_i  # ミリ秒が違うので to_i
+    # API 側で @now の値を出力したら、DB 値と一緒だったので、Timecop がミリ秒が扱えていないようだ。
 
     gift = Gift.find(gift.id)
     expect(gift.purchase_id).to eq purchase.id
@@ -63,6 +69,7 @@ describe 'POST /api/v1/purchases.json' do
     point = Point.find(point.id)
     expect(point.point).to eq 1000
     expect(point.remains).to eq 1000 - 100
+    expect(point.available).to eq true
   end
 
   it '購入済みのギフトしか残っていないときはエラー' do
@@ -211,7 +218,7 @@ describe 'POST /api/v1/purchases.json' do
       gift = create(:gift, item: item, purchase_id: nil)
 
       point = create(:point, media_user: @media_user, point: 1000, remains: 800)
-      @media_user.point = 1000
+      @media_user.point = 800
       @media_user.save
 
       post_purchases(1, 1, 100)
@@ -224,6 +231,26 @@ describe 'POST /api/v1/purchases.json' do
       point = Point.find(point.id)
       expect(point.remains).to eq 800 - 100
       expect(point.available).to eq true
+    end
+
+    it '使用済みのポイント資産は無効になる' do
+      item = create(:item, id: 1, point: 100)
+      gift = create(:gift, item: item, purchase_id: nil)
+
+      point = create(:point, media_user: @media_user, point: 1000, remains: 100)
+      @media_user.point = 100
+      @media_user.save
+
+      post_purchases(1, 1, 100)
+      expect(response).to be_success
+
+      # DB チェック
+      gift = Gift.find(gift.id)
+      expect(gift.purchase_id).not_to eq nil
+
+      point = Point.find(point.id)
+      expect(point.remains).to eq 100 - 100
+      expect(point.available).to eq false
     end
 
     it '複数のポイント資産が発生日時の古いものから順に使用される' do
@@ -241,6 +268,7 @@ describe 'POST /api/v1/purchases.json' do
       @media_user.save
 
       post_purchases(1, 2, 660)
+      #puts response.body
       expect(response).to be_success
 
       # DB チェック
@@ -251,13 +279,13 @@ describe 'POST /api/v1/purchases.json' do
 
       point1 = Point.find(point1.id)
       expect(point1.remains).to eq 400 - 400
-      expect(point1.available).to eq true
+      expect(point1.available).to eq false
       point2 = Point.find(point2.id)
       expect(point2.remains).to eq 200 - 160
       expect(point2.available).to eq true
       point3 = Point.find(point3.id)
       expect(point3.remains).to eq 100 - 100
-      expect(point3.available).to eq true
+      expect(point3.available).to eq false
     end
 
     it '複数のポイント資産が有効期限が古いものから順に使用される' do
@@ -291,10 +319,40 @@ describe 'POST /api/v1/purchases.json' do
       expect(point1.available).to eq true
       point2 = Point.find(point2.id)
       expect(point2.remains).to eq 200 - 200
-      expect(point2.available).to eq true
+      expect(point2.available).to eq false
       point3 = Point.find(point3.id)
       expect(point3.remains).to eq 100 - 20
       expect(point3.available).to eq true
+    end
+
+    it '使用済みのポイント資産は使用されない' do
+      item = create(:item, id: 1, point: 100)
+      gift = create(:gift, item: item, purchase_id: nil)
+
+      # 現実には remains が 0 より大きくて無効なポイント資産は存在しないはず (将来的にはあるかも)
+      point1 = create(:point, media_user: @media_user, point: 100, remains: 100, available: false,
+                      occurred_at: Time.zone.local(2000, 1, 1, 0, 0, 0))
+      point2 = create(:point, media_user: @media_user, point: 100, remains: 100, available: true,
+                      occurred_at: Time.zone.local(2000, 1, 2, 0, 0, 0))
+      point3 = create(:point, media_user: @media_user, point: 100, remains: 100, available: false,
+                      occurred_at: Time.zone.local(2000, 1, 3, 0, 0, 0))
+      @media_user.point = 300
+      @media_user.save
+
+      post_purchases(1, 1, 100)
+      #puts response.body
+      expect(response).to be_success
+
+      # DB チェック
+      point1 = Point.find(point1.id)
+      expect(point1.remains).to eq 100
+      expect(point1.available).to eq false
+      point2 = Point.find(point2.id)
+      expect(point2.remains).to eq 100 - 100
+      expect(point2.available).to eq false
+      point3 = Point.find(point3.id)
+      expect(point3.remains).to eq 100
+      expect(point3.available).to eq false
     end
 
     it '有効期限の切れたポイント資産は使用されない' do

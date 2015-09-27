@@ -60,11 +60,12 @@ module Api
             next
           rescue => e
             # リトライせずに即座にエラー
-            logger.error e.message
+            logger_fatal e.message
             logger.error "Transaction rollback."
 
-            # TODO: エラーコードとレスポンスを全体的に要検討
-            render :nothing => true, :status => 400 and return
+            # 上位でレスポンスを返す
+            raise e
+#            render :nothing => true, :status => 400 and return
           end
         end
 

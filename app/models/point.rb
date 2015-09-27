@@ -28,7 +28,10 @@ class Point < ActiveRecord::Base
   validates :occurred_at,
     presence: true
   validates :available,
-    presence: true
+#    presence: true
+    inclusion: {:in => [true, false]}
+  # boolean の必須チェックの書き方は↑これはひどいな…
+  # http://easyramble.com/rails-boolean-presence-validation.html
 
   #
   # 成果によるポイント追加
