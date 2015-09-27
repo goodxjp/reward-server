@@ -67,6 +67,7 @@ gem 'kaminari'
 group :test do
   gem 'rspec-rails'
   gem 'capybara'
+  gem 'timecop'  # http://ruby-rails.hatenadiary.com/entry/20141218/1418901424
 end
 
 gem 'factory_girl_rails'

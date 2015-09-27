@@ -125,24 +125,84 @@ describe 'POST /api/v1/purchases.json' do
     # TODO
   end
 
-  # TODO: 日付のパターンを DRY にしてもっと増やしたい
-  it '1 日 1 回までしか購入ができない' do
-    item = FactoryGirl.create(:item, id: 1)
+  # 日本の時間で行っているので注意
+  describe '1 日 1 回までしか購入できない' do
+    before :each do
+      # 購入に十分なポイントとギフト券を準備
+      @item = FactoryGirl.create(:item, id: 1)
+      @gift = FactoryGirl.create(:gift, item: @item, expiration_at: nil)
 
-    gift1 = FactoryGirl.create(:gift, item: item, expiration_at: nil)
-    gift2 = FactoryGirl.create(:gift, item: item, expiration_at: nil)
-    gift3 = FactoryGirl.create(:gift, item: item, expiration_at: nil)
+      @point = add_point(@media_user, 1000)
+    end
 
-    point = add_point(@media_user, 1000)
+    # occurred_at に購入したことにする
+    def prepare_purchase(occurred_at)
+      purchase = create(:purchase, media_user: @media_user, item: @item, occurred_at: occurred_at)
+    end
 
-    now = Time.zone.now
-    occurred_at = Time.zone.local(now.year, now.month, now.day, 0, 0, 0)
-    purchase = FactoryGirl.create(:purchase, media_user: @media_user, item: item, occurred_at: occurred_at)
+    it 'ある日の 00:00:00 に購入済みだと当日 23:59:59 に購入できない' do
+      prepare_purchase(Time.zone.local(2000, 1, 15, 0, 0, 0))
 
-    # 日付またぎのタイミングでやるとうまく成功しない
-    # TODO: テスト時に無理やり現在日時を設定できる仕組みを
-    post_purchases(1, 1, 100)
-    expect(response).not_to be_success
+      Timecop.travel(Time.zone.local(2000, 1, 15, 23, 59, 59))
+      post_purchases(1, 1, 100)
+      Timecop.return
+
+      expect(response).not_to be_success
+    end
+
+    it 'ある日の 00:00:00 に購入済みだと当日 00:00:00 に購入できない' do
+      prepare_purchase(Time.zone.local(2000, 1, 15, 0, 0, 0))
+
+      Timecop.travel(Time.zone.local(2000, 1, 15, 0, 0, 0))
+      post_purchases(1, 1, 100)
+      Timecop.return
+
+      expect(response).not_to be_success
+    end
+
+    it 'ある日の 23:59:59 に購入済みだと当日 23:59:59 に購入できない' do
+      prepare_purchase(Time.zone.local(2000, 1, 15, 23, 59, 59))
+
+      Timecop.travel(Time.zone.local(2000, 1, 15, 23, 59, 59))
+      post_purchases(1, 1, 100)
+      Timecop.return
+
+      expect(response).not_to be_success
+    end
+
+    it 'ある日の 23:59:59 に購入済みだと次の日の 00:00:00 に購入できる' do
+      prepare_purchase(Time.zone.local(2000, 1, 15, 23, 59, 59))
+
+      Timecop.travel(Time.zone.local(2000, 1, 16, 0, 0, 0))
+      post_purchases(1, 1, 100)
+      Timecop.return
+
+      expect(response).to be_success
+
+      # DB チェック
+      purchases = Purchase.all
+      expect(purchases.size).to eq 2
+
+      gift = Gift.find(@gift.id)
+      expect(gift.purchase_id).not_to eq nil
+    end
+
+    it '去年の同日に購入済みでも次の年の同日に購入できる' do
+      prepare_purchase(Time.zone.local(1999, 1, 15, 0, 0, 0))
+
+      Timecop.travel(Time.zone.local(2000, 1, 15, 0, 0, 0))
+      post_purchases(1, 1, 100)
+      Timecop.return
+
+      expect(response).to be_success
+
+      # DB チェック
+      purchases = Purchase.all
+      expect(purchases.size).to eq 2
+
+      gift = Gift.find(@gift.id)
+      expect(gift.purchase_id).not_to eq nil
+    end
   end
 
   describe 'ポイントの消費' do
