@@ -15,11 +15,13 @@ class Purchase < ActiveRecord::Base
   #
   # ギフト券購入処理
   #
-  def self.purchase(media_user, item, number, point, occurred_at)
+  # - 外でトランザクションかける前提だから、エラーは例外で返す必要あり。
+  #
+  def self.purchase(media_user, item, number, point_num, occurred_at)
     media_user.lock!  # ポイント関連の一覧の更新や、ユーザーの状態をチェックする前にユーザーでロックしておく
 
     #
-    # 各種チェック
+    # 各種チェック (ユーザー別)
     #
 
     # 1 日 1 回しか交換できない
@@ -31,7 +33,7 @@ class Purchase < ActiveRecord::Base
     if purchases.size > 0
       message = "User have already purchased today (media_user.id = #{media_user.id})."
       logger.info message
-      raise message
+      raise OverPurchaseError, message
     end
 
     #
@@ -39,30 +41,30 @@ class Purchase < ActiveRecord::Base
     #
 
     # ポイント資産から消費
-    consumed_point = point  # 消費すべきポイント
+    consumed_point_num = point_num  # 消費すべきポイント
     media_user.points.where(available: true).order('expiration_at IS NULL', expiration_at: :asc, occurred_at: :asc).each do |p|
       # 今回、減らすポイント
-      reduce_point = [consumed_point, p.remains].min
+      reduce_point_num = [consumed_point_num, p.remains].min
 
       # どっちかは 0 になる
-      consumed_point = consumed_point - reduce_point
-      p.remains = p.remains - reduce_point
+      consumed_point_num = consumed_point_num - reduce_point_num
+      p.remains = p.remains - reduce_point_num
       p.available = false if p.remains == 0
 
       p.save!
 
-      break if consumed_point == 0
+      break if consumed_point_num == 0
     end
 
     # 資産が足りないかチェック
-    if not consumed_point == 0
+    if not consumed_point_num == 0
       message = "Point is not enough (media_user.id = #{media_user.id})."
-      logger.error message
-      raise message
+      logger.info message
+      raise LackOfPointError, message
     end
 
     # 所有ポイントの消費 or 再計算
-    media_user.point = media_user.point - point
+    media_user.point = media_user.point - point_num
     media_user.save!
 
     # TODO: 資産の再計算チェック
@@ -70,12 +72,12 @@ class Purchase < ActiveRecord::Base
     # ポイント履歴の追加
     point_history = PointHistory.new()
     point_history.media_user   = media_user
-    point_history.point_change = -point
+    point_history.point_change = -point_num
     # TODO: ここも日本語前提
     if (number == 1)
-      point_history.detail     = "ポイント交換 (#{item.name}})"
+      point_history.detail = "ポイント交換 (#{item.name}})"
     else
-      point_history.detail     = "ポイント交換 (#{item.name} × #{number})"
+      point_history.detail = "ポイント交換 (#{item.name} × #{number})"
     end
     point_history.source       = @purchase
     point_history.save!
@@ -99,16 +101,16 @@ class Purchase < ActiveRecord::Base
     if gifts.size != number
       message = "Gift is not enough (item.id = #{item.id})."
       logger.error message
-      raise message
+      raise LackOfStockError, message
     end
 
     # 購入作成
-    purchase = Purchase.new(media_user: media_user, item: item, number: number, point: point, occurred_at: occurred_at)
+    purchase = Purchase.new(media_user: media_user, item: item, number: number, point: point_num, occurred_at: occurred_at)
     purchase.save!
 
-    # 複数個対応
+    # ギフト券更新 (複数個に対応)
     # TODO: 事前にギフト券を取得しないで、
-    # ここで注文個数に達するまで一個ずつとってきて、エラーが起きたら次のギフト券を取りに言った方がいいかも。
+    # ここで注文個数に達するまで一個ずつとってきて、エラーが起きたら次のギフト券を取りにいった方がいいかも。
     gifts.each do |gift|
       logger.debug "Gift.lock! user = #{media_user.id}, gift = #{gift.id}"
 
@@ -118,11 +120,12 @@ class Purchase < ActiveRecord::Base
       # ほんとに交換済みでないか念のためチェック (参照時にロックされる？)
       if not gift.purchase.nil?
         # TODO: 起こりうる？
-        # A が先に 1 個とって 1 つ目をロックしている間に、
-        # B が同じ 1 個を取得しようとして待っていて、その後 A が購入すると起こるかな。
+        # A が先に Gift A を確保して、上の gift.lock で Gift A をロックしている間に、
+        # B が同じ Gift A を確保して、上の gift.lock で待ってて、
+        # その後 A が購入完了して Gift A のロックを解除すると起こるかな。
         message = "Gift(#{gift.if}) is purchased."
         logger.error message
-        raise PurchasesController::GiftPurchasedError, message
+        raise GiftPurchasedError, message
       end
 
       gift.purchase = purchase
@@ -130,5 +133,21 @@ class Purchase < ActiveRecord::Base
     end
 
     return purchase
+  end
+
+  # 過剰購入エラー
+  class OverPurchaseError < StandardError
+  end
+
+  # ポイント不足エラー
+  class LackOfPointError < StandardError
+  end
+
+  # 在庫切れエラー
+  class LackOfStockError < StandardError
+  end
+
+  # ギフト券購入済み (競合エラー)
+  class GiftPurchasedError < StandardError
   end
 end

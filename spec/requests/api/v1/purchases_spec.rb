@@ -72,64 +72,65 @@ describe 'POST /api/v1/purchases.json' do
     expect(point.available).to eq true
   end
 
-  it '購入済みのギフトしか残っていないときはエラー' do
-    item = create(:item, id: 1, point: 100)
-    purchase = FactoryGirl.create(:purchase, media_user: @media_user, item: item)
+  it '過去 1 時間以内に 10 万ポイント以上交換されていたらエラー' do
+    item1 = create(:item, id: 1, point: 100)
+    gift2 = FactoryGirl.create(:gift, item: item1)
 
-    # 購入済みのギフト券
-    gift = FactoryGirl.create(:gift_purchased, item: item, purchase: purchase)
+    # 無関係のアイテムを無関係の人が購入
+    item2 = create(:item, id: 2, point: 100000)
+    purchase = FactoryGirl.create(:purchase,
+                                  item: item2,
+                                  point: 100000,
+                                  occurred_at: Time.zone.local(1999, 12, 31, 23, 0, 1))
+    gift2 = FactoryGirl.create(:gift, item: item2, purchase_id: purchase.id)
+    # ↑実際には gift は関係ない。
+
+    point = add_point(@media_user, 1000)
+
+    Timecop.travel(Time.zone.local(2000, 1, 1, 0, 0, 0))
+    post_purchases(1, 1, 100)
+    Timecop.return
+    #puts response.body
+    expect(response).not_to be_success
+
+    # レスポンスチェック
+    json = JSON.parse(response.body)
+    expect(json["code"]).to eq 2001
+  end
+
+  it '保持ポイントが足りないときはエラー' do
+    item = create(:item, id: 1, point: 100)
+
+    post_purchases(1, 1, 100)
+  end
+
+  it '商品 ID が無効の場合はエラー' do
+    item = create(:item, id: 1, point: 100,
+                  available: false)
+    gift = create(:gift, item: item)
 
     point = add_point(@media_user, 1000)
 
     post_purchases(1, 1, 100)
     expect(response).not_to be_success
+
+    # レスポンスチェック
+    json = JSON.parse(response.body)
+    expect(json["code"]).to eq 2003
   end
 
-  it '購入されるギフト券は有効期限が古いのが優先される' do
-    item = FactoryGirl.create(:item, id: 1)
-
-    gift1 = FactoryGirl.create(:gift, item: item, expiration_at: Time.zone.parse('2008-02-10 15:30:45'))
-    gift2 = FactoryGirl.create(:gift, item: item, expiration_at: Time.zone.parse('2007-02-10 15:30:45'))
-    gift3 = FactoryGirl.create(:gift, item: item, expiration_at: Time.zone.parse('2009-02-10 15:30:45'))
+  it 'ポイント数が実際の商品のポイント数と異なるの場合はエラー' do
+    item = create(:item, id: 1, point: 100)
+    gift = create(:gift, item: item)
 
     point = add_point(@media_user, 1000)
 
-    post_purchases(1, 1, 100)
-    #puts response.body
-    expect(response).to be_success
+    post_purchases(1, 1, 99)
+    expect(response).not_to be_success
 
-    # DB チェック
-    gift1 = Gift.find(gift1.id)
-    gift2 = Gift.find(gift2.id)
-    gift3 = Gift.find(gift3.id)
-    expect(gift1.purchase_id).to eq nil
-    expect(gift2.purchase_id).not_to eq nil  # 有効期限が一番短いギフト券が消費される
-    expect(gift3.purchase_id).to eq nil
-  end
-
-  it '購入されるギフト券は有効期限が設定されていないものが最後に使われる' do
-    item = FactoryGirl.create(:item, id: 1)
-
-    gift1 = FactoryGirl.create(:gift, item: item, expiration_at: nil)
-    gift2 = FactoryGirl.create(:gift, item: item, expiration_at: Time.zone.parse('2007-02-10 15:30:45'))
-    gift3 = FactoryGirl.create(:gift, item: item, expiration_at: nil)
-
-    point = add_point(@media_user, 1000)
-
-    post_purchases(1, 1, 100)
-    expect(response).to be_success
-
-    # DB チェック
-    gift1 = Gift.find(gift1.id)
-    gift2 = Gift.find(gift2.id)
-    gift3 = Gift.find(gift3.id)
-    expect(gift1.purchase_id).to eq nil
-    expect(gift2.purchase_id).not_to eq nil  # 有効期限が一番短いギフト券が消費される
-    expect(gift3.purchase_id).to eq nil
-  end
-
-  it 'パラメータのポイントが実際の商品のポイントと違う場合はエラー' do
-    # TODO
+    # レスポンスチェック
+    json = JSON.parse(response.body)
+    expect(json["code"]).to eq 2004
   end
 
   # 日本の時間で行っているので注意
@@ -155,6 +156,10 @@ describe 'POST /api/v1/purchases.json' do
       Timecop.return
 
       expect(response).not_to be_success
+
+      # レスポンスチェック
+      json = JSON.parse(response.body)
+      expect(json["code"]).to eq 2005
     end
 
     it 'ある日の 00:00:00 に購入済みだと当日 00:00:00 に購入できない' do
@@ -165,6 +170,10 @@ describe 'POST /api/v1/purchases.json' do
       Timecop.return
 
       expect(response).not_to be_success
+
+      # レスポンスチェック
+      json = JSON.parse(response.body)
+      expect(json["code"]).to eq 2005
     end
 
     it 'ある日の 23:59:59 に購入済みだと当日 23:59:59 に購入できない' do
@@ -175,6 +184,10 @@ describe 'POST /api/v1/purchases.json' do
       Timecop.return
 
       expect(response).not_to be_success
+
+      # レスポンスチェック
+      json = JSON.parse(response.body)
+      expect(json["code"]).to eq 2005
     end
 
     it 'ある日の 23:59:59 に購入済みだと次の日の 00:00:00 に購入できる' do
@@ -210,6 +223,80 @@ describe 'POST /api/v1/purchases.json' do
       gift = Gift.find(@gift.id)
       expect(gift.purchase_id).not_to eq nil
     end
+  end
+
+  it 'ポイントが不足している場合はエラー' do
+    item = create(:item, id: 1, point: 100)
+    gift = create(:gift, item: item)
+
+    point = add_point(@media_user, 99)
+
+    post_purchases(1, 1, 100)
+    expect(response).not_to be_success
+
+    # レスポンスチェック
+    json = JSON.parse(response.body)
+    expect(json["code"]).to eq 2006
+  end
+
+  it '購入済みのギフトしか残っていないときはエラー' do
+    item = create(:item, id: 1, point: 100)
+    purchase = create(:purchase, media_user: @media_user, item: item)
+
+    # 購入済みのギフト券
+    gift = create(:gift_purchased, item: item, purchase: purchase)
+
+    point = add_point(@media_user, 1000)
+
+    post_purchases(1, 1, 100)
+    expect(response).not_to be_success
+
+    # レスポンスチェック
+    json = JSON.parse(response.body)
+    expect(json["code"]).to eq 2007
+  end
+
+  it '購入されるギフト券は有効期限が古いのが優先される' do
+    item = create(:item, id: 1)
+
+    gift1 = create(:gift, item: item, expiration_at: Time.zone.parse('2008-02-10 15:30:45'))
+    gift2 = create(:gift, item: item, expiration_at: Time.zone.parse('2007-02-10 15:30:45'))
+    gift3 = create(:gift, item: item, expiration_at: Time.zone.parse('2009-02-10 15:30:45'))
+
+    point = add_point(@media_user, 1000)
+
+    post_purchases(1, 1, 100)
+    #puts response.body
+    expect(response).to be_success
+
+    # DB チェック
+    gift1 = Gift.find(gift1.id)
+    gift2 = Gift.find(gift2.id)
+    gift3 = Gift.find(gift3.id)
+    expect(gift1.purchase_id).to eq nil
+    expect(gift2.purchase_id).not_to eq nil  # 有効期限が一番短いギフト券が消費される
+    expect(gift3.purchase_id).to eq nil
+  end
+
+  it '購入されるギフト券は有効期限が設定されていないものが最後に使われる' do
+    item = create(:item, id: 1)
+
+    gift1 = create(:gift, item: item, expiration_at: nil)
+    gift2 = create(:gift, item: item, expiration_at: Time.zone.parse('2007-02-10 15:30:45'))
+    gift3 = create(:gift, item: item, expiration_at: nil)
+
+    point = add_point(@media_user, 1000)
+
+    post_purchases(1, 1, 100)
+    expect(response).to be_success
+
+    # DB チェック
+    gift1 = Gift.find(gift1.id)
+    gift2 = Gift.find(gift2.id)
+    gift3 = Gift.find(gift3.id)
+    expect(gift1.purchase_id).to eq nil
+    expect(gift2.purchase_id).not_to eq nil  # 有効期限が一番短いギフト券が消費される
+    expect(gift3.purchase_id).to eq nil
   end
 
   describe 'ポイントの消費' do

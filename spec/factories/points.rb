@@ -8,6 +8,6 @@ FactoryGirl.define do
     expiration_at Time.zone.now + 1.days
     available true
     point_type PointType::AUTO
-    association :source, factory: :achievement
+    #association :source, factory: :achievement  # これでユーザーが一つできちゃう
   end
 end
