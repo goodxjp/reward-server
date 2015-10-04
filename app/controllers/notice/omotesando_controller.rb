@@ -59,7 +59,7 @@ module Notice
       notice.reward = reward
       notice.point  = point
       if not notice.save
-        logger.error "Cannot save AdcropsAchievementNotice."
+        logger_fatal "Cannot save AdcropsAchievementNotice."
         render :nothing => true, :status => 404 and return
       end
 
@@ -86,13 +86,14 @@ module Notice
       source_campaign_identifier = xad
       offer_id = sad.to_i
       payment = reward.to_i
+      payment_is_including_tax = true
       media_user_id = suid.to_i
 
       #
       # 共通処理
       #
       if check_and_add_achievement(medium, campaign_source,
-                                   source_campaign_identifier, offer_id, payment,
+                                   source_campaign_identifier, offer_id, payment, payment_is_including_tax,
                                    media_user_id, @now, notice)
         render :nothing => true, :status => 200
       else
@@ -157,7 +158,7 @@ module Notice
       notice.advertisement_id = advertisement_id
       notice.media_session    = media_session
       if not notice.save
-        logger.error "Cannot save GreeAchievementNotice."
+        logger_fatal "Cannot save GreeAchievementNotice."
         render :nothing => true, :status => 404 and return
       end
 
@@ -208,13 +209,14 @@ module Notice
       source_campaign_identifier = campaign_id
       offer_id = media_session.to_i
       payment = point.to_i
+      payment_is_including_tax = true
       media_user_id = identifier.to_i
 
       #
       # 共通処理
       #
       if check_and_add_achievement(medium, campaign_source,
-                                   source_campaign_identifier, offer_id, payment,
+                                   source_campaign_identifier, offer_id, payment, payment_is_including_tax,
                                    media_user_id, @now, notice)
         render_gree_added_point
       else
@@ -226,28 +228,27 @@ module Notice
       #
       # ネットワークシステムに依存しない処理 (オファーが特定できる場合)
       #
-      # TODO: 税込前提になってしまっている
       def check_and_add_achievement(medium, campaign_source,
-                                    source_campaign_identifier, offer_id, payment,
+                                    source_campaign_identifier, offer_id, payment, payment_is_including_tax,
                                     media_user_id, occurred_at, notice)
         # キャンペーンとオファーの特定
         campaigns = Campaign.where(campaign_source: campaign_source,
                                    source_campaign_identifier: source_campaign_identifier)
         if not campaigns.count == 1
-          logger.error "Not found campaign(#{source_campaign_identifier}). count = #{campaigns.count}"
+          logger_fatal "Not found campaign(#{source_campaign_identifier}). count = #{campaigns.count}"
           return false
         end
         campaign = campaigns[0]
 
         offer = Offer.find_by_id(offer_id)
         if offer.nil?
-          logger.error "Not found offer(#{offer_id})."
+          logger_fatal "Not found offer(#{offer_id})."
           return false
         end
 
         # 念のためキャンペーンとオファーの関係をチェックしておく
         if not offer.campaign.id == campaign.id
-          logger.error "Offer is inconsistent. offer.campaign.id = #{offer.campaign.id}, campaign.id = #{campaign.id}"
+          logger_fatal "Offer is inconsistent. offer.campaign.id = #{offer.campaign.id}, campaign.id = #{campaign.id}"
           return false
         end
 
@@ -255,27 +256,28 @@ module Notice
         # 向こうで報酬金額を変更して、うちで変更した値を取りにいってないうちに、
         # ユーザーが案件を実行してしまった場合はこういうことが起こりうる。
         if not offer.payment == payment
-          logger.error "Offer is inconsistent. offer.payment = #{offer.payment}, payment = #{payment}"
+          # 頻繁に起こるか様子を見るために FATAL でログを上げておく。
+          logger_fatal "Offer is inconsistent. offer.payment = #{offer.payment}, payment = #{payment}"
           # エラー表示のみで、payment の値で売上を立てて、offer.point の値でポイントをつける。
         end
 
         # ユーザーの特定
         media_user = MediaUser.find_by_id(media_user_id)
         if media_user.nil?
-          logger.error "Not found MediaUser(#{media_user_id})."
+          logger_fatal "Not found MediaUser(#{media_user_id})."
           return false
         end
 
         # 念のためメディアのチェックをしておく
         if not media_user.medium.id == medium.id
-          logger.error "MediaUser is inconsistent. media_user.medium.id = #{media_user.medium.id}, medium.id = #{medium.id}"
+          logger_fatal "MediaUser is inconsistent. media_user.medium.id = #{media_user.medium.id}, medium.id = #{medium.id}"
           return false
         end
 
         # クリック履歴の確認
         click_histories = ClickHistory.where(media_user: media_user, offer: offer)
         if not click_histories.size > 0
-          logger.error "Not found ClickHisotry (media_user.id = #{media_user.id}, offer.id = #{offer.id})."
+          logger_fatal "Not found ClickHisotry (media_user.id = #{media_user.id}, offer.id = #{offer.id})."
           return false
         end
 
@@ -284,7 +286,7 @@ module Notice
         ActiveRecord::Base.transaction do
           # TODO: ロックのテスト
           media_user.lock!
-          Achievement.add_achievement(media_user, campaign, payment, true, offer.point, occurred_at, notice)
+          Achievement.add_achievement(media_user, campaign, payment, payment_is_including_tax, offer.point, occurred_at, notice)
         end
 
         return true
