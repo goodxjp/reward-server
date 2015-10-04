@@ -46,6 +46,24 @@ class Achievement < ActiveRecord::Base
                          occurred_at, notification, PointType::MANUAL)
   end
 
+  # TODO: ここら辺のネットワークに依存した処理をどこかに一元化できないか？
+
+  # 成果通知にオファー情報が含まれていればオファー情報を取得する
+  def offer_id
+    if notification.nil?
+      return nil
+    end
+
+    if notification.kind_of?(AdcropsAchievementNotice)
+      return notification.sad
+    elsif notification.kind_of?(GreeAchievementNotice)
+      return notification.media_session
+    else
+      return nil
+    end
+
+  end
+
   # TODO: 本来はモデルに書くものではない
   def notification_type_name
     if notification.nil?

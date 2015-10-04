@@ -13,8 +13,10 @@
     <% @point_histories.each do |point_history| %>
     <% if point_history.source.kind_of?(Achievement)
          campaign = point_history.source.campaign
+         offer_id = point_history.source.offer_id
        else
          campaign = nil
+         offer_id = nil
        end
      %>
     <tr>
@@ -37,6 +39,9 @@
       <td class="text-center">
         <% if not campaign.nil? %>
           <%= link_to "キャンペーン #{campaign.id}" , edit_campaign_path(campaign), class: 'btn btn-default btn-xs' %>
+        <% end %>
+        <% if not offer_id.nil? %>
+          <%= link_to "オファー #{offer_id}" , offer_path(offer_id), class: 'btn btn-default btn-xs' %>
         <% end %>
       </td>
     </tr>
