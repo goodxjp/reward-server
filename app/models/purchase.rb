@@ -42,7 +42,7 @@ class Purchase < ActiveRecord::Base
 
     # ポイント資産から消費
     consumed_point_num = point_num  # 消費すべきポイント
-    media_user.points.where(available: true).order('expiration_at IS NULL', expiration_at: :asc, occurred_at: :asc).each do |p|
+    media_user.points.where(available: true).where('? < expiration_at', occurred_at).order('expiration_at IS NULL', expiration_at: :asc, occurred_at: :asc).each do |p|
       # 今回、減らすポイント
       reduce_point_num = [consumed_point_num, p.remains].min
 

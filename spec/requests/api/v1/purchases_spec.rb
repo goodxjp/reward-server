@@ -443,7 +443,37 @@ describe 'POST /api/v1/purchases.json' do
     end
 
     it '有効期限の切れたポイント資産は使用されない' do
-      # TODO
+      item = create(:item, id: 1, point: 100)
+      gift = create(:gift, item: item, purchase_id: nil)
+
+      point1 = create(:point, media_user: @media_user, point: 100, remains: 100, available: true,
+                      occurred_at: Time.zone.local(2000, 1, 1, 0, 0, 0),
+                      expiration_at: Time.zone.local(2100, 1, 1, 0, 0, 0))
+      point2 = create(:point, media_user: @media_user, point: 100, remains: 100, available: true,
+                      occurred_at: Time.zone.local(2001, 1, 1, 0, 0, 0),
+                      expiration_at: Time.zone.local(2100, 1, 3, 0, 0, 0))
+      point3 = create(:point, media_user: @media_user, point: 100, remains: 100, available: true,
+                      occurred_at: Time.zone.local(2000, 1, 1, 0, 0, 0),
+                      expiration_at: Time.zone.local(2100, 1, 2, 0, 0, 0))
+      @media_user.point = 300
+      @media_user.save
+
+      Timecop.travel(Time.zone.local(2100, 1, 2, 0, 0, 1))
+      post_purchases(1, 1, 100)
+      Timecop.return
+      #puts response.body
+      expect(response).to be_success
+
+      # DB チェック
+      point1 = Point.find(point1.id)
+      expect(point1.remains).to eq 100
+      expect(point1.available).to eq true
+      point2 = Point.find(point2.id)
+      expect(point2.remains).to eq 100 - 100
+      expect(point2.available).to eq false
+      point3 = Point.find(point3.id)
+      expect(point3.remains).to eq 100
+      expect(point3.available).to eq true
     end
   end
 end
