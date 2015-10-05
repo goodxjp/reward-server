@@ -16,7 +16,7 @@ describe 'POST /api/v1/purchases.json' do
     #↑こっちの方がリアルっぽいけど、DB を完全に把握しておいた方がいいかな。point も後で使いたいし。
     point = create(:point, media_user: media_user, point: point_num, remains: point_num)
     media_user.point = point_num
-    media_user.save
+    media_user.save!
 
     return point
   end
