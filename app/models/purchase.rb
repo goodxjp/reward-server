@@ -75,7 +75,7 @@ class Purchase < ActiveRecord::Base
     point_history.point_change = -point_num
     # TODO: ここも日本語前提
     if (number == 1)
-      point_history.detail = "ポイント交換 (#{item.name}})"
+      point_history.detail = "ポイント交換 (#{item.name})"
     else
       point_history.detail = "ポイント交換 (#{item.name} × #{number})"
     end
