@@ -3,11 +3,9 @@ class MediaUser < ActiveRecord::Base
   has_many :points
   belongs_to :medium
 
-  has_many :terminal_androids
+  has_one :media_user_update
 
-  validates :terminal_id,
-    :presence => true
-    #:uniqueness => true
+  has_many :terminal_androids
 
   # キャンペーンに対応した成果数 TODO: 削除
   def count_points_by_campaign(campaign)

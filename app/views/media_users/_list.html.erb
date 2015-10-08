@@ -4,14 +4,15 @@
   <thead>
     <tr>
       <th class="col-sm-1">ID</th>
-      <th class="col-sm-2">端末 ID</th>
+      <th class="col-sm-1">端末種別</th>
       <th class="col-sm-2">端末情報</th>
-      <th class="col-sm-2">
+      <th class="col-sm-1">
         総獲得ポイント<br>
         <small class="text-muted">※過去に獲得した総ポイント数</small>
       </th>
       <th class="col-sm-1">状態</th>
       <th class="col-sm-2">登録日時</th>
+      <th class="col-sm-2">最終アクセス日時</th>
       <th class="col-sm-2 text-center"></th>
     </tr>
   </thead>
@@ -22,7 +23,9 @@
       <td>
         <%= link_to media_user.id, media_user, class: 'btn btn-default btn-xs' %>
       </td>
-      <td><%= truncate(media_user.terminal_id, :length => 30) %></td>
+      <td>
+        <span class="label label-success">Android</span>
+      </td>
       <td>
         <%= media_user.brand %><br>
         <%= media_user.model %><br>
@@ -32,6 +35,11 @@
       <td class="text-right"><%= number_with_delimiter(media_user.total_point) %></td>
       <td class="text-center"><span class="label label-success">有効</span></td>
       <td><%= media_user.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S") %></td>
+      <td>
+        <% if not media_user.media_user_update.nil? %>
+        <%= media_user.media_user_update.last_access_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S") %>
+        <% end %>
+      </td>
       <td class="text-center">
         <div class="btn-group">
           <%= link_to media_user, class: 'btn btn-default' do %>

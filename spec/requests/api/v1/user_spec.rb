@@ -3,12 +3,12 @@ require 'rails_helper'
 
 describe 'POST /api/v1/user.json' do
   it '超正常系' do
-    medium = FactoryGirl.create(:medium, id: 1)
+    medium = create(:medium, id: 1)
 
     query = { mid: "1", avc: "29" }
     sig = Api::V1::ApiController.make_signature(medium, nil, "POST", "/api/v1/user.json", query)
 
-    params = { user: { terminal_id: "xxx", terminal_info: { "a": "b", "VERSION.RELEASE": "1.0.0" }, android_registration_id: "zzz"} }
+    params = { user: { terminal_id: { "id": "xxx", "version": 1, "created_at": "2015-10-09T00:06:19.445+09:00" }, terminal_info: { "a": "b", "VERSION.RELEASE": "1.0.0" }, android_registration_id: "zzz"} }
     headers = { 'CONTENT_TYPE' => 'application/json' }
 
     post "/api/v1/user.json?mid=1&avc=29&sig=#{sig}", params.to_json, headers
@@ -26,8 +26,13 @@ describe 'POST /api/v1/user.json' do
     expect(media_users.size).to eq 1
 
     media_user = media_users[0]
-    expect(media_user.terminal_id).to eq "xxx"
+    expect(media_user.terminal_id).to eq nil  # 削除 OK
+    #expect(media_user.terminal_info).to eq nil  # 後で OK
     expect(media_user.android_registration_id).to eq "zzz"
+    expect(media_user.point).to eq 0
+    expect(media_user.total_point).to eq 0
+    expect(media_user.medium_id).to eq 1
+    expect(media_user.key).to match(/.{10,}/)  # とりあえず、10 文字以上はあること
 
     media_user_updates = MediaUserUpdate.all
     expect(media_user_updates.size).to eq 1

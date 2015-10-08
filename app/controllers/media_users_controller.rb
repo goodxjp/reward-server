@@ -28,7 +28,14 @@ class MediaUsersController < ApplicationController
     @points = Point.where(media_user: @media_user).order(created_at: :desc)
   end
 
+  # 開発環境でしか使わないこと
   def destroy
+    # 端末を全て削除
+    @media_user.terminal_androids.each do |terminal|
+      terminal.destroy
+    end
+
+    @media_user.media_user_update.destroy
     @media_user.destroy
     redirect_to media_users_url, notice: 'MediaUser was successfully destroyed.'
   end
