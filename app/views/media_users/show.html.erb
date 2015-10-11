@@ -40,7 +40,13 @@
               <label class="col-md-4 control-label">ステータス</label>
               <div class="col-md-8">
                 <div class="form-control-static">
+                  <% if @media_user.available %>
                   <span class="label label-success">有効</span>
+                  <%= link_to '停止', update_available_media_user_path, class: 'btn btn-default btn-xs', method: :put, data: { confirm: 'ユーザーを停止します？' } %>
+                  <% else %>
+                  <span class="label label-danger">無効</span>
+                  <%= link_to '有効', update_available_media_user_path, class: 'btn btn-default btn-xs', method: :put, data: { confirm: 'ユーザーを有効化します？' } %>
+                  <% end %>
                 </div>
               </div>
             </div>

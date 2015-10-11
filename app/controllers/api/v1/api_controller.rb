@@ -47,6 +47,16 @@ class Api::V1::ApiController < ApplicationController
 
     # 不正なアクセスを処理しないために署名チェック後に MediaUserUpdate を更新
     update_media_user_update(@media_user, avc)
+
+    # TODO: 後でメソッド名を適切なものに
+
+    # ユーザーの状態をチェック
+    if @media_user.available == false
+      respond_to do |format|
+        format.json { render_error(9005) }
+        format.html { render status: :forbidden, text: "お手数ですが、最初からやり直していただけますか？" }
+      end
+    end
   end
 
   #
@@ -174,6 +184,8 @@ class Api::V1::ApiController < ApplicationController
     9003 => { message: "現在、復旧作業中です。今しばらくお待ちください。" },
     # 署名エラー
     9004 => { message: "お手数ですが、最初からやり直してください。" },
+    # ユーザー停止中
+    9005 => { message: "お手数ですが、最初からやり直してください。" },
 
     # 強制終了
     9999 => { message: "" },

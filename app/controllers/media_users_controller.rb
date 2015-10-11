@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 class MediaUsersController < ApplicationController
   before_action :authenticate_admin_user!
-  before_action :set_media_user, only: [:show, :edit, :update, :destroy, :notify, :add_point_by_offer]
+  before_action :set_media_user, only: [:show, :edit, :update, :destroy,
+                                        :notify, :update_available, :add_point_by_offer]
 
   def index
     @media_users = MediaUser.order(id: :desc).page params[:page]
@@ -50,6 +51,13 @@ class MediaUsersController < ApplicationController
     response = gcm.send_notification(registration_ids, options)
 
     head :no_content
+  end
+
+  def update_available
+    @media_user.toggle(:available)
+    @media_user.save!
+
+    redirect_to action: :show
   end
 
   # 手動成果

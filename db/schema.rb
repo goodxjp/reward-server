@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150925183155) do
+ActiveRecord::Schema.define(version: 20151011085722) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -213,15 +213,13 @@ ActiveRecord::Schema.define(version: 20150925183155) do
   add_index "media_user_updates", ["media_user_id"], name: "index_media_user_updates_on_media_user_id", using: :btree
 
   create_table "media_users", force: :cascade do |t|
-    t.string   "terminal_id",             limit: 255
-    t.text     "terminal_info"
-    t.string   "android_registration_id", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "point",                               default: 0, null: false
-    t.integer  "total_point",                         default: 0, null: false
+    t.integer  "point",                   default: 0,    null: false
+    t.integer  "total_point",             default: 0,    null: false
     t.integer  "medium_id"
-    t.string   "key",                     limit: 255
+    t.string   "key",         limit: 255
+    t.boolean  "available",               default: true, null: false
   end
 
   add_index "media_users", ["medium_id"], name: "index_media_users_on_medium_id", using: :btree

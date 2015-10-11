@@ -6,8 +6,8 @@ Rails.application.routes.draw do
   # ユーザー
   resources :media_users do
     member do
+      put 'update_available'
       get 'add_point_by_offer'
-      get 'add_point_by_campaign'
     end
   end
   post 'media_users/:id/notify' => 'media_users#notify'

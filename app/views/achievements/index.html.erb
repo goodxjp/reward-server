@@ -41,7 +41,11 @@
           <%= link_to "キャンペーン #{achievement.campaign.id}", achievement.campaign, class: 'btn btn-default btn-xs' %>
         </td>
         <td class="text-center">
+          <% if not achievement.media_user.nil? %>
           <%= link_to achievement.media_user.id, achievement.media_user, class: 'btn btn-default btn-xs' %>
+          <% else %>
+          <%= achievement.media_user_id %>
+          <% end %>
         </td>
         <td class="text-right">
           <%= number_with_delimiter(achievement.payment) %>
