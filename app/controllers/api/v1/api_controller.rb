@@ -10,11 +10,11 @@ class Api::V1::ApiController < ApplicationController
   # 例外ハンドリング
   # http://morizyun.github.io/blog/custom-error-404-500-page/
   # http://ruby-rails.hatenadiary.com/entry/20141111/1415707101
-  if not Rails.env.development?
+#  if not Rails.env.development?  # API では開発環境でも、下記を返した方が良い気がする。
     rescue_from Exception, with: :render_500
     rescue_from ActiveRecord::RecordNotFound, with: :render_404
     rescue_from ActionController::RoutingError, with: :render_404
-  end
+#  end
 
   #
   # 全ての API で共通に行う処理
@@ -43,10 +43,10 @@ class Api::V1::ApiController < ApplicationController
     @medium = Medium.find(mid)
     @media_user = MediaUser.find(uid)
 
-    # 署名チェックの前に MediaUserUpdate を更新
-    update_media_user_update(@media_user, avc)
-
     check_signature_with_model(@medium, @media_user)
+
+    # 不正なアクセスを処理しないために署名チェック後に MediaUserUpdate を更新
+    update_media_user_update(@media_user, avc)
   end
 
   #
@@ -173,7 +173,10 @@ class Api::V1::ApiController < ApplicationController
     # データベースのデータ不整合 (FATAL ログできちんと原因を検出できる用にしておくこと)
     9003 => { message: "現在、復旧作業中です。今しばらくお待ちください。" },
     # 署名エラー
-    9004 => { message: "お手数ですが、最初からやり直して下さい。" },
+    9004 => { message: "お手数ですが、最初からやり直してください。" },
+
+    # 強制終了
+    9999 => { message: "" },
 
     # このエラーコードのメッセージはアプリに埋め込まないこと。
     0 => { message: "" }
