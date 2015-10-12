@@ -56,7 +56,7 @@ module Api
           end
         end
 
-        @media_user = MediaUser.new(user_params)
+        @media_user = MediaUser.new
         @media_user.medium = @medium
 
         # ユーザーキーを作成
@@ -84,7 +84,6 @@ module Api
 
         # 端末情報は JSON で保存
         terminal_info = params[:user][:terminal_info]
-        @media_user.terminal_info = terminal_info.to_json  # TODO: 後で削除
 
         #
         # 端末情報
@@ -121,11 +120,6 @@ module Api
 
         render :show
       end
-
-      private
-        def user_params
-          params.require(:user).permit(:terminal_id, :android_registration_id)
-        end
     end
   end
 end
