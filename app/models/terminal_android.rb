@@ -16,4 +16,32 @@ class TerminalAndroid < ActiveRecord::Base
     presence: true
   validates :available,
     presence: true
+
+  def version
+    begin
+      json = JSON.parse(info)
+    rescue JSON::ParserError => e
+      return nil
+    end
+    return json["VERSION.RELEASE"]
+  end
+
+  def brand
+    begin
+      json = JSON.parse(info)
+    rescue JSON::ParserError => e
+      return nil
+    end
+    return json["BRAND"]
+  end
+
+  def model
+    begin
+      json = JSON.parse(info)
+    rescue JSON::ParserError => e
+      return nil
+    end
+    return json["MODEL"]
+  end
+
 end

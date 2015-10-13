@@ -26,9 +26,6 @@ describe 'POST /api/v1/user.json' do
     expect(media_users.size).to eq 1
 
     media_user = media_users[0]
-    expect(media_user.terminal_id).to eq nil  # 削除 OK
-    #expect(media_user.terminal_info).to eq nil  # 後で OK
-    expect(media_user.android_registration_id).to eq "zzz"
     expect(media_user.point).to eq 0
     expect(media_user.total_point).to eq 0
     expect(media_user.medium_id).to eq 1
@@ -43,9 +40,6 @@ describe 'POST /api/v1/user.json' do
 
     terminal_androids = TerminalAndroid.all
     expect(terminal_androids.size).to eq 1
-
-    json = JSON.parse(media_user.terminal_info)
-    expect(json["a"]).to eq "b"
 
     terminal_android = terminal_androids[0]
     expect(terminal_android.media_user).to eq media_user

@@ -34,9 +34,7 @@ describe 'GET /api/v1/gifts.json' do
 
   it '他の人のギフト券は返さない' do
     # DB 準備
-    @media_user.terminal_id = "xxx"
-    @media_user.save!
-    media_user_other = create(:media_user, medium: @medium, terminal_id: "yyy")
+    media_user_other = create(:media_user, medium: @medium)
 
     item = create(:item)
     gift1 = create(:gift, code: "GIFT1XXXXX", item: item, expiration_at: Time.zone.parse('2008-02-10 15:30:45'))

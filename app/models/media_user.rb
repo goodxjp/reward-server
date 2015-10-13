@@ -7,9 +7,17 @@ class MediaUser < ActiveRecord::Base
 
   has_many :terminal_androids
 
-  # キャンペーンに対応した成果数 TODO: 削除
-  def count_points_by_campaign(campaign)
-    return Point.where(media_user: self).where(source_type: "Campaign", source: campaign).size
+  # 有効な端末
+  def terminal
+    # とりあえずは Android のみ考慮
+    terminals = terminal_androids.where(available: true)
+    if terminals.size != 1
+      # TODO: 全 Model で共通のメソッドを定義するには？
+      #logger_fatal "Terminal is not 1(#{terminal_androids.size}). (MadiaUser.id = #{id})"
+      return nil
+    else
+      return terminals[0]
+    end
   end
 
   # キャンペーンに対応した成果数
@@ -18,36 +26,21 @@ class MediaUser < ActiveRecord::Base
   end
 
   def version
-    begin
-      json = JSON.parse(terminal_info)
-    #rescue JSON::ParserError => e
-    rescue Exception => e
-      logger.debug(e)
-      return nil
-    end
-    return json["VERSION.RELEASE"]
+    return nil if terminal.nil?
+
+    terminal.version
   end
 
   def brand
-    begin
-      json = JSON.parse(terminal_info)
-    #rescue JSON::ParserError => e
-    rescue Exception => e
-      logger.debug(e)
-      return nil
-    end
-    return json["BRAND"]
+    return nil if terminal.nil?
+
+    terminal.brand
   end
 
   def model
-    begin
-      json = JSON.parse(terminal_info)
-    #rescue JSON::ParserError => e
-    rescue Exception => e
-      logger.debug(e)
-      return nil
-    end
-    return json["MODEL"]
+    return nil if terminal.nil?
+
+    terminal.model
   end
 
   # ユーザーキー生成
