@@ -24,6 +24,13 @@ class Api::V1::ApiController < ApplicationController
 
     # アクセス日時を記録
     # TODO: 将来的には NoSQL に記録
+
+    # API で遅延や任意のエラーコードを送信する場合に、コメントを外して利用する
+    #logger.debug("params ---------------------------------------- #{params.to_s}")
+    #if (params[:controller] == "api/v1/purchases")
+    #  sleep 3
+    #  render_error(9003)
+    #end
   end
 
   #
@@ -126,12 +133,14 @@ class Api::V1::ApiController < ApplicationController
 
   def render_500(e = nil)
     logger_fatal "Rendering 500 with exception: #{e.message}" if e
+    logger_fatal e.backtrace.join('\n')
     code = 9001
     render status: 500, json: { code: code, message: ERROR_CODE[code][:message] }
   end
 
   def render_404(e = nil)
     logger_fatal "Rendering 404 with exception: #{e.message}" if e
+    logger_fatal e.backtrace.join('\n')
     code = 9002
     render status: 404, json: { code: code, message: ERROR_CODE[code][:message] }
   end
@@ -190,8 +199,9 @@ class Api::V1::ApiController < ApplicationController
     # 強制終了
     9999 => { message: "" },
 
+    # エラーコード不正 (バグ)
     # このエラーコードのメッセージはアプリに埋め込まないこと。
-    0 => { message: "" }
+    0 => { message: "Sorry for the inconvenience. Please wait for a while." }
   }
 
   private

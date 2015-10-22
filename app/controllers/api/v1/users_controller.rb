@@ -49,9 +49,15 @@ module Api
             if (terminal.media_user.medium == @medium)
               # インストール済みの端末あり
 
-              # TODO: しばらく、一度インストールされた端末に再インストールできないようにしておく。
-              logger_fatal "Registered terminal_id = #{params[:user][:terminal_id]}."
-              render_error(1999) and return
+              # 一度インストールされた端末に再インストールできないようにしておく場合
+              #logger_fatal "Registered terminal_id = #{params[:user][:terminal_id]}."
+              #render_error(1999) and return
+
+              # 一度インストールされた端末なら、その情報をそのまま利用する。
+              # TODO: 端末を移行して、有効無効が切り替わったのを考慮していない。
+              logger_fatal "Registered terminal_id = #{params[:user][:terminal_id]}."  # TODO: しばらく、ログテスト用に出力
+              @media_user = terminal.media_user
+              render :show and return
             end
           end
         end
