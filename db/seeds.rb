@@ -38,7 +38,7 @@ ActiveRecord::Base.connection.execute("SELECT setval('campaign_categories_id_seq
 # まだ、確定していないので毎回変更してしまう。
 medium = Medium.find_or_create_by(id: 1)
 medium.media_type = MediaType::ANDROID
-medium.name = 'リワードアプリ (仮)'
+medium.name = 'こゆび太郎 (仮)'
 medium.key = '6Fk810vbM3'
 medium.save!
 
@@ -86,11 +86,11 @@ if GreeConfig.find_by(campaign_source: campaign_source) == nil
 end
 
 # 複数メディアの検証用
-campaign_source = CampaignSource.find_or_create_by(id: 3)
-campaign_source.network_system = NetworkSystem::ADCROPS
-campaign_source.name = "adcrops (Reward Pro)"
-campaign_source.network_id = 2
-campaign_source.save!
+#campaign_source = CampaignSource.find_or_create_by(id: 3)
+#campaign_source.network_system = NetworkSystem::ADCROPS
+#campaign_source.name = "adcrops (Reward Pro)"
+#campaign_source.network_id = 2
+#campaign_source.save!
 
 #
 # 商品
