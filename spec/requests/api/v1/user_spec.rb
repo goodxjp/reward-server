@@ -55,16 +55,16 @@ end
 
 describe 'GET /api/v1/user.json' do
   it '超正常系' do
-    medium = FactoryGirl.create(:medium, id: 1)
-    media_user = FactoryGirl.create(:media_user, id: 1)
+    medium = create(:medium, id: 1)
+    media_user = create(:media_user, id: 1, point: 1000, total_point: 2000)
 
     query = { mid: "1", uid: "1" }
     sig = Api::V1::ApiController.make_signature(medium, media_user, "GET", "/api/v1/user.json", query)
 
-    Point::add_point(media_user, PointType::MANUAL, 1000, "テスト用")
-
     get "/api/v1/user.json?mid=1&uid=1&sig=#{sig}"
     #puts response.body
     expect(response).to be_success
+
+    # TODO: DB チェック
   end
 end

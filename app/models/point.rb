@@ -33,6 +33,19 @@ class Point < ActiveRecord::Base
   # boolean の必須チェックの書き方は↑これはひどいな…
   # http://easyramble.com/rails-boolean-presence-validation.html
 
+  # 何のポイントかをユーザーに表示、管理画面に表示する
+  def detail
+    if point.source.nil?
+      "-"
+    elsif not point.source.kind_of?(Achievement)
+      "-"
+    eleif point.source.campaign.nil?
+      "-"
+    else
+      point.source.campaign.name
+    end
+  end
+
   #
   # 成果によるポイント追加
   #
@@ -50,11 +63,12 @@ class Point < ActiveRecord::Base
     p.expiration_at = achievement.occurred_at + 1.years  # TODO: 有効期限を決める
     p.available     = true
 
-    point_history = PointHistory.new()
+    point_history = PointHistory.new
     point_history.media_user   = media_user
     point_history.point_change = point
     point_history.detail       = achievement.campaign.name
     point_history.source       = achievement
+    point_history.occurred_at  = achievement.occurred_at
     # TODO: 要検討
     # point_history.source       = achievement  # 追加の時はポイント資産の方がいいかな。
     # 手動のとき困るのと、あくまで補助的情報なので、遠くなっても OK
@@ -71,7 +85,7 @@ class Point < ActiveRecord::Base
   # - トランザクションは外部でかけること！
   # - メディアユーザーに対して、スレッドセーフではないので注意！
   # 主にテストで使ってる？できれば廃止したい。
-  def self.add_point(media_user, type, point, detail)
+  def self.add_point2(media_user, type, point, detail)
     p = Point.new
     p.media_user    = media_user
     p.point_type    = type
@@ -80,7 +94,7 @@ class Point < ActiveRecord::Base
     p.remains       = point
     p.expiration_at = nil
 
-    point_history = PointHistory.new()
+    point_history = PointHistory.new
     point_history.media_user   = media_user
     point_history.point_change = point
     point_history.detail       = detail

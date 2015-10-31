@@ -68,7 +68,7 @@ Rails.application.routes.draw do
       resources :point_histories, :only => [ 'index' ]
 
       resources :items, :only => [ 'index' ]
-      resources :purchases, :only => [ 'index', 'create' ]
+      resources :purchases, :only => [ 'create' ]
       resources :gifts, :only => [ 'index' ]
     end
   end
