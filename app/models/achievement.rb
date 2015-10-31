@@ -7,7 +7,7 @@ class Achievement < ActiveRecord::Base
   has_many :points, as: :source
 
   #
-  # メディアユーザーとキャンペーンを特定した後に成果を上げる
+  # メディアユーザーとキャンペーンを特定した後に成果を上げる (売上日時がない場合)
   #
   # * トランザクションは外部でかけること
   # * メディアユーザーに対して、スレッドセーフではないので注意！
@@ -18,6 +18,8 @@ class Achievement < ActiveRecord::Base
                                       campaign: campaign,
                                       payment: payment,
                                       payment_is_including_tax: payment_is_including_tax,
+                                      # 売上日時が成果通知で渡ってこない場合は発生日時を売上日時とする
+                                      sales_at: occurred_at,
                                       occurred_at: occurred_at,
                                       notification: notification)
 

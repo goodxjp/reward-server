@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151011085722) do
+ActiveRecord::Schema.define(version: 20151031125632) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,12 +26,14 @@ ActiveRecord::Schema.define(version: 20151011085722) do
     t.datetime "occurred_at",                          null: false
     t.integer  "notification_id"
     t.string   "notification_type",        limit: 255
+    t.datetime "sales_at"
   end
 
   add_index "achievements", ["campaign_id"], name: "index_achievements_on_campaign_id", using: :btree
   add_index "achievements", ["media_user_id"], name: "index_achievements_on_media_user_id", using: :btree
   add_index "achievements", ["notification_id", "notification_type"], name: "index_achievements_on_notification_id_and_notification_type", using: :btree
   add_index "achievements", ["occurred_at"], name: "index_achievements_on_occurred_at", using: :btree
+  add_index "achievements", ["sales_at"], name: "index_achievements_on_sales_at", using: :btree
 
   create_table "adcrops_achievement_notices", force: :cascade do |t|
     t.integer  "campaign_source_id"
