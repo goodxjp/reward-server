@@ -23,13 +23,13 @@ describe 'POST /api/v1/purchases.json' do
 
   # mid = 1, uid = 1 で購入 API を送信
   def post_purchases(id, number, point)
-    query = { mid: "1", uid: "1" }
+    query = { mid: "1", uid: "1", avc: "29" }
     sig = Api::V1::ApiController.make_signature(@medium, @media_user, "POST", "/api/v1/purchases.json", query)
 
     params = { item: { id: id, number: number, point: point} }
     headers = { 'CONTENT_TYPE' => 'application/json' }
 
-    post "/api/v1/purchases.json?mid=1&uid=1&sig=#{sig}", params.to_json, headers
+    post "/api/v1/purchases.json?mid=1&uid=1&avc=29&sig=#{sig}", params.to_json, headers
   end
 
   it '超正常系' do

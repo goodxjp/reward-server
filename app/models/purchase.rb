@@ -70,7 +70,7 @@ class Purchase < ActiveRecord::Base
     # TODO: 資産の再計算チェック
 
     # ポイント履歴の追加
-    point_history = PointHistory.new()
+    point_history = PointHistory.new
     point_history.media_user   = media_user
     point_history.point_change = -point_num
     # TODO: ここも日本語前提
@@ -80,6 +80,7 @@ class Purchase < ActiveRecord::Base
       point_history.detail = "ポイント交換 (#{item.name} × #{number})"
     end
     point_history.source       = @purchase
+    point_history.occurred_at  = occurred_at
     point_history.save!
 
     #

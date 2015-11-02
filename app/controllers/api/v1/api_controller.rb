@@ -47,22 +47,33 @@ class Api::V1::ApiController < ApplicationController
     uid = params[:uid]
     avc = params[:avc]
 
+    if mid.nil?
+      logger_fatal "mid is null."
+      render_error(9006) and return
+    end
+    if uid.nil?
+      logger_fatal "uid is null."
+      render_error(9006) and return
+    end
+    if avc.nil?
+      logger_fatal "avc is null."
+      render_error(9006) and return
+    end
+
     @medium = Medium.find(mid)
     @media_user = MediaUser.find(uid)
 
-    check_signature_with_model(@medium, @media_user)
+    # 中で render やってる前提になってる
+    if not (check_signature_with_model(@medium, @media_user))
+      return
+    end
 
     # 不正なアクセスを処理しないために署名チェック後に MediaUserUpdate を更新
     update_media_user_update(@media_user, avc)
 
-    # TODO: 後でメソッド名を適切なものに
-
     # ユーザーの状態をチェック
     if @media_user.available == false
-      respond_to do |format|
-        format.json { render_error(9005) }
-        format.html { render status: :forbidden, text: "お手数ですが、最初からやり直していただけますか？" }
-      end
+      render_error(9005)
     end
   end
 
@@ -79,9 +90,59 @@ class Api::V1::ApiController < ApplicationController
     mid = params[:mid]
     avc = params[:avc]
 
+    if mid.nil?
+      logger_fatal "mid is null."
+      render_error(9006) and return
+    end
+    if avc.nil?
+      logger_fatal "avc is null."
+      render_error(9006) and return
+    end
+
     @medium = Medium.find(mid)
 
-    check_signature_with_model(@medium, nil)
+    # 中で render やってる前提になってる
+    if not (check_signature_with_model(@medium, nil))
+      return
+    end
+  end
+
+  #
+  # 署名が正しいかチェック (案件実行用)
+  #
+  # - チェックが成功したら @medium と @media_user が設定されている。
+  #
+  def check_signature_for_execute
+    logger.debug("request_method   = #{request.request_method}")
+    logger.debug("path             = #{request.path}")
+    logger.debug("query_parameters = #{request.query_parameters}")
+    mid = params[:mid]
+    uid = params[:uid]
+
+    if mid.nil?
+      logger_fatal "mid is null."
+      render_error(9006) and return
+    end
+    if uid.nil?
+      logger_fatal "uid is null."
+      render_error(9006) and return
+    end
+
+    @medium = Medium.find(mid)
+    @media_user = MediaUser.find(uid)
+
+    # 中で render やってる前提になってる
+    if not (check_signature_with_model(@medium, @media_user))
+      return
+    end
+
+    # 案件実行はアプリ起動しないで実行される場合もあるので MediaUserUpdate を更新しない
+    #update_media_user_update(@media_user, avc)
+
+    # ユーザーの状態をチェック
+    if @media_user.available == false
+      render status: :forbidden, text: "お手数ですが、最初からやり直していただけますでしょうか。(A9005)"
+    end
   end
 
   #
@@ -195,6 +256,8 @@ class Api::V1::ApiController < ApplicationController
     9004 => { message: "お手数ですが、最初からやり直してください。" },
     # ユーザー停止中
     9005 => { message: "お手数ですが、最初からやり直してください。" },
+    # パラメータ不正
+    9006 => { message: "Sorry for the inconvenience. Please wait for a while." },
 
     # 強制終了
     9999 => { message: "" },
@@ -219,24 +282,37 @@ class Api::V1::ApiController < ApplicationController
       media_user_update.save!
     end
 
+    #
+    # 戻り値が false のときは中で render やってる前提になってる。微妙…
+    #
     def check_signature_with_model(medium, media_user)
       query = request.query_parameters
       sig = query.delete("sig")
 
       correct_sig = self.class.make_signature(medium, media_user, request.request_method, request.path, query)
 
-      if sig != correct_sig
-        logger_fatal("Signature error. (#{media_user.to_s}")  # media_user = nil の場合あり
-
-        # 案件実行時には JSON ではなく HTML でエラー表示する必要がある。
-        # TODO: 案件実行の時に日本語前提になっちゃってる。まぁ、不正な処理なのでいいかな。
-        respond_to do |format|
-          format.json { render_error(9004) }
-          format.html { render status: :forbidden, text: "お手数ですが、最初からやり直していただけますか？" }
-        end
-        # ↑は before_～ で使うのが前提の処理になっちゃってるけど、まぁ、いっかな。
-        # http://techracho.bpsinc.jp/baba/2013_08_06/12650
+      if sig == correct_sig
+        return true
       end
+
+      # 以下、署名が正しくない場合の処理
+
+      if (media_user.nil?)  # media_user = nil の場合あり
+        logger_fatal("Signature error (media_user is null).")
+      else
+        logger_fatal("Signature error (media_user.id = #{media_user.id}).")
+      end
+
+      # 案件実行時には JSON ではなく HTML でエラー表示する必要がある。
+      # TODO: 案件実行の時に日本語前提になっちゃってる。まぁ、不正な処理なのでいいかな。
+      respond_to do |format|
+        format.json { render_error(9004) }
+        format.html { render status: :forbidden, text: "お手数ですが、最初からやり直していただけますでしょうか。(A9004)" }
+      end
+      # ↑は before_～ で使うのが前提の処理になっちゃってるけど、まぁ、いっかな。
+      # http://techracho.bpsinc.jp/baba/2013_08_06/12650
+
+      return false
     end
 
 end

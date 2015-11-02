@@ -58,10 +58,10 @@ describe 'GET /api/v1/user.json' do
     medium = create(:medium, id: 1)
     media_user = create(:media_user, id: 1, point: 1000, total_point: 2000)
 
-    query = { mid: "1", uid: "1" }
+    query = { mid: "1", uid: "1", avc: "29" }
     sig = Api::V1::ApiController.make_signature(medium, media_user, "GET", "/api/v1/user.json", query)
 
-    get "/api/v1/user.json?mid=1&uid=1&sig=#{sig}"
+    get "/api/v1/user.json?mid=1&uid=1&avc=29&sig=#{sig}"
     #puts response.body
     expect(response).to be_success
 

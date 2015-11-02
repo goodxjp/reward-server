@@ -13,10 +13,10 @@ describe 'GET /api/v1/items.json' do
     gift3 = FactoryGirl.create(:gift, item: item)
 
     # HTTP リクエスト準備
-    query = { mid: "1", uid: "1" }
+    query = { mid: "1", uid: "1", avc: "29" }
     sig = Api::V1::ApiController.make_signature(medium, media_user, "GET", "/api/v1/items.json", query)
 
-    get "/api/v1/items.json?mid=1&uid=1&sig=#{sig}"
+    get "/api/v1/items.json?mid=1&uid=1&avc=29&sig=#{sig}"
     #puts response.body
     expect(response).to be_success
 
@@ -35,10 +35,10 @@ describe 'GET /api/v1/items.json' do
     gift1 = FactoryGirl.create(:gift, item: item, purchase: purchase)  # 使用済みギフト券
 
     # HTTP リクエスト準備
-    query = { mid: "1", uid: "1" }
+    query = { mid: "1", uid: "1", avc: "29" }
     sig = Api::V1::ApiController.make_signature(medium, media_user, "GET", "/api/v1/items.json", query)
 
-    get "/api/v1/items.json?mid=1&uid=1&sig=#{sig}"
+    get "/api/v1/items.json?mid=1&uid=1&avc=29&sig=#{sig}"
     #puts response.body
     expect(response).to be_success
 
@@ -56,10 +56,10 @@ describe 'GET /api/v1/items.json' do
     gift1 = FactoryGirl.create(:gift, item: item, purchase: nil)  # 未使用ギフト券
 
     # HTTP リクエスト準備
-    query = { mid: "1", uid: "1" }
+    query = { mid: "1", uid: "1", avc: "29" }
     sig = Api::V1::ApiController.make_signature(medium, media_user, "GET", "/api/v1/items.json", query)
 
-    get "/api/v1/items.json?mid=1&uid=1&sig=#{sig}"
+    get "/api/v1/items.json?mid=1&uid=1&avc=29&sig=#{sig}"
     #puts response.body
     expect(response).to be_success
 

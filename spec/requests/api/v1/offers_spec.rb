@@ -10,10 +10,10 @@ describe 'GET /api/v1/offers.json' do
   it '超正常系' do
     offer = create(:offer, medium: @medium)
 
-    query = { mid: "1", uid: "1" }
+    query = { mid: "1", uid: "1", avc: "29" }
     sig = Api::V1::ApiController.make_signature(@medium, @media_user, "GET", "/api/v1/offers.json", query)
 
-    get "/api/v1/offers.json?mid=1&uid=1&sig=#{sig}"
+    get "/api/v1/offers.json?mid=1&uid=1&avc=29&sig=#{sig}"
     #puts response.body
     expect(response).to be_success
   end
@@ -21,10 +21,10 @@ describe 'GET /api/v1/offers.json' do
   it '無効なものを返さない' do
     offer = create(:offer_unavailable, medium: @medium)
 
-    query = { mid: "1", uid: "1" }
+    query = { mid: "1", uid: "1", avc: "29" }
     sig = Api::V1::ApiController.make_signature(@medium, @media_user, "GET", "/api/v1/offers.json", query)
 
-    get "/api/v1/offers.json?mid=1&uid=1&sig=#{sig}"
+    get "/api/v1/offers.json?mid=1&uid=1&avc=29&sig=#{sig}"
     #puts response.body
     expect(response).to be_success
 
@@ -42,10 +42,10 @@ describe 'GET /api/v1/offers.json' do
     Hiding.create!(media_user: @media_user, target: campaign2)
     Hiding.create!(media_user: @media_user, target: offer1)  # 今は Offer 単位での非表示は行っていない
 
-    query = { mid: "1", uid: "1" }
+    query = { mid: "1", uid: "1", avc: "29" }
     sig = Api::V1::ApiController.make_signature(@medium, @media_user, "GET", "/api/v1/offers.json", query)
 
-    get "/api/v1/offers.json?mid=1&uid=1&sig=#{sig}"
+    get "/api/v1/offers.json?mid=1&uid=1&avc=29&sig=#{sig}"
     #puts response.body
     expect(response).to be_success
 
@@ -67,10 +67,10 @@ describe 'GET /api/v1/:id/execute.json' do
     campaign = create(:campaign)
     offer = create(:offer, id: 4, campaign: campaign, medium: @medium, name: "o_name1")
 
-    query = { mid: "1", uid: "1" }
+    query = { mid: "1", uid: "1", avc: "29" }
     sig = Api::V1::ApiController.make_signature(@medium, @media_user, "GET", "/api/v1/offers/4/execute", query)
 
-    get "/api/v1/offers/4/execute?mid=1&uid=1&sig=#{sig}"
+    get "/api/v1/offers/4/execute?mid=1&uid=1&avc=29&sig=#{sig}"
     #puts response.body
     expect(response).to redirect_to(offer.url)
   end
@@ -82,10 +82,10 @@ describe 'GET /api/v1/:id/execute.json' do
     campaign = create(:campaign, campaign_source: campaign_source_gree)
     offer = create(:offer, id: 4, campaign: campaign, medium: @medium, name: "o_name1", url: "$USER_ID$_$OFFER_ID$_$GREE_DIGEST$")
 
-    query = { mid: "1", uid: "1" }
+    query = { mid: "1", uid: "1", avc: "29" }
     sig = Api::V1::ApiController.make_signature(@medium, @media_user, "GET", "/api/v1/offers/4/execute", query)
 
-    get "/api/v1/offers/4/execute?mid=1&uid=1&sig=#{sig}"
+    get "/api/v1/offers/4/execute?mid=1&uid=1&avc=29&sig=#{sig}"
     #puts response.body
 
     # レスポンスチェック

@@ -96,13 +96,13 @@ end
 # 商品
 #
 if Item.find_by(id: 1) == nil
-  Item.create(id: 1, name: 'Amazon ギフト券 (100 円分)', point: 100)
+  Item.create(id: 1, name: 'Amazon ギフト券 100 円分', point: 100)
 end
 if Item.find_by(id: 2) == nil
-  Item.create(id: 2, name: 'Amazon ギフト券 (500 円分)', point: 490)
+  Item.create(id: 2, name: 'Amazon ギフト券 500 円分', point: 490)
 end
 if Item.find_by(id: 3) == nil
-  Item.create(id: 3, name: 'Amazon ギフト券 (1000 円分)', point: 950)
+  Item.create(id: 3, name: 'Amazon ギフト券 1000 円分', point: 950)
 end
 
 # PostgreSQL 依存

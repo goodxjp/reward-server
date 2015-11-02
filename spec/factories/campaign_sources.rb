@@ -2,6 +2,7 @@
 FactoryGirl.define do
   factory :campaign_source do
     name "実在しないキャンペーンソース"
+    network_system NetworkSystem::ADCROPS
     network
   end
 
