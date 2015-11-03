@@ -218,6 +218,7 @@ DEPENDENCIES
   jquery-rails
   kaminari
   newrelic_rpm
+  nokogiri
   pg
   puma
   quiet_assets

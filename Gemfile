@@ -77,3 +77,4 @@ gem 'quiet_assets', group: :development
 # https://devcenter.heroku.com/articles/newrelic#ruby-installation-and-configuration
 gem 'newrelic_rpm'
 
+gem 'nokogiri'
