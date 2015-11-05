@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta content="width=device-width, initial=scale=1" name="viewport">
 
-  <title>リワードシステム</title>
+  <title><%= system_title %></title>
 
   <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
   <!-- Font Awesome Icons -->
@@ -18,13 +18,13 @@
 
 </head>
 <% if admin_user_signed_in? %>
-<body role="document" class="skin-blue fixed">
+<body role="document" class="<%= skin_color %> fixed">
 <% else %>
-<body role="document" class="skin-blue sidebar-collapse">
+<body role="document" class="<%= skin_color %> sidebar-collapse">
 <% end %>
   <div class="wrapper">
     <header class="main-header">
-      <a href="/" class="logo">リワードシステム</a>
+      <a href="/" class="logo"><%= system_name %></a>
       <nav class="navbar navbar-static-top" role="navigation">
 <% if admin_user_signed_in? %>
         <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button"></a>
