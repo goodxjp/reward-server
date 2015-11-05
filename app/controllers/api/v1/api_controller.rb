@@ -194,14 +194,14 @@ class Api::V1::ApiController < ApplicationController
 
   def render_500(e = nil)
     logger_fatal "Rendering 500 with exception: #{e.message}" if e
-    logger_fatal e.backtrace.join('\n')
+    logger_fatal e.backtrace.join("\n")
     code = 9001
     render status: 500, json: { code: code, message: ERROR_CODE[code][:message] }
   end
 
   def render_404(e = nil)
     logger_fatal "Rendering 404 with exception: #{e.message}" if e
-    logger_fatal e.backtrace.join('\n')
+    logger_fatal e.backtrace.join("\n")
     code = 9002
     render status: 404, json: { code: code, message: ERROR_CODE[code][:message] }
   end
