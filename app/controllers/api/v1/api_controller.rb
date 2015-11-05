@@ -60,8 +60,18 @@ class Api::V1::ApiController < ApplicationController
       render_error(9006) and return
     end
 
-    @medium = Medium.find(mid)
-    @media_user = MediaUser.find(uid)
+    # 不正アクセスによるトレースログが大量にでないように find ではなく find_by を使う
+    @medium = Medium.find_by(id: mid)
+    @media_user = MediaUser.find_by(id: uid)
+
+    if @medium.nil?
+      logger_fatal "mid is invalid (mid = #{mid})."
+      render_error(9006) and return
+    end
+    if @media_user.nil?
+      logger_fatal "uid is invalid (uid = #{uid})."
+      render_error(9006) and return
+    end
 
     # 中で render やってる前提になってる
     if not (check_signature_with_model(@medium, @media_user))
@@ -99,7 +109,12 @@ class Api::V1::ApiController < ApplicationController
       render_error(9006) and return
     end
 
-    @medium = Medium.find(mid)
+    @medium = Medium.find_by(id: mid)
+
+    if @medium.nil?
+      logger_fatal "mid is invalid (mid = #{mid})."
+      render_error(9006) and return
+    end
 
     # 中で render やってる前提になってる
     if not (check_signature_with_model(@medium, nil))
@@ -119,6 +134,7 @@ class Api::V1::ApiController < ApplicationController
     mid = params[:mid]
     uid = params[:uid]
 
+    # TODO: きれいなエラー画面出したい
     if mid.nil?
       logger_fatal "mid is null."
       render_error(9006) and return
@@ -128,8 +144,18 @@ class Api::V1::ApiController < ApplicationController
       render_error(9006) and return
     end
 
-    @medium = Medium.find(mid)
-    @media_user = MediaUser.find(uid)
+    @medium = Medium.find_by(id: mid)
+    @media_user = MediaUser.find_by(id: uid)
+
+    # TODO: きれいなエラー画面出したい
+    if @medium.nil?
+      logger_fatal "mid is invalid (mid = #{mid})."
+      render_error(9006) and return
+    end
+    if @media_user.nil?
+      logger_fatal "uid is invalid (uid = #{uid})."
+      render_error(9006) and return
+    end
 
     # 中で render やってる前提になってる
     if not (check_signature_with_model(@medium, @media_user))
