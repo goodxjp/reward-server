@@ -1,0 +1,68 @@
+<%= paginate @gree_campaigns %>
+
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+      <th class="col-md-1">ID</th>
+      <th class="col-md-1">GREE ID</th>
+      <th class="col-md-1">アイコン</th>
+      <th class="col-md-2">名称</th>
+      <th class="col-md-1">
+        site_price<br>
+        media_revenue
+      </th>
+      <th class="col-md-1">
+        thanks_count<br>
+        campaign_category<br>
+        thanks_category
+      </th>
+      <th class="col-md-1">
+        carrier<br>
+        platform_id
+      </th>
+      <th class="col-md-1">default_thanks_name<br>thanks_name</th>
+      <th class="col-md-1">状態</th>
+      <th class="col-md-1">登録日時</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @gree_campaigns.each do |campaign| %>
+    <tr>
+      <td>
+        <%= link_to campaign.id, campaign, class: 'btn btn-default btn-xs' %>
+      </td>
+      <td><%= campaign.campaign_identifier %></td>
+      <td><%= image_tag campaign.icon_url, :size => '57x57' %></td>
+      <td><%= campaign.site_name %></td>
+      <td>
+        <%= campaign.site_price %><br>
+        <%= campaign.thanks_media_revenue %>
+      </td>
+      <td>
+        <%= campaign.thanks_count %><br>
+        <%= campaign.campaign_category %><br>
+        <%= campaign.thanks_thanks_category %>
+      </td>
+      <td>
+        <%= campaign.carrier %><br>
+        <%= campaign.platform_identifier %>
+      </td>
+      <td>
+        <%= campaign.default_thanks_name %><br>
+        <%= campaign.thanks_thanks_name %>
+      </td>
+      <td class="text-center">
+        <% if campaign.available %>
+        <span class="label label-success">有効</span>
+        <% else %>
+        <span class="label label-default">無効</span>
+        <% end %>
+        </td>
+      <td><%= campaign.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S") %></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate @gree_campaigns %>

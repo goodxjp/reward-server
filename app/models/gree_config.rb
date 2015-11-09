@@ -10,6 +10,8 @@ class GreeConfig < ActiveRecord::Base
   #
   validates :campaign_source,
     presence: true
+  validates :site_identifier,
+    presence: true
   validates :media_identifier,
     presence: true
   validates :site_key,

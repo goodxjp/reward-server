@@ -79,10 +79,10 @@ campaign_source.network_id = 3
 campaign_source.save!
 
 if GreeConfig.find_by(campaign_source: campaign_source) == nil
-  # テスト環境用
   GreeConfig.create(campaign_source: campaign_source,
-                    media_identifier: 1318,
-                    site_key: "e77aa5facba56d6c331bb5a827705f18")
+                    site_identifier: 11779,
+                    media_identifier: 1981,
+                    site_key: "187c7439151c56bbf58d3f2c50bdad8e")
 end
 
 # 複数メディアの検証用

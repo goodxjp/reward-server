@@ -28,7 +28,6 @@ module ApplicationHelper
       "skin-blue"
     else
       "skin-black"
-      "skin-purple"
     end
   end
 

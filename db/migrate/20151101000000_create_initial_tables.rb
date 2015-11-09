@@ -94,7 +94,8 @@ class CreateInitialTables < ActiveRecord::Migration
       t.boolean :payment_is_including_tax, default: false, null: false
       t.integer :point
 
-      t.boolean :available, default: true,  null: false
+      t.boolean :available, default: true,  null: false, index: true
+      # 有効なものの一覧を取り出しそう
 
       t.timestamps null: false
     end
@@ -123,7 +124,8 @@ class CreateInitialTables < ActiveRecord::Migration
       t.boolean :payment_is_including_tax, default: false, null: false
       t.integer :point, null: false  # ここだけ campaign と異なる
 
-      t.boolean :available, default: true,  null: false
+      t.boolean :available, default: true,  null: false, index: true
+      # 有効なものの一覧は頻繁に取り出す
 
       t.timestamps null: false
     end
@@ -226,6 +228,8 @@ class CreateInitialTables < ActiveRecord::Migration
     #
     # adcrops
     #
+
+    # adcrops 成果通知
     create_table :adcrops_achievement_notices do |t|
       t.references :campaign_source, index: true
 
@@ -248,7 +252,7 @@ class CreateInitialTables < ActiveRecord::Migration
 
     # GREE 成果通知
     create_table :gree_achievement_notices do |t|
-      t.references :campaign_source, index: true
+      t.references :campaign_source, null: false, index: true
 
       t.string :identifier
       t.string :achieve_id
@@ -265,9 +269,10 @@ class CreateInitialTables < ActiveRecord::Migration
 
     # GREE 設定
     create_table :gree_configs do |t|
-      t.references :campaign_source, index: true
+      t.references :campaign_source, null: false, index: true
 
-      t.integer  :media_identifier, null: false
+      t.integer :site_identifier, null: false
+      t.integer :media_identifier, null: false
       t.string :site_key, null: false
 
       t.timestamps null: false

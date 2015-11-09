@@ -3,15 +3,82 @@ require 'open-uri'
 require 'kconv'
 
 namespace :get do
+  #
+  # Get GREE Ads
+  #
+  desc "Get GREE Ads data"
+  task :gree => :environment do
+    CAMPAIGN_SOURCE_ID_GREE_KOYUBI = 2
+
+    campaign_source = CampaignSource.find(CAMPAIGN_SOURCE_ID_GREE_KOYUBI)
+    campaign_source.lock!
+    # TODO: なぜかトランザクションの外ではロックされない？
+
+    config = GreeConfig.find_by(campaign_source: campaign_source)
+    if config.nil?
+      puts "Config null error."
+      return
+    end
+
+    # 本番データ
+    site_id = config.site_identifier
+    media_id = config.media_identifier
+    key = config.site_key
+    uri_string = "https://reward.gree.net/api.rest/2/p/get_campaigns.1"
+
+    document = NetworkSystemGree.get_campaigns(uri_string, site_id, media_id, key)
+    #puts document
+    NetworkSystemGree.register_campaigns(campaign_source, document)
+
+    # TODO: ロック解除する必要ある？
+  end
+
+  #
+  # Get GREE Ads (Test)
+  #
+  desc "Get GREE Ads data (for Test)"
+  task :gree_test => :environment do
+    CAMPAIGN_SOURCE_ID_GREE_KOYUBI = 2
+
+    campaign_source = CampaignSource.find(CAMPAIGN_SOURCE_ID_GREE_KOYUBI)
+    campaign_source.lock!
+    # TODO: なぜかトランザクションの外ではロックされない？
+
+    config = GreeConfig.find_by(campaign_source: campaign_source)
+    if config.nil?
+      puts "Config null error."
+      return
+    end
+
+    # テスト用データ
+    site_id = 9324
+    media_id = 1318
+    key = "e77aa5facba56d6c331bb5a827705f18"
+    uri_string = "https://reward-sb.gree.net/api.rest/2/p/get_campaigns.1"
+
+    document = NetworkSystemGree.get_campaigns(uri_string, site_id, media_id, key)
+    #puts document
+    NetworkSystemGree.register_campaigns(campaign_source, document)
+
+    # TODO: ロック解除する必要ある？
+  end
+
+  #
+  # Get au SmartPass
+  #
   desc "Get au SmartPass data from RewardPlatform (for Sample)"
   task :au => :environment do
     uri = URI("http://rewardplatform.jp/goldtaro/210141/")
     user_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12A365 Safari/600.1.4"
 
     html = open(uri, 'User-Agent' => user_agent, &:read).toutf8
-    File.write(Rails.root.join('aaa.html'), html)
+    #File.write(Rails.root.join('au.html'), html)
 
     doc = Nokogiri.HTML(html)
+
+    # 現在、有効な全てのキャンペーンの ID
+    current_ids = Campaign.where(campaign_source_id: 1, available: true).ids
+    puts "current_ids.size = #{current_ids.size}"
 
     ActiveRecord::Base.transaction do
       doc.xpath("//div[@class='item_info']").each do |node|
@@ -33,20 +100,32 @@ namespace :get do
           campaign = campaigns[0]
         end
 
+        # 適当にキャンペーンデータ作ってる
         campaign.network_id = 2
         campaign.campaign_source_id = 1
         campaign.source_campaign_identifier = id
 
         campaign.campaign_category_id = 2
         campaign.name = h3
-        campaign.icon_url = "http://rewardplatform.jp/#{img_src}"
-        campaign.url = inst_href
+        campaign.detail = "#{h3} (au スマパス案件を自動チェックするための嘘キャンペーン)"
+        campaign.icon_url = "http://rewardplatform.jp#{img_src}"
+        campaign.url = "http://rewardplatform.jp#{inst_href}"
         campaign.price = 0
         campaign.payment = id % 1234
 
+        campaign.requirement = "どうやっても無理"
+        campaign.requirement_detail = "そんな簡単に成果がつくと思ったら大間違い。"
+        campaign.period = "3 年程度"
+
         campaign.available = true
         campaign.save!
+
+        current_ids.delete(campaign.id)
       end
+
+      # 取得データに入ってなかった有効なキャンペーンを全て無効に
+      puts "current_ids.size = #{current_ids.size}"
+      Campaign.where(id: current_ids).update_all("available = false")
     end
   end
 end

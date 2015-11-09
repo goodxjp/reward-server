@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151101000000) do
+ActiveRecord::Schema.define(version: 20151107134321) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -109,6 +109,7 @@ ActiveRecord::Schema.define(version: 20151101000000) do
     t.datetime "updated_at",                                 null: false
   end
 
+  add_index "campaigns", ["available"], name: "index_campaigns_on_available", using: :btree
   add_index "campaigns", ["campaign_category_id"], name: "index_campaigns_on_campaign_category_id", using: :btree
   add_index "campaigns", ["campaign_source_id"], name: "index_campaigns_on_campaign_source_id", using: :btree
   add_index "campaigns", ["network_id"], name: "index_campaigns_on_network_id", using: :btree
@@ -152,7 +153,7 @@ ActiveRecord::Schema.define(version: 20151101000000) do
   add_index "gifts", ["purchase_id"], name: "index_gifts_on_purchase_id", using: :btree
 
   create_table "gree_achievement_notices", force: :cascade do |t|
-    t.integer  "campaign_source_id"
+    t.integer  "campaign_source_id", null: false
     t.string   "identifier"
     t.string   "achieve_id"
     t.string   "point"
@@ -167,8 +168,47 @@ ActiveRecord::Schema.define(version: 20151101000000) do
   add_index "gree_achievement_notices", ["campaign_source_id", "identifier", "advertisement_id"], name: "index_gree_achievement_notices_2", using: :btree
   add_index "gree_achievement_notices", ["campaign_source_id"], name: "index_gree_achievement_notices_on_campaign_source_id", using: :btree
 
+  create_table "gree_campaigns", force: :cascade do |t|
+    t.integer  "campaign_source_id",                        null: false
+    t.integer  "site_price"
+    t.string   "icon_url"
+    t.integer  "thanks_count"
+    t.integer  "thanks_media_revenue"
+    t.string   "thanks_thanks_name"
+    t.integer  "thanks_thanks_point"
+    t.integer  "thanks_thanks_category"
+    t.integer  "thanks_thanks_period"
+    t.integer  "campaign_identifier"
+    t.integer  "subscription_duration"
+    t.string   "carrier"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.integer  "is_url_scheme"
+    t.string   "site_price_currency"
+    t.text     "site_description"
+    t.string   "site_name"
+    t.integer  "campaign_category"
+    t.string   "market_app_id"
+    t.string   "click_url"
+    t.string   "default_thanks_name"
+    t.integer  "number_of_max_action_daily"
+    t.integer  "daily_action_left_in_stock"
+    t.integer  "number_of_max_action"
+    t.text     "draft"
+    t.integer  "platform_identifier"
+    t.integer  "duplication_type"
+    t.string   "duplication_date"
+    t.boolean  "available",                  default: true, null: false
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
+  end
+
+  add_index "gree_campaigns", ["available"], name: "index_gree_campaigns_on_available", using: :btree
+  add_index "gree_campaigns", ["campaign_source_id"], name: "index_gree_campaigns_on_campaign_source_id", using: :btree
+
   create_table "gree_configs", force: :cascade do |t|
-    t.integer  "campaign_source_id"
+    t.integer  "campaign_source_id", null: false
+    t.integer  "site_identifier",    null: false
     t.integer  "media_identifier",   null: false
     t.string   "site_key",           null: false
     t.datetime "created_at",         null: false
@@ -253,6 +293,7 @@ ActiveRecord::Schema.define(version: 20151101000000) do
     t.datetime "updated_at",                               null: false
   end
 
+  add_index "offers", ["available"], name: "index_offers_on_available", using: :btree
   add_index "offers", ["campaign_category_id"], name: "index_offers_on_campaign_category_id", using: :btree
   add_index "offers", ["campaign_id"], name: "index_offers_on_campaign_id", using: :btree
   add_index "offers", ["medium_id"], name: "index_offers_on_medium_id", using: :btree

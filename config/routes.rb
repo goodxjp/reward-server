@@ -14,7 +14,6 @@ Rails.application.routes.draw do
 
   # キャンペーン
   resources :campaigns
-  resources :advertisements  # TODO: 削除
 
   # オファー
   resources :offers
@@ -44,9 +43,12 @@ Rails.application.routes.draw do
   resources :settings
 
   # 管理
-  get 'welcome/admin'
+  get 'admin/index'
 
   resources :network_systems
+
+  # GREE Ads Reward
+  resources :gree_campaigns
 
   #
   # API
