@@ -16,6 +16,7 @@ class Campaign < ActiveRecord::Base
 
   # Validations
   validates :campaign_source, :presence => true
+  validates :campaign_category, :presence => true
   validates :name, :presence => true
   validates :url, :presence => true
   validates :price,

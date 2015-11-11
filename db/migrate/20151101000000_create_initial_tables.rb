@@ -80,7 +80,7 @@ class CreateInitialTables < ActiveRecord::Migration
       t.references :source, polymorphic: true, index: true
       t.string :source_campaign_identifier
 
-      t.references :campaign_category, index: true
+      t.references :campaign_category, null: false, index: true
       t.string :name, null: false
       t.text :detail
       # http://xoyip.hatenablog.com/entry/2014/07/08/200000
@@ -111,7 +111,7 @@ class CreateInitialTables < ActiveRecord::Migration
       t.references  :campaign, null: false, index: true
       t.references :medium, null: false, index: true
 
-      t.references :campaign_category, index: true
+      t.references :campaign_category, null: false, index: true
       t.string :name, null: false
       t.text :detail
       t.text :icon_url
