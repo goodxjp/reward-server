@@ -3,12 +3,74 @@
 </section>
 
 <section class="content">
-  <p>
-  </p>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="box box-solid box-success">
+        <div class="box-header with-border">
+          <h3 class="box-title">Android アプリ</h3>
+        </div>
+        <div class="box-body">
+          <ul>
+            <li><a href="https://docs.google.com/spreadsheets/d/1qosACSAKrMi2S9Q6SLPDi3o9jLLx912spw3lIZWHAqg/edit#gid=1845092692" target="_blank">画面機能</a></li>
+            <li><a href="https://docs.google.com/spreadsheets/d/1EwFBZvvLpWIZ7LGICl8pTkBne5JVgVHdbouCFmZUuuQ/edit#gid=1887879622" target="_blank">機能一覧</a></li>
+          </ul>
+        </div>
+        <div class="box-footer">
+              <a class="btn btn-success" href="http://omotesando.s3.amazonaws.com/android/app-production-release.apk">
+                <i class="fa fa-download"></i> Download (本番)
+              </a>
+
+              <a class="btn btn-success" href="http://omotesando.s3.amazonaws.com/android/app-staging-release.apk">
+                <i class="fa fa-download"></i> Download (ステージング)
+              </a>
+        </div>
+      </div>
+    </div><!-- /.col-* -->
+
+    <div class="col-md-6">
+      <div class="box box-solid box-warning">
+        <div class="box-header with-border">
+          <h3 class="box-title">管理画面</h3>
+        </div>
+        <div class="box-body">
+          <ul>
+            <li><a href="https://docs.google.com/spreadsheets/d/1EwFBZvvLpWIZ7LGICl8pTkBne5JVgVHdbouCFmZUuuQ/edit#gid=619612354" target="_blank">機能一覧</a></li>
+          </ul>
+        </div>
+        <div class="box-footer">
+          <ul>
+            <li><a href="https://reward-production.herokuapp.com/" target="_blank">本番</a>
+              <ul>
+                <li>
+                  <a href="https://papertrailapp.com/systems/reward-production/events" target="_blank">Papertrail</a>
+                </li>
+                <li>
+                  <a href="https://rpm.newrelic.com/accounts/1134924/applications/12813739" target="_blank">New Relic</a>
+                </li>
+              </ul>
+            </li>
+            <li><a href="https://reward-staging.herokuapp.com/" target="_blank">ステージング</a>
+              <ul>
+                <li>
+                  <a href="https://papertrailapp.com/systems/reward-staging/events" target="_blank">Papertrail</a>
+                </li>
+                <li>
+                  <a href="https://rpm.newrelic.com/accounts/1114752/applications/11613386" target="_blank">New Relic</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div><!-- /.col-* -->
+  </div><!-- /.row -->
+
+  <hr>
 
   <div class="row">
     <div class="col-md-4">
-      <div class="box box-solid box-success">
+      <div class="box box-solid box-primary">
         <div class="box-header with-border">
           <h3 class="box-title">機能一覧</h3>
         </div>
@@ -22,20 +84,20 @@
       </div>
     </div><!-- /.col-* -->
     <div class="col-md-4">
-      <div class="box box-solid box-warning">
+      <div class="box box-solid box-primary">
         <div class="box-header with-border">
           <h3 class="box-title">ドキュメント</h3>
         </div>
         <div class="box-body">
           <ul>
             <li><a href="https://www.facebook.com/groups/1545071585729204/" target="_blank">Facebook グループ</a></li>
-            <li><a href="https://drive.google.com/folderview?id=0B_kIBfTzU6CRRHJ1MnZvVWFlZE0&usp=sharing#list" target="_blank">Google ドキュメント</a></li>
+            <li><a href="https://drive.google.com/drive/u/0/folders/0B_kIBfTzU6CRRHJ1MnZvVWFlZE0" target="_blank">Google ドキュメント</a></li>
           </ul>
         </div>
       </div>
     </div><!-- /.col-* -->
     <div class="col-md-4">
-      <div class="box box-solid box-danger">
+      <div class="box box-solid box-primary">
         <div class="box-header with-border">
           <h3 class="box-title">ソースコード</h3>
         </div>
@@ -47,70 +109,6 @@
         </div>
       </div>
     </div><!-- /.col-* -->
-  </div><!-- /.row -->
-
-  <hr>
-
-  <div class="row">
-
-    <div class="col-md-4">
-      <div class="box box-solid box-primary">
-        <div class="box-header with-border">
-          <h3 class="box-title">Android アプリ</h3>
-        </div>
-        <div class="box-body">
-          <ul>
-            <li><a href="https://docs.google.com/spreadsheets/d/1qosACSAKrMi2S9Q6SLPDi3o9jLLx912spw3lIZWHAqg/edit#gid=1845092692" target="_blank">画面機能</a></li>
-            <li><a href="https://docs.google.com/spreadsheets/d/1EwFBZvvLpWIZ7LGICl8pTkBne5JVgVHdbouCFmZUuuQ/edit#gid=1887879622" target="_blank">機能一覧</a></li>
-          </ul>
-        </div>
-        <div class="box-footer">
-          <div class="row">
-            <div class="col-md-6 text-center">
-              ステージング<br>
-              <a class="btn btn-primary" href="http://omotesando.s3.amazonaws.com/android/app-staging-release.apk">
-                <i class="fa fa-download"></i> Download
-              </a>
-            </div>
-            <div class="col-md-6 text-center">
-              本番<br>
-              <a class="btn btn-primary" href="http://omotesando.s3.amazonaws.com/android/app-production-release.apk">
-                <i class="fa fa-download"></i> Download
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div><!-- /.col-* -->
-
-    <div class="col-md-4">
-      <div class="box box-solid box-primary">
-        <div class="box-header with-border">
-          <h3 class="box-title">管理画面</h3>
-        </div>
-        <div class="box-body">
-          <ul>
-            <li><a href="https://docs.google.com/spreadsheets/d/1EwFBZvvLpWIZ7LGICl8pTkBne5JVgVHdbouCFmZUuuQ/edit#gid=619612354" target="_blank">機能一覧</a></li>
-          </ul>
-        </div>
-        <div class="box-footer">
-          <ul>
-            <li><a href="https://reward-staging.herokuapp.com/" target="_blank">ステージング</a>
-              <ul>
-                <li>
-                  <a href="https://papertrailapp.com/systems/reward-staging/events" target="_blank">Papertrail</a>
-                </li>
-                <li>
-                  <a href="https://rpm.newrelic.com/accounts/1114752/applications/11613386" target="_blank">New Relic</a>
-                </li>
-              </ul>
-            </li>
-            <li><a href="https://reward-production.herokuapp.com/" target="_blank">本番</a></li>
-          </ul>
-        </div>
-      </div>
-    </div><!-- /.col-* -->
-
   </div><!-- /.row -->
 </section>
 

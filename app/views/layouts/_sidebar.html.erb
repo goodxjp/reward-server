@@ -1,0 +1,91 @@
+<section class="sidebar">
+  <ul class="sidebar-menu">
+    <li class="header">メニュー</li>
+    <% if request.path_info.match(/^\/media_users/) %>
+    <li class="active">
+    <% else %>
+    <li>
+    <% end %>
+      <a href="/media_users"><i class="fa fa-circle-o text-info"></i>ユーザー</a>
+    </li>
+    <% if request.path_info.match(/^\/campaigns/) %>
+    <li class="active">
+    <% else %>
+    <li>
+    <% end %>
+      <a href="/campaigns"><i class="fa fa-circle-o text-info"></i>キャンペーン</a>
+    </li>
+    <% if request.path_info.match(/^\/offers/) %>
+    <li class="active">
+    <% else %>
+    <li>
+    <% end %>
+      <a href="/offers"><i class="fa fa-circle-o text-info"></i>オファー</a>
+    </li>
+    <% if request.path_info.match(/^\/networks/) %>
+    <li class="active">
+    <% else %>
+    <li>
+    <% end %>
+      <a href="/networks"><i class="fa fa-circle-o text-info"></i>ネットワーク</a>
+    </li>
+    <% if request.path_info.match(/^\/media\b/) %>
+    <li class="active">
+    <% else %>
+    <li>
+    <% end %>
+      <a href="/media"><i class="fa fa-circle-o text-info"></i>メディア</a>
+    </li>
+    <% if request.path_info.match(/^\/items/) %>
+    <li class="active">
+    <% else %>
+    <li>
+    <% end %>
+      <a href="/items"><i class="fa fa-circle-o text-info"></i>商品</a>
+    </li>
+    <% if request.path_info.match(/^\/report/) %>
+    <li class="active treeview">
+    <% else %>
+    <li class="treeview">
+    <% end %>
+      <a href="#"><i class="fa fa-circle-o text-warning"></i>レポート<i class="fa fa-angle-left pull-right"></i></a>
+      <ul class="treeview-menu">
+        <% if request.path_info.match(/^\/report\/sales/) %>
+        <li class="active">
+        <% else %>
+        <li>
+        <% end %>
+          <a href="/report/sales"><i class="fa fa-circle-o"></i>売上</a>
+        </li>
+        <% if request.path_info.match(/^\/report\/campaigns/) %>
+        <li class="active">
+        <% else %>
+        <li>
+        <% end %>
+          <a href="/report/campaigns"><i class="fa fa-circle-o"></i>キャンペーン別</a>
+        </li>
+      </ul>
+    </li>
+    <% if request.path_info.match(/^\/achievements/) %>
+    <li class="active">
+    <% else %>
+    <li>
+    <% end %>
+      <a href="/achievements"><i class="fa fa-circle-o text-warning"></i>成果</a>
+    </li>
+    <% if request.path_info.match(/^\/settings/) %>
+    <li class="active">
+    <% else %>
+    <li>
+    <% end %>
+      <a href="/settings"><i class="fa fa-circle-o text-danger"></i>設定</a>
+    </li>
+    <% if request.path_info.match(/^\/welcome\/admin/) %>
+    <li class="active">
+    <% else %>
+    <li>
+    <% end %>
+      <a href="/admin/index"><i class="fa fa-circle-o text-warning"></i>管理</a>
+    </li>
+  </ul>
+</section>
