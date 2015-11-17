@@ -16,7 +16,28 @@ class CampaignsController < ApplicationController
 
   # GET /campaigns/new
   def new
-    @campaign = Campaign.new
+    if not params[:gree_campaign_id].nil?
+      gree_campaign = GreeCampaign.find(params[:gree_campaign_id])
+      @campaign = Campaign.new
+      # TODO: ここらへんの変換ルールをモデルに
+      @campaign.network_id = 3  # TODO: ここら辺もう定数だな。どうにかしたい。
+      @campaign.campaign_source_id = 2  # TODO: ここら辺もう定数だな。どうにかしたい。
+      @campaign.source_campaign_identifier = gree_campaign.campaign_identifier
+
+      @campaign.name = gree_campaign.site_name
+      @campaign.detail = gree_campaign.site_description
+      @campaign.icon_url = gree_campaign.icon_url
+      @campaign.url = gree_campaign.get_url_for_campaign
+      @campaign.requirement = gree_campaign.default_thanks_name
+      @campaign.requirement_detail = gree_campaign.draft
+
+      @campaign.period = "10 分程度"
+      @campaign.price = gree_campaign.site_price
+      @campaign.payment = gree_campaign.thanks_media_revenue
+      @campaign.payment_is_including_tax = true
+    else
+      @campaign = Campaign.new
+    end
   end
 
   # GET /campaigns/1/edit

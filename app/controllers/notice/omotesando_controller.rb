@@ -172,7 +172,7 @@ module Notice
           achievements = Achievement.where(notification: notice)
           if achievements.size > 0
             logger.info "Retry notification achieved. (achieve_id = #{achieve_id})"
-            logger.fatal "Too many Achievement notice.id = #{notice.id}." if achievements.size > 1
+            logger_fatal "Too many Achievement notice.id = #{notice.id}." if achievements.size > 1
             # 正常で返す
             render_gree_added_point and return
           else
@@ -192,7 +192,7 @@ module Notice
           achievements = Achievement.where(notification: notice)
           if achievements.size > 0 and @now.beginning_of_day <= notice.created_at and notice.created_at < @now.tomorrow.beginning_of_day
             logger.info "Similar notification achieved. (identifier = #{identifier}, advertisement_id = #{advertisement_id})"
-            logger.fatal "Too many Achievement notice.id = #{notice.id}." if achievements.size > 1
+            logger_fatal "Too many Achievement notice.id = #{notice.id}." if achievements.size > 1
 
             # エラーで返す
             render_gree_not_added_point and return

@@ -5,8 +5,10 @@
 <section class="content">
   <div class="row">
     <div class="col-md-12">
-
       <div class="box box-default">
+        <div class="box-header with-border">
+          <%= link_to 'キャンペーン登録', new_campaign_path({ gree_campaign_id: @gree_campaign.id }), :class => 'btn btn-primary' %>
+        </div>
         <div class="box-body">
           <form class="form-horizontal">
             <div class="form-group">
