@@ -3,11 +3,11 @@ FactoryGirl.define do
   factory :campaign do
     network
     campaign_source
+    campaign_category
     name "テスト案件"
     detail "詳細はこんな感じ。"
     icon_url "http://png.findicons.com/files/icons/1681/siena/128/currency_dollar_yellow.png"
     url "http://goodx.jp"
-    campaign_category_id "1"
     requirement "何もしなくても OK"
     requirement_detail "努力すれば成果はつきます。"
     period "速攻"
