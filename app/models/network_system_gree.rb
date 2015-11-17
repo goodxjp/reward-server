@@ -14,7 +14,9 @@ class NetworkSystemGree < NetworkSystem
     campaign_id = campaign.source_campaign_identifier
     identifier = media_user.id
 
-    return (Digest::SHA256.hexdigest "#{campaign_id};#{identifier};#{media_id};#{site_key}").upcase
+    # 仕様書のサンプルは大文字なのに、まさかの大文字だと digest エラー…アホらし
+    #return (Digest::SHA256.hexdigest "#{campaign_id};#{identifier};#{media_id};#{site_key}").upcase
+    return (Digest::SHA256.hexdigest "#{campaign_id};#{identifier};#{media_id};#{site_key}")
   end
 
   #
