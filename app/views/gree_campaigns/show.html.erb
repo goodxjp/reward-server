@@ -58,7 +58,7 @@
             <div class="form-group">
               <label class="col-md-4 control-label">thanks_thanks_category</label>
               <div class="col-md-8">
-                <div class="form-control"><%= @gree_campaign.thanks_thanks_category %></div>
+                <%= label_thanks_category @gree_campaign.thanks_thanks_category %>
               </div>
             </div>
             <div class="form-group">
@@ -133,7 +133,7 @@
             <div class="form-group">
               <label class="col-md-4 control-label">campaign_category</label>
               <div class="col-md-8">
-                <div class="form-control"><%= @gree_campaign.campaign_category %></div>
+                <%= label_campaign_category @gree_campaign.campaign_category %>
               </div>
             </div>
             <div class="form-group">
@@ -181,7 +181,7 @@
             <div class="form-group">
               <label class="col-md-4 control-label">platform_id</label>
               <div class="col-md-8">
-                <div class="form-control"><%= @gree_campaign.platform_identifier %></div>
+                <%= label_platform_identifier @gree_campaign.platform_identifier %>
               </div>
             </div>
             <div class="form-group">

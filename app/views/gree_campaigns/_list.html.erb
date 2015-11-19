@@ -11,12 +11,10 @@
         site_price<br>
         media_revenue
       </th>
-      <th class="col-md-1">
+      <th class="col-md-2">
         thanks_count<br>
         campaign_category<br>
-        thanks_category
-      </th>
-      <th class="col-md-1">
+        thanks_category<br>
         carrier<br>
         platform_id
       </th>
@@ -39,18 +37,31 @@
         <%= campaign.site_price %><br>
         <%= campaign.thanks_media_revenue %>
       </td>
+      <% if campaign.thanks_count != 1 %>
+      <td class="danger">
+      <% else %>
       <td>
-        <%= campaign.thanks_count %><br>
-        <%= campaign.campaign_category %><br>
-        <%= campaign.thanks_thanks_category %>
+      <% end %>
+        <%= campaign.thanks_count %>
+        <br>
+        <%= label_campaign_category campaign.campaign_category %>
+        <br>
+        <%= label_thanks_category campaign.thanks_thanks_category %>
+        <br>
+        <%= campaign.carrier %>
+        <br>
+        <%= label_platform_identifier campaign.platform_identifier %>
       </td>
+      <% if campaign.default_thanks_name != campaign.thanks_thanks_name %>
+      <td class="danger">
+      <% else %>
       <td>
-        <%= campaign.carrier %><br>
-        <%= campaign.platform_identifier %>
-      </td>
-      <td>
-        <%= campaign.default_thanks_name %><br>
-        <%= campaign.thanks_thanks_name %>
+      <% end %>
+        <%= campaign.default_thanks_name %>
+        <% if campaign.default_thanks_name != campaign.thanks_thanks_name %>
+          <br>
+          <%= campaign.thanks_thanks_name %>
+        <% end %>
       </td>
       <td class="text-center">
         <% if campaign.available %>

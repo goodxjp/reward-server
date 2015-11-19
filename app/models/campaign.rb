@@ -15,6 +15,7 @@ class Campaign < ActiveRecord::Base
   has_and_belongs_to_many :media
 
   # Validations
+  validates :network, :presence => true
   validates :campaign_source, :presence => true
   validates :campaign_category, :presence => true
   validates :name, :presence => true

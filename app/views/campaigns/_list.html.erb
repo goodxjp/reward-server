@@ -20,7 +20,9 @@
   <tbody>
     <% @campaigns.each do |campaign| %>
     <tr>
-      <td><%= campaign.id %></td>
+      <td>
+        <%= link_to campaign.id, campaign, class: 'btn btn-default btn-xs' %>
+      </td>
       <td>
         <%= campaign.campaign_source.name %>
       </td>
@@ -54,12 +56,18 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu pull-right">
-              <li><a href="#">レポート</a></li>
+              <li>
+                <%= link_to campaign do %>
+                  レポート
+                <% end %>
+              </li>
+              <!--
               <li>
                 <%= link_to campaign, method: :delete, data: { confirm: 'Are you sure?' } do %>
                   削除
                 <% end %>
               </li>
+              -->
             </ul>
           </div>
         </div>
