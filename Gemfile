@@ -79,4 +79,5 @@ gem 'newrelic_rpm'
 
 gem 'nokogiri'
 gem 'ransack'
+gem 'slim-rails'
 

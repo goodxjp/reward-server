@@ -1,0 +1,73 @@
+doctype html
+html lang="ja"
+  head
+    meta charset="UTF-8"
+    meta http-equiv="X-UA-Compatible" content="IE=edge"
+    meta content="width=device-width, initial=scale=1" name="viewport"
+
+    title = system_title
+
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
+
+    <!-- Font Awesome Icons -->
+    link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"
+    <!-- Ionicons -->
+    link href="http://code.ionicframework.com/ionicons/2.0.0/css/ionicons.min.css" rel="stylesheet" type="text/css"
+
+    link rel="icon" type="image/x-icon" href="/favicon.ico"
+    = javascript_include_tag 'application', 'data-turbolinks-track' => true
+    = csrf_meta_tags
+
+  - if admin_user_signed_in?
+    - body_class = "#{skin_color} fixed"
+  - else
+    - body_class = "#{skin_color} sidebar-collapse"
+
+  body class="#{body_class}" role="document"
+    .wrapper
+      .header.main-header
+        a href="/" class="logo"
+          = system_name
+        nav.navbar.navbar-static-top role="navigation"
+          - if admin_user_signed_in?
+          a.sidebar-toggle href="#" data-toggle="offcanvas" role="button"
+
+          .navbar-custom-menu
+            ul.nav.navbar-nav
+              - if admin_user_signed_in?
+                li.dropdown.user.user-menu
+                  a.dropdown-toggle href="#" data-toggle="dropdown"
+                    span
+                      = current_admin_user.email
+                  ul.dropdown-menu
+                    .li.user-body
+                      .col-xs-6
+                        = link_to 'ログアウト', destroy_admin_user_session_path, method: :delete, class: 'btn btn-default btn-flat'
+              - else
+                li = link_to 'ログイン', new_admin_user_session_path
+
+      - if admin_user_signed_in?
+        aside.main-sidebar
+          == render partial: 'layouts/sidebar', locals: {path: request.path_info}
+
+      .content-wrapper
+        - if notice or alert
+          .content-header.row
+            .col-md-8
+              .box.box-default
+                .box-header.with-border
+                  - if notice
+                    h3.box-title お知らせ
+                  - if alert
+                    h3.box-title 警告
+
+                  .box-tools.pull-right
+                    button.btn.btn-box-tool data-widget="remove"
+                      i.fa.fa-times
+                .box-body
+                  - if notice
+                    p = notice
+                  - if alert
+                    p = alert
+
+        == yield
