@@ -6,7 +6,8 @@ class GreeCampaignsController < ApplicationController
   # GET /campaigns
   # GET /campaigns.json
   def index
-    @gree_campaigns = GreeCampaign.order(id: :desc).page params[:page]
+    @q = GreeCampaign.search(params[:q])
+    @gree_campaigns = @q.result.order(id: :desc).page params[:page]
   end
 
   # GET /campaigns/1

@@ -4,6 +4,17 @@
 
 <section class="content">
   <div class="box box-default">
+    <div class="box-header">
+      <%= search_form_for @q, builder: SimpleForm::FormBuilder, html: { class: 'form-inline' } do |f| %>
+        <%= f.input :site_name_cont, label: false, placeholder: "名称" %>
+        <%= f.input :campaign_category_eq, label: false, placeholder: "campaign_category" %>
+        <%= f.input :thanks_thanks_category_eq, label: false, placeholder: "thanks_category" %>
+        <%= f.input :platform_identifier_eq, label: false, placeholder: "platform_id" %>
+        <%= f.input :available_eq, label: false, placeholder: "状態", as: :select %>
+
+        <%= f.submit "検索", class: "btn btn-primary" %>
+      <% end %>
+    </div>
     <div class="box-body">
       <%= render 'list' %>
     </div><!-- /.box-body -->

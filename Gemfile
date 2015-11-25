@@ -78,3 +78,5 @@ gem 'quiet_assets', group: :development
 gem 'newrelic_rpm'
 
 gem 'nokogiri'
+gem 'ransack'
+
