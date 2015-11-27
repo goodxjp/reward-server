@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 Rails.application.routes.draw do
   get 'welcome/index'
+
   devise_for :admin_users
 
   # ユーザー

@@ -42,9 +42,12 @@ html lang="ja"
                   ul.dropdown-menu
                     .li.user-body
                       .col-xs-6
+                        = link_to 'パスワード変更', edit_admin_user_registration_path, class: 'btn btn-default btn-flat'
+                      .col-xs-6
                         = link_to 'ログアウト', destroy_admin_user_session_path, method: :delete, class: 'btn btn-default btn-flat'
               - else
                 li = link_to 'ログイン', new_admin_user_session_path
+                li = link_to '*', edit_admin_user_password_path
 
       - if admin_user_signed_in?
         aside.main-sidebar
