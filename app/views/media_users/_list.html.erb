@@ -57,10 +57,6 @@
             </button>
             <ul class="dropdown-menu pull-right">
               <li>
-                <%= link_to media_user, method: :delete, data: { confirm: 'Are you sure?' } do %>
-                  削除
-                <% end %>
-              <li>
                 <%= link_to({ :controller => 'media_users', :action => 'notify', :id => media_user.id }, method: 'post') do %>
                   通知テスト
                 <% end %>

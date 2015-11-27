@@ -18,3 +18,8 @@
  *= require dist/css/skins/_all-skins
  *= require plugins/datepicker/datepicker3
  */
+/* 参照画面で textarea の readonly を使用したときに、他の text と統一感を出すために変更 */
+textarea.form-control[readonly] {
+    background-color: #fff;
+    cursor: text;
+}
