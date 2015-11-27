@@ -16,6 +16,9 @@
 //= require bootstrap/js/bootstrap
 //= require plugins/slimScroll/jquery.slimscroll.min
 //= require plugins/fastclick/fastclick.min
+// vendor/assets/AdminLTE
+//= require plugins/datepicker/bootstrap-datepicker
+//= require plugins/datepicker/locales/bootstrap-datepicker.ja
 //= require dist/js/app
 // require dist/js/demo
 //= require_tree .

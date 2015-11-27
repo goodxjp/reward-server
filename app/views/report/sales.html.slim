@@ -1,0 +1,30 @@
+section.content-header
+  h2 売上レポート
+
+section.content
+  p 月を選択できるようにする。
+
+  .box.box-default
+    .box-header
+      = form_for @form, url: report_sales_path, method: :get, html: { class: 'form-inline' } do |f|
+        .form-group
+          = f.text_field :start, placeholder: 'yyyy/mm/dd', class: 'form-control'
+          span<> ～
+          = f.text_field :end, placeholder: 'yyyy/mm/dd', class: 'form-control'
+        = f.submit "表示", class: 'btn btn-default'
+
+    .box-body
+      == render 'list'
+
+javascript:
+  $(function() {
+    $("#report_period_form_start").datepicker({
+      language: 'ja'
+    });
+    $("#report_period_form_start").datepicker('setDate', '#{@form.start}');
+    $("#report_period_form_end").datepicker({
+      language: 'ja'
+    });
+    $("#report_period_form_end").datepicker('setDate', '#{@form.end}');
+  });
+

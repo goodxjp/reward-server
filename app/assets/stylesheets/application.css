@@ -13,6 +13,8 @@
  *= require_tree .
  *= require_self
  *= require bootstrap/css/bootstrap.min
+ * vender/assets/AdminLTE
  *= require dist/css/AdminLTE
  *= require dist/css/skins/_all-skins
+ *= require plugins/datepicker/datepicker3
  */

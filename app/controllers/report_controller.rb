@@ -3,14 +3,39 @@ class ReportController < ApplicationController
   before_action :authenticate_admin_user!
 
   def sales
+    #
+    # 表示期間の決定
+    #
+    # TODO: エラー処理真面目に
+    if params[:report_period_form].nil?
+      @form = ReportPeriodForm.new()
+      start_day = Date.today.beginning_of_month
+      end_day   = start_day.end_of_month
+    else
+      @form = ReportPeriodForm.new(params.require(:report_period_form))
+      begin
+        start_day = Date.strptime(@form.start, "%Y/%m/%d")
+      rescue ArgumentError
+        start_day = Date.today.beginning_of_month
+      end
+      begin
+        end_day = Date.strptime(@form.end, "%Y/%m/%d")
+      rescue ArgumentError
+        end_day   = start_day.end_of_month
+      end
+    end
+
+    if end_day - start_day > 100
+      end_day = start_day + 100
+    end
+
+    @form.start = start_day.strftime("%Y/%m/%d")
+    @form.end = end_day.strftime("%Y/%m/%d")
+
+
     @report_data = []
 
     # TODO: View をネットワークが増えても対応出来るように、または、ID 1 のネットワークに対応
-
-    # TODO: 選択可能に
-    # 今月
-    start_day = Date.today.beginning_of_month
-    end_day   = start_day.end_of_month
 
     d = start_day
     while d <= end_day
