@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 Rails.application.routes.draw do
+  # トップページ
   get 'welcome/index'
 
   devise_for :admin_users
@@ -50,6 +51,9 @@ Rails.application.routes.draw do
 
   # GREE Ads Reward
   resources :gree_campaigns
+
+  # ヘルスチェック
+  get 'check', to: 'check#index'
 
   #
   # API
