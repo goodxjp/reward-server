@@ -38,4 +38,6 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
 
   config.log_formatter = ::Logger::Formatter.new
+
+  BetterErrors::Middleware.allow_ip! '1.21.148.73'
 end

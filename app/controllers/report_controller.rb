@@ -25,6 +25,8 @@ class ReportController < ApplicationController
       end
     end
 
+    binding.pry
+
     if end_day - start_day > 100
       end_day = start_day + 100
     end

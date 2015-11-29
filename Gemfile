@@ -81,3 +81,7 @@ gem 'nokogiri'
 gem 'ransack'
 gem 'slim-rails'
 
+gem 'pry-rails', group: [:development, :test]
+gem 'pry-byebug', group: [:development, :test]
+gem 'better_errors', group: [:development, :test]
+gem 'binding_of_caller', group: [:development, :test]
