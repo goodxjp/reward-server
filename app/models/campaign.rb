@@ -15,8 +15,14 @@ class Campaign < ActiveRecord::Base
   has_and_belongs_to_many :media
 
   # Validations
-  validates :network, :presence => true
-  validates :campaign_source, :presence => true
+  validates :network, presence: true
+  # URL スキームの時は campaign_source と source_campaign_identifier を null にした方がいいかも
+  validates :campaign_source, presence: true
+  # DB には source_campaign_identifier の一意性制約をつけていない (後で変わりそうなので) ので、気休め程度。
+  validates :source_campaign_identifier,
+#    presence: true,
+#    format: { with: /\A\w+\z/ },
+    uniqueness: { scope: [:campaign_source] }
   validates :campaign_category, :presence => true
   validates :name, :presence => true
   validates :url, :presence => true

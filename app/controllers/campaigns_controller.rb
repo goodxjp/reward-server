@@ -12,6 +12,19 @@ class CampaignsController < ApplicationController
   # GET /campaigns/1
   # GET /campaigns/1.json
   def show
+    # 対応する GREE キャンペーン
+    # TODO: 汎用的に
+    if @campaign.campaign_source_id == 2
+      gree_campaigns = GreeCampaign.where(campaign_source: @campaign.campaign_source, campaign_identifier: @campaign.source_campaign_identifier)
+      if gree_campaigns.size > 1
+        logger_fatal "GreeCampaigns is incorrect. (campaign_identifier = #{@campaign.source_campaign_identifier})"
+        @source = gree_campaigns[0]
+      elsif gree_campaigns.size == 1
+        @source = gree_campaigns[0]
+      else
+        @source = nil
+      end
+    end
   end
 
   # GET /campaigns/new
@@ -93,8 +106,9 @@ class CampaignsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         # 両方の Validation を実行しておく
-        campaign = Campaign.new(campaign_params)
-        campaign_invalid = campaign.invalid?
+        #campaign = Campaign.new(campaign_params)
+        #campaign_invalid = campaign.invalid?
+        campaign_invalid = false
         #advertisement = Advertisement.new(advertisement_params)
         #advertisement_invalid = advertisement.invalid?
 

@@ -16,6 +16,16 @@
       <form class="form-horizontal">
         <div class="form-group">
           <label class="col-md-4 control-label">
+            ソース
+          </label>
+          <div class="col-md-8">
+            <% if not @source.nil? %>
+            <%= link_to '詳細', @source, class: 'btn btn-default btn-xs' %>
+            <% end %>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-4 control-label">
             <%= Campaign.human_attribute_name('id') %>
           </label>
           <div class="col-md-8">

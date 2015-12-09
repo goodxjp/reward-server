@@ -7,7 +7,11 @@
     <div class="col-md-12">
       <div class="box box-default">
         <div class="box-header with-border">
-          <%= link_to 'キャンペーン登録', new_campaign_path({ gree_campaign_id: @gree_campaign.id }), :class => 'btn btn-primary' %>
+          <% if @campaign.nil? %>
+            <%= link_to 'キャンペーン登録', new_campaign_path({ gree_campaign_id: @gree_campaign.id }), :class => 'btn btn-primary' %>
+          <% else %>
+            <%= link_to 'キャンペーン更新', edit_campaign_path(@campaign), :class => 'btn btn-primary' %>
+          <% end %>
         </div>
         <div class="box-body">
           <form class="form-horizontal">
@@ -37,7 +41,11 @@
                 <div class="form-control"><%= @gree_campaign.thanks_count %></div>
               </div>
             </div>
+            <% if not @campaign.nil? and @gree_campaign.thanks_media_revenue != @campaign.payment %>
+            <div class="form-group has-warning">
+            <% else %>
             <div class="form-group">
+            <% end %>
               <label class="col-md-4 control-label">thanks_media_revenue</label>
               <div class="col-md-8">
                 <div class="form-control"><%= @gree_campaign.thanks_media_revenue %></div>
@@ -49,7 +57,11 @@
                 <div class="form-control"><%= @gree_campaign.thanks_thanks_name %></div>
               </div>
             </div>
+            <% if not @gree_campaign.thanks_thanks_point == @gree_campaign.thanks_media_revenue %>
+            <div class="form-group has-error">
+            <% else %>
             <div class="form-group">
+            <% end %>
               <label class="col-md-4 control-label">thanks_thanks_point</label>
               <div class="col-md-8">
                 <div class="form-control"><%= @gree_campaign.thanks_thanks_point %></div>
