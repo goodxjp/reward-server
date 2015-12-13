@@ -5,7 +5,29 @@ class Offer < ActiveRecord::Base
 
   belongs_to :campaign_category
 
-  def self.create_from_campaign(medium, campaign)
+  # Validations
+  validates :campaign, presence: true
+  validates :medium, presence: true
+
+  #
+  # キャンペーン内容とメディアに対応するオファーを探す
+  #
+  # - 存在しない場合は nil
+  #
+  def self.offer_from_campaign_and_medium(campaign, medium)
+    # 対応候補
+    offers = Offer.where(campaign: campaign, medium: medium)
+
+    offers.each do |offer|
+      if offer.equal?(campaign)
+        return offer
+      end
+    end
+
+    return nil
+  end
+
+  def self.new_from_campaign(campaign, medium)
     offer = Offer.new
 
     offer.campaign           = campaign

@@ -44,6 +44,7 @@ class CampaignsController < ApplicationController
       @campaign.requirement = gree_campaign.default_thanks_name
       @campaign.requirement_detail = gree_campaign.draft
 
+      # TODO
       @campaign.period = "10 分程度"
       @campaign.price = gree_campaign.site_price
       @campaign.payment = gree_campaign.thanks_media_revenue
@@ -66,27 +67,16 @@ class CampaignsController < ApplicationController
       ActiveRecord::Base.transaction do
         # 両方の Validation を実行しておく
         campaign_invalid = @campaign.invalid?
-        #advertisement_invalid = @advertisement.invalid?
 
-        #if campaign_invalid or advertisement_invalid
         if campaign_invalid
           render :new
           return
         end
 
         @campaign.save!
-        #@advertisement.campaign_id = @campaign.id
 
-        #@advertisement.save!
-
-        # オファー作成
-        if @campaign.available
-          @campaign.media.each do |medium|
-            #offer = Offer.new
-            offer = Offer.create_from_campaign(medium, @campaign)
-            offer.save!
-          end
-        end
+        # 対応するオファーを作成
+        @campaign.update_related_offers
 
         redirect_to :action => 'index', notice: 'Campaign was successfully created.'
       end
@@ -99,8 +89,6 @@ class CampaignsController < ApplicationController
   # PATCH/PUT /campaigns/1
   # PATCH/PUT /campaigns/1.json
   def update
-    #advertisement_params = params.require(:campaign).require(:advertisement).permit(:price, :payment, :point)
-
     # TODO: ここらへん見るものが多岐にわたるからキャンペーン単位でロックかけておく方が安全か？
     # TODO: 本当に楽観的ロックで大丈夫か？
     begin
@@ -109,66 +97,19 @@ class CampaignsController < ApplicationController
         #campaign = Campaign.new(campaign_params)
         #campaign_invalid = campaign.invalid?
         campaign_invalid = false
-        #advertisement = Advertisement.new(advertisement_params)
-        #advertisement_invalid = advertisement.invalid?
 
-        #if campaign_invalid or advertisement_invalid
         if campaign_invalid
-          #@advertisement = @campaign.advertisements[0]
-
           @campaign.attributes = campaign_params
           @campaign.valid?  # エラーメッセージを入れるため
-          #@advertisement.attributes = advertisement_params
-          #@advertisement.valid?  # エラーメッセージを入れるため
 
           render :edit
           return
         end
 
         @campaign.update!(campaign_params)
-        #@advertisement = @campaign.advertisements[0]
-        #@advertisement.update!(advertisement_params)
 
-        #
-        # 差分をチェックしてオファー更新、新規作成
-        #
-        media = Medium.all  # 今はメディアが少ないので全メディアに対して処理を行う。将来的には差分のみ実施
-        media.each do |medium|
-          # チェック対象となるオファーを取得
-          offers = Offer.where(:campaign => @campaign, :medium => medium)
-
-          if @campaign.available and @campaign.media.include?(medium)
-            #
-            # 配信対象メディア
-            #
-            # すでにオファーがないかチェックしながら、有効、無効を切り替える
-            offer_exists = false
-            offers.each do |offer|
-              if offer.equal?(@campaign)
-                offer.available = true
-                offer_exists = true
-                # TODO: 万が一複数できたらどうするか？
-              else
-                offer.available = false
-              end
-              offer.save!  # TODO: 保存する必要がないものは保存しないようにしたい
-            end
-
-            # オファーがなければ新規作成
-            if not offer_exists
-              new_offer = Offer.create_from_campaign(medium, @campaign)
-              new_offer.save!
-            end
-          else
-            #
-            # 配信停止メディア
-            #
-            offers.each do |offer|
-              offer.available = false
-              offer.save!  # TODO: 保存する必要がないものは保存しないようにしたい
-            end
-          end
-        end
+        # 対応するオファー更新
+        @campaign.update_related_offers
 
         redirect_to :action => 'index', notice: 'Campaign was successfully created.'
       end
