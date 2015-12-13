@@ -44,8 +44,11 @@ class CampaignsController < ApplicationController
       @campaign.requirement = gree_campaign.default_thanks_name
       @campaign.requirement_detail = gree_campaign.draft
 
-      # TODO
-      @campaign.period = "10 分程度"
+      if gree_campaign.thanks_thanks_period == 0
+        @campaign.period = "10 分程度"
+      else
+        @campaign.period = "#{gree_campaign.thanks_thanks_period} 日程度"
+      end
       @campaign.price = gree_campaign.site_price
       @campaign.payment = gree_campaign.thanks_media_revenue
       @campaign.payment_is_including_tax = true
