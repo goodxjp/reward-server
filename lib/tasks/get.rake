@@ -25,12 +25,35 @@ namespace :get do
     media_id = config.media_identifier
     key = config.site_key
     uri_string = "https://reward.gree.net/api.rest/2/p/get_campaigns.1"
+    # TODO: 設定化
 
     document = NetworkSystemGree.get_campaigns(uri_string, site_id, media_id, key)
     #puts document
-    NetworkSystemGree.register_campaigns(campaign_source, document)
+    #File.write("gree.json", JSON.pretty_generate(JSON.parse(document)))
+    create_gree_campaigns, update_gree_campaigns, delete_gree_campaigns = NetworkSystemGree.register_campaigns(campaign_source, document)
 
     # TODO: ロック解除する必要ある？
+
+    # 削除になったもののうち、登録済みのもののみ残す (対応キャンペーンを無効にしてしまう)
+    delete_gree_campaigns.each do |gc|
+      # 対応するキャンペーン
+      campaign = gc.corresponding_campaign
+
+      if campaign.nil?
+        delete_gree_campaigns.delete(gc)
+      else
+        # 対応キャンペーンを無効に
+        ActiveRecord::Base.transaction do
+          campaign.update(available: false)
+          campaign.update_related_offers
+        end
+      end
+    end
+
+    # レポートメール送信
+    if create_gree_campaigns.size > 0 or delete_gree_campaigns.size > 0
+      AdminUserMailer.report_get_gree(create_gree_campaigns, delete_gree_campaigns).deliver
+    end
   end
 
   #
@@ -58,9 +81,34 @@ namespace :get do
 
     document = NetworkSystemGree.get_campaigns(uri_string, site_id, media_id, key)
     #puts document
-    NetworkSystemGree.register_campaigns(campaign_source, document)
+    #File.write("gree.json", JSON.pretty_generate(JSON.parse(document)))
+    create_gree_campaigns, update_gree_campaigns, delete_gree_campaigns = NetworkSystemGree.register_campaigns(campaign_source, document)
+    puts create_gree_campaigns.size
+    puts update_gree_campaigns.size
+    puts delete_gree_campaigns.size
 
     # TODO: ロック解除する必要ある？
+
+    # 削除になったもののうち、登録済みのもののみ残す (対応キャンペーンを無効にしてしまう)
+    delete_gree_campaigns.each do |gc|
+      # 対応するキャンペーン
+      campaign = gc.corresponding_campaign
+
+      if campaign.nil?
+        delete_gree_campaigns.delete(gc)
+      else
+        # 対応キャンペーンを無効に
+        ActiveRecord::Base.transaction do
+          campaign.update(available: false)
+          campaign.update_related_offers
+        end
+      end
+    end
+
+    # レポートメール送信
+    if create_gree_campaigns.size > 0 or delete_gree_campaigns.size > 0
+      AdminUserMailer.report_get_gree(create_gree_campaigns, delete_gree_campaigns).deliver
+    end
   end
 
   #

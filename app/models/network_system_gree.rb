@@ -44,6 +44,11 @@ class NetworkSystemGree < NetworkSystem
                                      available: true).ids
     puts "current_ids.size = #{current_ids.size}"
 
+    # 追加、更新、削除のキャンペーンを保存
+    create_gree_campaigns = []
+    update_gree_campaigns = []
+    delete_gree_campaigns = []
+
     # TODO: JSON データにエラーがあったときのパターンをもっと真面目に処理
     ActiveRecord::Base.transaction do
       json['result'].each do |o|
@@ -55,6 +60,7 @@ class NetworkSystemGree < NetworkSystem
 
         if (gree_campaigns.size == 0)
           campaign = GreeCampaign.new
+          create_gree_campaigns << campaign
         elsif (gree_campaigns.size > 1)
           # TODO: タスクの共通関数どうするか？
           #logger_fatal ""
@@ -67,11 +73,8 @@ class NetworkSystemGree < NetworkSystem
         thanks = o['thanks'][0]
 
         puts "-------- ^ ----------------------------------------"
-        puts o['campaign_id']
-        puts o['site_name']
-        puts o['thanks'].size
-        puts thanks['media_revenue']
-        puts thanks['thanks_name']
+        puts "#{o['campaign_id']}: #{o['site_name']}"
+        puts "#{thanks['media_revenue']}"
         puts "-------- $ ----------------------------------------"
 
         campaign.campaign_source = campaign_source
@@ -116,11 +119,14 @@ class NetworkSystemGree < NetworkSystem
 
       # 取得データに入ってなかった有効なキャンペーンを全て無効に
       puts "Turn to invalid. current_ids = #{current_ids.to_s}"
-      # TODO: 更新日時が更新されない。
+      # ↓これだと更新日時が更新されない。
       #GreeCampaign.where(id: current_ids).update_all("available = false")
       GreeCampaign.where(id: current_ids).each do |gc|
         gc.update(available: false)
+        delete_gree_campaigns << gc
       end
     end
+
+    return create_gree_campaigns, update_gree_campaigns, delete_gree_campaigns
   end
 end
