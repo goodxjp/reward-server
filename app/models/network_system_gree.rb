@@ -72,10 +72,10 @@ class NetworkSystemGree < NetworkSystem
 
         thanks = o['thanks'][0]
 
-        puts "-------- ^ ----------------------------------------"
-        puts "#{o['campaign_id']}: #{o['site_name']}"
-        puts "#{thanks['media_revenue']}"
-        puts "-------- $ ----------------------------------------"
+        #puts "-------- ^ ----------------------------------------"
+        #puts "#{o['campaign_id']}: #{o['site_name']}"
+        #puts "#{thanks['media_revenue']}"
+        #puts "-------- $ ----------------------------------------"
 
         campaign.campaign_source = campaign_source
 

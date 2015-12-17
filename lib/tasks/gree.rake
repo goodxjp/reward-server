@@ -35,20 +35,20 @@ namespace :gree do
         next
       end
 
-      puts "##### #{c.id} #####"
-      puts c.name
+      #puts "##### #{c.id} #####"
+      #puts c.name
 
       # 有効、無効に不整合がないかチェック
-      puts c.available
-      puts gree_campaign.available
+      #puts c.available
+      #puts gree_campaign.available
       if (c.available != gree_campaign.available)
         report_messages << "Campaign(#{c.id}) changes available #{gree_campaign.available} -> #{c.available}"
       end
 
       # 差分チェック
       # TODO: もっと詳しくチェック
-      puts c.payment
-      puts gree_campaign.thanks_media_revenue
+      #puts c.payment
+      #puts gree_campaign.thanks_media_revenue
       if (c.payment != gree_campaign.thanks_media_revenue)
         report_messages << "Campaign(#{c.id}) changes payment"
       end
