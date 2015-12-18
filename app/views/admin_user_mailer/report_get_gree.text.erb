@@ -3,21 +3,25 @@ Delete (<%= @delete_gree_campaigns.size %>)
 
 ■Create
 <% @create_gree_campaigns.each do |gc| %>
+----------------------------------------
 ##### campaign_id: <%= gc.campaign_identifier %> #####
 site_name: <%= gc.site_name %>
 campaign_category: <%= gc.campaign_category %>
 thanks_category:  <%= gc.thanks_thanks_category %>
 default_thanks_name:  <%= gc.default_thanks_name %>
 thanks_media_revenue:  <%= gc.thanks_media_revenue %>
+----------------------------------------
 <% end %>
 
 ■Delete
 <% @delete_gree_campaigns.each do |gc| %>
+----------------------------------------
 ##### campaign_id: <%= gc.campaign_identifier %> #####
 site_name: <%= gc.site_name %>
 campaign_category: <%= gc.campaign_category %>
 thanks_category:  <%= gc.thanks_thanks_category %>
 default_thanks_name:  <%= gc.default_thanks_name %>
 thanks_media_revenue:  <%= gc.thanks_media_revenue %>
+----------------------------------------
 <% end %>
 

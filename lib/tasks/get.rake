@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'nokogiri'
 require 'open-uri'
 require 'kconv'
@@ -35,18 +36,36 @@ namespace :get do
     # TODO: ロック解除する必要ある？
 
     # 削除になったもののうち、登録済みのもののみ残す (対応キャンペーンを無効にしてしまう)
-    delete_gree_campaigns.each do |gc|
+    # http://betrue12.hateblo.jp/entry/2015/04/08/204343
+    # ↑思いっきりこのパターンで実装していた
+    # delete_gree_campaigns.each do |gc|
+    #   # 対応するキャンペーン
+    #   campaign = gc.corresponding_campaign
+
+    #   if campaign.nil?
+    #     delete_gree_campaigns.delete(gc)
+    #   else
+    #     # 対応キャンペーンを無効に
+    #     ActiveRecord::Base.transaction do
+    #       campaign.update(available: false)
+    #       campaign.update_related_offers
+    #     end
+    #   end
+    # end
+    delete_gree_campaigns.delete_if do |gc|
       # 対応するキャンペーン
       campaign = gc.corresponding_campaign
 
       if campaign.nil?
-        delete_gree_campaigns.delete(gc)
+        true  # delete する
       else
         # 対応キャンペーンを無効に
         ActiveRecord::Base.transaction do
           campaign.update(available: false)
           campaign.update_related_offers
         end
+
+        false  # delete しない
       end
     end
 
@@ -90,18 +109,20 @@ namespace :get do
     # TODO: ロック解除する必要ある？
 
     # 削除になったもののうち、登録済みのもののみ残す (対応キャンペーンを無効にしてしまう)
-    delete_gree_campaigns.each do |gc|
+    delete_gree_campaigns.delete_if do |gc|
       # 対応するキャンペーン
       campaign = gc.corresponding_campaign
 
       if campaign.nil?
-        delete_gree_campaigns.delete(gc)
+        true  # delete する
       else
         # 対応キャンペーンを無効に
         ActiveRecord::Base.transaction do
           campaign.update(available: false)
           campaign.update_related_offers
         end
+
+        false  # delete しない
       end
     end
 
