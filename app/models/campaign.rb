@@ -71,7 +71,7 @@ class Campaign < ActiveRecord::Base
           offer.save!
 
           # 処理済みということで無効化対象から外す
-          before_offers.delete_if { |o| o.id = offer.id }
+          before_offers.delete_if { |o| o.id == offer.id }
         end
       end
     end

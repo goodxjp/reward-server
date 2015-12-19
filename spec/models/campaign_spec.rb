@@ -61,6 +61,29 @@ RSpec.describe Campaign, type: :model do
         expect(result_offer.available).to eq true
       end
 
+      it 'すでに対応したオファーが存在した場合はそのオファーが有効になり、既存のオファーは無効になる' do
+        medium1 = create(:medium)
+        campaign = create(:campaign, available: true)
+        campaign.media << medium1
+        #offer1 = create(:offer, campaign: campaign, medium: medium1, available: true)
+        offer1 = Offer.new_from_campaign(campaign, medium1)
+        offer1.available = false
+        offer1.save!
+        offer2 = Offer.new_from_campaign(campaign, medium1)
+        offer2.point = campaign.point * 2  # ポイント違いのものが今は有効
+        offer2.available = true
+        offer2.save!
+
+        campaign.update_related_offers
+
+        expect(campaign.offers.size).to eq 2
+        result_offer1 = campaign.offers.where(point: campaign.point)[0]
+        result_offer2 = campaign.offers.where(point: campaign.point * 2)[0]
+        expect(result_offer1.equal?(campaign)).to eq true
+        expect(result_offer1.available).to eq true
+        expect(result_offer2.available).to eq false
+      end
+
       it '対応メディアで内容の異なるオファーが無効になる' do
         medium1 = create(:medium)
         campaign = create(:campaign, available: true)
