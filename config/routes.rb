@@ -52,6 +52,9 @@ Rails.application.routes.draw do
   # GREE Ads Reward
   resources :gree_campaigns
 
+  # AppDriver
+  resources :app_driver_campaigns
+
   # ヘルスチェック
   get 'check', to: 'check#index'
 

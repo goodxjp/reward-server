@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151107134321) do
+ActiveRecord::Schema.define(version: 20151219171912) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -68,6 +68,68 @@ ActiveRecord::Schema.define(version: 20151107134321) do
 
   add_index "admin_users", ["email"], name: "index_admin_users_on_email", unique: true, using: :btree
   add_index "admin_users", ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true, using: :btree
+
+  create_table "app_driver_achievement_notices", force: :cascade do |t|
+    t.integer  "campaign_source_id", null: false
+    t.string   "identifier"
+    t.string   "achieve_id"
+    t.string   "accepted_time"
+    t.string   "campaign_id"
+    t.string   "campaign_name"
+    t.string   "advertisement_id"
+    t.string   "advertisement_name"
+    t.string   "point"
+    t.string   "payment"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "app_driver_achievement_notices", ["campaign_source_id", "achieve_id"], name: "index_app_driver_achievement_notices_1", using: :btree
+  add_index "app_driver_achievement_notices", ["campaign_source_id"], name: "index_app_driver_achievement_notices_on_campaign_source_id", using: :btree
+
+  create_table "app_driver_campaigns", force: :cascade do |t|
+    t.integer  "campaign_source_id",                      null: false
+    t.integer  "identifier"
+    t.string   "name"
+    t.text     "location"
+    t.text     "remark"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.boolean  "budget_is_unlimited"
+    t.text     "detail"
+    t.text     "icon"
+    t.text     "url"
+    t.integer  "platform"
+    t.integer  "market"
+    t.integer  "price"
+    t.integer  "subscription_duration"
+    t.integer  "remaining"
+    t.integer  "duplication_type"
+    t.integer  "advertisement_count"
+    t.integer  "advertisement_identifier"
+    t.string   "advertisement_name"
+    t.integer  "advertisement_requisite"
+    t.integer  "advertisement_period"
+    t.integer  "advertisement_payment"
+    t.integer  "advertisement_point"
+    t.boolean  "available",                default: true, null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+  end
+
+  add_index "app_driver_campaigns", ["available"], name: "index_app_driver_campaigns_on_available", using: :btree
+  add_index "app_driver_campaigns", ["campaign_source_id"], name: "index_app_driver_campaigns_on_campaign_source_id", using: :btree
+
+  create_table "app_driver_configs", force: :cascade do |t|
+    t.integer  "campaign_source_id", null: false
+    t.integer  "site_identifier",    null: false
+    t.string   "site_key",           null: false
+    t.integer  "media_identifier",   null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "app_driver_configs", ["campaign_source_id"], name: "index_app_driver_configs_on_campaign_source_id", using: :btree
 
   create_table "campaign_categories", force: :cascade do |t|
     t.string   "name",       null: false

@@ -14,9 +14,12 @@ section.content
       h3.box-title その他
 
     .box-body
+      div
+        = link_to 'GREE キャンペーン一覧', gree_campaigns_path, class: 'btn btn-default'
+      div
+        = link_to 'ネットワーク一覧', networks_path, class: 'btn btn-default'
+
       ul
-        li = link_to 'GREE キャンペーン一覧', gree_campaigns_path
-        li = link_to 'ネットワークシステム一覧', network_systems_path
         li = link_to '管理画面 (本番環境)', 'https://reward-production.herokuapp.com/', target: '_blank'
         li = link_to '管理画面 (ステージング環境)', 'https://reward-staging.herokuapp.com/', target: '_blank'
 

@@ -38,7 +38,7 @@ ActiveRecord::Base.connection.execute("SELECT setval('campaign_categories_id_seq
 # まだ、確定していないので毎回変更してしまう。
 medium = Medium.find_or_create_by(id: 1)
 medium.media_type = MediaType::ANDROID
-medium.name = 'こゆび太郎 (仮)'
+medium.name = 'こゆび太郎'
 medium.key = '6Fk810vbM3'
 medium.save!
 
@@ -56,6 +56,9 @@ if Network.find_by(id: 2) == nil
 end
 if Network.find_by(id: 3) == nil
   Network.create(id: 3, name: 'Glossom')
+end
+if Network.find_by(id: 4) == nil
+  Network.create(id: 4, name: 'アドウェイズ')
 end
 
 # PostgreSQL 依存
@@ -83,6 +86,19 @@ if GreeConfig.find_by(campaign_source: campaign_source) == nil
                     site_identifier: 11779,
                     media_identifier: 1981,
                     site_key: "187c7439151c56bbf58d3f2c50bdad8e")
+end
+
+campaign_source = CampaignSource.find_or_create_by(id: NetworkSystemAppDriver::CS_ID_KOYUBI)
+campaign_source.network_system = NetworkSystem::APP_DRIVER
+campaign_source.name = "AppDriver (Android)"
+campaign_source.network_id = 4
+campaign_source.save!
+
+if AppDriverConfig.find_by(campaign_source: campaign_source) == nil
+  AppDriverConfig.create(campaign_source: campaign_source,
+                         site_identifier: 28517,
+                         site_key: "224cbaaf5044e0ff0862fed5fd558f67",
+                         media_identifier: 4328)
 end
 
 # 複数メディアの検証用

@@ -1,0 +1,24 @@
+section.content-header
+  h2 ネットワークシステム一覧
+
+section.content
+  .box.box-default
+    .box-body
+      table.table.table-bordered.table-hover
+        thead
+          tr
+            th.col-md-1 ID
+            th.col-md-9 名称
+            th.col-md-2
+        tbody
+          - @network_systems.each do |network_system|
+            tr
+              td
+                = link_to network_system.id, network_system, class: 'btn btn-default btn-xs'
+              td
+                = network_system.name
+              td.text-center
+                = link_to network_system, class: 'btn btn-default' do
+                  i.fa.fa-book
+
+

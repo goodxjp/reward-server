@@ -1,0 +1,66 @@
+= paginate @app_driver_campaigns
+
+table.table.table-striped.table-bordered.table-hover
+  thead
+    tr
+      th.col-md-1 ID
+      th.col-md-1 AppDriver ID
+      th.col-md-1 アイコン
+      th.col-md-2 名称
+      th.col-md-1
+        | price
+        br
+        | payment
+        br
+        | (point)
+      th.col-md-2
+        | platform
+        br
+        | requisite
+      th.col-md-1
+        | advertisement_count
+        br
+        | advertisement_name
+      th.col-md-1 状態
+      th.col-md-1 登録日時
+
+  tbody
+    - @app_driver_campaigns.each do |campaign|
+      tr
+        td
+          = link_to campaign.id, campaign, class: 'btn btn-default btn-xs'
+        td
+          = campaign.identifier
+        td
+          = image_tag campaign.icon, :size => '57x57'
+        td
+          = campaign.name
+
+        - td_class = (campaign.advertisement_payment != campaign.advertisement_point) ? "danger" : nil
+        td class="#{td_class}"
+          = campaign.price
+          br
+          = campaign.advertisement_payment
+          - if not campaign.advertisement_payment == campaign.advertisement_point
+            br
+            = "(#{campaign.advertisement_point})"
+        td
+          = label_platform(campaign.platform)
+          br
+          = label_requisite(campaign.advertisement_requisite)
+
+        - td_class = (campaign.advertisement_count > 1) ? "danger" : nil
+        td class="#{td_class}"
+          = campaign.advertisement_count
+          br
+          = campaign.advertisement_name
+
+        td.text-center
+          - if campaign.available
+            span.label.label-success 有効
+          - else
+            span.label.label-default 無効
+        td
+          = campaign.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S")
+
+= paginate @app_driver_campaigns

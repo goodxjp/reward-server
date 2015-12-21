@@ -22,12 +22,12 @@
     <% end %>
       <a href="/offers"><i class="fa fa-circle-o text-info"></i>オファー</a>
     </li>
-    <% if request.path_info.match(/^\/networks/) %>
+    <% if request.path_info.match(/^\/network_systems/) %>
     <li class="active">
     <% else %>
     <li>
     <% end %>
-      <a href="/networks"><i class="fa fa-circle-o text-info"></i>ネットワーク</a>
+      <a href="/network_systems"><i class="fa fa-circle-o text-info"></i>ネットワークシステム</a>
     </li>
     <% if request.path_info.match(/^\/media\b/) %>
     <li class="active">

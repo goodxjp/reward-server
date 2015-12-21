@@ -1,0 +1,58 @@
+section.content-header
+  h2 AppDriver キャンペーン詳細
+
+section.content
+  .row
+    .col-md-12
+      .box.box-default
+        .box-header.with-border
+          | キャンペーン登録を汎用的に
+
+        .box-body
+          form.form-horizontal
+            = fg_readonly_text('ID', @ns_campaign.id)
+            = fg_readonly_text('id', @ns_campaign.identifier)
+            = fg_readonly_text('name', @ns_campaign.name)
+            = fg_readonly_textarea('location', @ns_campaign.location)
+            = fg_readonly_textarea('remark', @ns_campaign.remark, 3)
+            = fg_readonly_text('start_time', l(@ns_campaign.start_time),
+                                 @ns_campaign.start_time > Time.now)
+            = fg_readonly_text('end_time', l(@ns_campaign.end_time))
+            = fg_readonly_text('budget_is_unlimited', @ns_campaign.budget_is_unlimited)
+            = fg_readonly_textarea('detail', @ns_campaign.detail, 3)
+            = fg_readonly_textarea('icon', @ns_campaign.icon)
+            = fg_readonly_textarea('url', @ns_campaign.url)
+
+            /= fg_readonly_text('platform', @ns_campaign.platform)
+            .form-group
+              label.col-md-4.control-label platform
+              .col-md-8
+                p.form-control-static
+                  = label_platform(@ns_campaign.platform)
+
+            /= fg_readonly_text('market', @ns_campaign.market)
+            .form-group
+              label.col-md-4.control-label market
+              .col-md-8
+                p.form-control-static
+                  = label_market(@ns_campaign.market)
+
+            = fg_readonly_text('price', @ns_campaign.price)
+            = fg_readonly_text('subscription_duration', @ns_campaign.subscription_duration)
+            = fg_readonly_text('remaining', @ns_campaign.remaining)
+            = fg_readonly_text('duplication_type', @ns_campaign.duplication_type)
+            = fg_readonly_text('advertisement_count', @ns_campaign.advertisement_count,
+                                 @ns_campaign.advertisement_count.to_i > 1)
+            = fg_readonly_text('advertisement_id', @ns_campaign.advertisement_identifier)
+            = fg_readonly_text('advertisement_name', @ns_campaign.advertisement_name)
+
+            .form-group
+              label.col-md-4.control-label advertisment_requisite
+              .col-md-8
+                p.form-control-static
+                  = label_requisite(@ns_campaign.advertisement_requisite)
+
+            = fg_readonly_text('advertisement_period', @ns_campaign.advertisement_period)
+            = fg_readonly_text('advertisement_payment', @ns_campaign.advertisement_payment)
+            = fg_readonly_text('advertisement_point', @ns_campaign.advertisement_point)
+

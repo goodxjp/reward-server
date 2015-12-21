@@ -29,5 +29,8 @@ module RewardServer
     config.generators do |g|
       g.test_framework = :rspec
     end
+
+    # http://easyramble.com/auto-load-rails-lib.html
+    config.autoload_paths += %W(#{config.root}/lib/utils)
   end
 end

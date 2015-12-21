@@ -1,0 +1,17 @@
+section.content-header
+  h2 AppDriver キャンペーン一覧
+
+section.content
+  .box.box-default
+    .box-header
+      = search_form_for @q, builder: SimpleForm::FormBuilder, html: { class: 'form-inline' } do |f|
+        => f.input :name_cont, label: false, placeholder: "名称"
+        => f.input :price_eq, label: false, placeholder: "price"
+        => f.input :platform_eq, label: false, placeholder: "platform"
+        => f.input :advertisement_requisite_eq, label: false, placeholder: "requisite"
+        => f.input :available_eq, label: false, placeholder: "状態", as: :select
+        = f.submit "検索", class: "btn btn-primary"
+
+    .box-body
+      == render 'list'
+

@@ -1,0 +1,33 @@
+table.table.table-striped.table-bordered.table-hover
+  thead
+    tr
+      th.col-sm-1 ID
+      th.col-sm-6 名前
+      th.col-sm-1 状態
+      th.col-sm-2 登録日時
+      th.col-sm-2.text-center
+        = link_to '新規登録', new_network_path, :class => 'btn btn-primary'
+
+  tbody
+    - @networks.each do |network|
+      tr
+        td
+          = network.id
+        td
+          = network.name
+        td.text-center
+          span.label.label-success 有効
+        td
+          = network.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S")
+        td.text-center
+          .btn-group
+            = link_to edit_network_path(network), class: 'btn btn-default' do
+              i.fa.fa-edit
+            .btn-group
+              .button.btn.btn-default.dropdown-toggle data-toggle='dropdown'
+                span.caret
+              ul.dropdown-menu.pull-right
+                li
+                  a href='#' レポート
+
+
