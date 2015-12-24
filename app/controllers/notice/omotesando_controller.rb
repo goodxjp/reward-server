@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 module Notice
   class OmotesandoController < NoticeController
+    # この通知はこゆび太郎用
+    # メディア ID (db/seeds.rb とあわせること)
+    MEDIA_ID_KOYUBI = 1
+
     #
     # adcrops
     #
@@ -11,18 +15,10 @@ module Notice
       #
 
       # メディア
-      medium = Medium.find_by_id(1)
-      if medium.nil?
-        logger.fatal "Not found Medium(1)."
-        render :nothing => true, :status => 404 and return
-      end
+      medium = Medium.find(MEDIA_ID_KOYUBI)
 
       # キャンペーンソース
-      campaign_source = CampaignSource.find_by_id(1)
-      if campaign_source.nil?
-        logger.fatal "Not found CampaignSource(1)."
-        render :nothing => true, :status => 404 and return
-      end
+      campaign_source = CampaignSource.find(1)
 
       # TODO: 要確認
       # 許可 IP アドレス
@@ -111,18 +107,10 @@ module Notice
       #
 
       # メディア
-      medium = Medium.find_by_id(1)
-      if medium.nil?
-        logger.fatal "Not found Medium(1)."
-        render :nothing => true, :status => 404 and return
-      end
+      medium = Medium.find(MEDIA_ID_KOYUBI)
 
       # キャンペーンソース
-      campaign_source = CampaignSource.find_by_id(2)
-      if campaign_source.nil?
-        logger.fatal "Not found CampaignSource(2)."
-        render :nothing => true, :status => 404 and return
-      end
+      campaign_source = CampaignSource.find(2)
 
       # TODO: 余裕があったら、sandbox 環境と本番環境のチェックを厳密に
       # 動作環境ごとに手軽に値を変える、管理できる仕組み
@@ -224,13 +212,122 @@ module Notice
       end
     end
 
+    #
+    # AppDriver
+    #
+    def app_driver
+      #
+      # 定数的なもの
+      #
+
+      # メディア
+      medium = Medium.find(MEDIA_ID_KOYUBI)
+
+      # キャンペーンソース
+      campaign_source = CampaignSource.find(NetworkSystemAppDriver::CS_ID_KOYUBI)
+
+      # 許可 IP アドレス
+      allow_from = [ "127.0.0.1", "59.106.111.156", "27.110.48.28", "59.106.111.152", "27.110.48.24" ]
+
+      # TODO: IP アドレスのチェックを共通化 (まずはキャッシュの仕組みを作ってから)
+      #
+      # IP アドレスのチェック
+      #
+      if not allow_from.include?(request.remote_ip)
+        LogUtil.fatal "remote_ip is incorrect(#{request.remote_ip})."
+        render :nothing => true, :status => 404 and return
+      end
+
+      identifier         = params[:identifier]
+      achieve_id         = params[:achieve_id]
+      accepted_time      = params[:accepted_time]
+      campaign_id        = params[:campaign_id]
+      campaign_name      = params[:campaign_name]
+      advertisement_id   = params[:advertisement_id]
+      advertisement_name = params[:advertisement_name]
+      point              = params[:point]
+      payment            = params[:payment]
+
+      #
+      # 通知ログの記録
+      #
+      # - よっぽどの事 (DB に入らないデータ) がない限り残す。
+      #
+      notice = AppDriverAchievementNotice.new
+      notice.campaign_source    = campaign_source
+      notice.identifier         = identifier
+      notice.achieve_id         = achieve_id
+      notice.accepted_time      = accepted_time
+      notice.campaign_id        = campaign_id
+      notice.campaign_name      = campaign_name
+      notice.advertisement_id   = advertisement_id
+      notice.advertisement_name = advertisement_name
+      notice.point              = point
+      notice.payment            = payment
+      if not notice.save
+        logger_fatal "Cannot save AppDriverAchievementNotice."
+        render :nothing => true, :status => 404 and return
+      end
+
+      # TODO: ここでパラメータチェックをした方が安全かも
+      # AppDriverAchievementNotice の Validation がいいかもと思ったけど、
+      # 不正データも保存しておきたいので別メソッドで。
+
+      #
+      # 同一成果の確認
+      # - すでに同じ achieve_id の通知を処理していたら、処理しない。
+      #
+      notices = AppDriverAchievementNotice.where(campaign_source: campaign_source, achieve_id: achieve_id)
+                                          .where.not(id: notice.id)  # 直前に保存した通知は対象外
+      notices.each do |notice|
+        achievements = Achievement.where(notification: notice)
+        if achievements.size > 0
+          logger.info "Retry notification achieved. (achieve_id = #{achieve_id})"
+
+          # 念のためデータ不整合チェック
+          LogUtil.fatal "Too many Achievement notice.id = #{notice.id}." if achievements.size > 1
+
+          # 正常で返す
+          render_app_driver_added_point and return
+        else
+          logger.info "Retry notification not achieved. (achieve_id = #{achieve_id})"
+        end
+      end
+
+      # achieve_id の処理だけでいいと思うが、
+      # achieve_id, identifier でチェックしろと仕様書にある。identifier ごとに achieve_id 違うの？
+      #notices = AppDriverAchievementNotice.where(identifier: identifier, achieve_id: achieve_id)
+
+      # 値の対応関係
+      source_campaign_identifier = campaign_id
+      #offer_id = (わからない)
+      payment = payment.to_i
+      payment_is_including_tax = false
+      media_user_id = identifier.to_i
+      occurred_at = @now
+      sales_at = Time.zone.parse(accepted_time)
+
+      #
+      # 共通処理
+      #
+      if check_and_add_achievement_without_offer(medium, campaign_source,
+                                                 source_campaign_identifier, payment, payment_is_including_tax,
+                                                 media_user_id, occurred_at, notice,
+                                                 sales_at: sales_at)
+        render_app_driver_added_point
+      else
+        render_app_driver_not_added_point
+      end
+    end
+
     private
       #
       # ネットワークシステムに依存しない処理 (オファーが特定できる場合)
       #
       def check_and_add_achievement(medium, campaign_source,
                                     source_campaign_identifier, offer_id, payment, payment_is_including_tax,
-                                    media_user_id, occurred_at, notice)
+                                    media_user_id, occurred_at, notice,
+                                    sales_at: nil)
         # キャンペーンとオファーの特定
         campaigns = Campaign.where(campaign_source: campaign_source,
                                    source_campaign_identifier: source_campaign_identifier)
@@ -286,10 +383,99 @@ module Notice
         ActiveRecord::Base.transaction do
           # TODO: ロックのテスト
           media_user.lock!
-          Achievement.add_achievement(media_user, campaign, payment, payment_is_including_tax, offer.point, occurred_at, notice)
+          # TODO: sales_at のテスト
+          if sales_at.nil?
+            Achievement.add_achievement(media_user, campaign, payment, payment_is_including_tax, offer.point, occurred_at,
+                                        notification: notice)
+          else
+            Achievement.add_achievement(media_user, campaign, payment, payment_is_including_tax, offer.point, occurred_at,
+                                        sales_at: sales_at, notification: notice)
+          end
         end
 
         return true
+      end
+
+      #
+      # ネットワークシステムに依存しない処理 (オファーが特定できない場合)
+      #
+      def check_and_add_achievement_without_offer(medium, campaign_source,
+                                    source_campaign_identifier, payment, payment_is_including_tax,
+                                    media_user_id, occurred_at, notice,
+                                    sales_at: nil)
+        # キャンペーンの特定
+        campaigns = Campaign.where(campaign_source: campaign_source,
+                                   source_campaign_identifier: source_campaign_identifier)
+        if not campaigns.count == 1
+          logger_fatal "Not found campaign(#{source_campaign_identifier}). count = #{campaigns.count}"
+          return false
+        end
+        campaign = campaigns[0]
+
+        # ユーザーの特定
+        media_user = MediaUser.find_by_id(media_user_id)
+        if media_user.nil?
+          logger_fatal "Not found MediaUser(#{media_user_id})."
+          return false
+        end
+
+        # オファーの特定 (付加ポイントを決定するためだけに利用)
+        offer = find_appropriate_offer(media_user, campaign, payment)
+        if offer.nil?
+          # クリック履歴なし
+          logger_fatal "Not found ClickHisotry (media_user.id = #{media_user.id}, campaign.id = #{campaign.id})."
+          return false
+        end
+
+        # 念のためメディアのチェックをしておく
+        if not media_user.medium.id == medium.id
+          logger_fatal "MediaUser is inconsistent. media_user.medium.id = #{media_user.medium.id}, medium.id = #{medium.id}"
+          return false
+        end
+
+        # クリック履歴はオファーの特定時に確認済み
+
+        # 成果を付ける
+        # TODO: トランザクションのテスト
+        ActiveRecord::Base.transaction do
+          # TODO: ロックのテスト
+          media_user.lock!
+          if sales_at.nil?
+            Achievement.add_achievement(media_user, campaign, payment, payment_is_including_tax, offer.point, occurred_at,
+                                        notification: notice)
+          else
+            Achievement.add_achievement(media_user, campaign, payment, payment_is_including_tax, offer.point, occurred_at,
+                                        sales_at: sales_at, notification: notice)
+          end
+        end
+
+        return true
+      end
+
+      #
+      # 報酬金額から最適なオファー (実行時の表示していたと思われるオファー) を見つける
+      #
+      # - 報酬そのままで、ポイントを変更した後にクリックされて、その後に成果が来た場合に間違える。
+      # - 先方で報酬変更された場合は、対象クリック履歴が見つからない場合がある。
+      #
+      def find_appropriate_offer(media_user, campaign, payment)
+        click_histories = ClickHistory.find_all_by_media_user_and_campaign(media_user, campaign).order(created_at: :desc)
+
+        if click_histories.size == 0
+          return nil  # クリック履歴なし
+        end
+
+        # 1 人が 1 案件に対してクリックする数はたかがしれているので、全部まわす
+        click_histories.each do |ch|
+          if ch.offer.payment == payment
+            # 最も最近にクリックされたオファーを返す
+            return ch.offer
+          end
+        end
+
+        # もし、報酬金額が同じクリック履歴が見つからなかったら、やむをえず最新のクリック履歴を使用する
+        LogUtil.fatal "Not found Appropriate Offer (media_user.id = #{media_user.id}, campaign.id = #{campaign.id}, payment = #{payment})."
+        return click_histories[0].offer
       end
 
       # GREE で「ポイント付与」の場合のレスポンス
@@ -298,8 +484,19 @@ module Notice
       end
 
       # GREE で「ポイント未付与」の場合のレスポンス (再送の必要がない)
-      # 再送がいる場合は 200 で返すべきではない
+      # 再送が必要の場合は 200 で返すべきではない
       def render_gree_not_added_point
+        render :text => "0", :status => 200
+      end
+
+      # AppDriver で「ポイント付与」の場合のレスポンス
+      def render_app_driver_added_point
+        render :text => "1", :status => 200
+      end
+
+      # AppDriver で「ポイント未付与」の場合のレスポンス (再送の必要がない)
+      # 再送が必要の場合は 200 で返すべきではない
+      def render_app_driver_not_added_point
         render :text => "0", :status => 200
       end
   end

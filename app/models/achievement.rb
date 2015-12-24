@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+#
+# 成果 (実質、キャンペーン成果)
+#
 class Achievement < ActiveRecord::Base
   belongs_to :media_user
   belongs_to :campaign
@@ -7,12 +10,48 @@ class Achievement < ActiveRecord::Base
   has_many :points, as: :source
 
   #
+  # Validator
+  #
+  validates :media_user, presence: true
+  validates :campaign, presence: true
+  validates :payment,
+    presence: true,
+    numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  # Rails バッドノウハウ
+  # http://qiita.com/mktakuya/items/a13c2175f0f0d9871038
+  #validates :payment_is_including_tax, presence: true
+  validates :payment_is_including_tax, inclusion: { in: [ true, false ] }
+
+  #
+  # メディアユーザーとキャンペーンを特定した後に成果を上げる
+  #
+  # * トランザクションは外部でかけること
+  # * メディアユーザーに対して、スレッドセーフではないので注意！
+  #
+  def self.add_achievement(media_user, campaign, payment, payment_is_including_tax, point, occurred_at,
+                           sales_at: occurred_at, notification: nil, point_type: PointType::AUTO)
+    achievement = Achievement.create!(media_user: media_user,
+                                      campaign: campaign,
+                                      payment: payment,
+                                      payment_is_including_tax: payment_is_including_tax,
+                                      sales_at: sales_at,
+                                      occurred_at: occurred_at,
+                                      notification: notification)
+
+    # 成果が上がったものは非表示にする
+    Hiding.create!(media_user: media_user, target: campaign)
+
+    # ポイント追加 (メディアユーザーに対して、非スレッドセーフ)
+    Point.add_point_by_achievement(media_user, point_type, point, achievement)
+  end
+
+  #
   # メディアユーザーとキャンペーンを特定した後に成果を上げる (売上日時がない場合)
   #
   # * トランザクションは外部でかけること
   # * メディアユーザーに対して、スレッドセーフではないので注意！
   #
-  def self.add_achievement(media_user, campaign, payment, payment_is_including_tax, point,
+  def self.old_add_achievement(media_user, campaign, payment, payment_is_including_tax, point,
                            occurred_at, notification, point_type = PointType::AUTO)
     achievement = Achievement.create!(media_user: media_user,
                                       campaign: campaign,

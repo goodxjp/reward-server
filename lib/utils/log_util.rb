@@ -1,6 +1,6 @@
-# -*- coding: cp932 -*-
+# -*- coding: utf-8 -*-
 module LogUtil
-  # Heroku でアラートを検出するために、ログメッセージにキーワードを挿入
+  # Heroku 縺ｧ繧｢繝ｩ繝ｼ繝医ｒ讀懷�ｺ縺吶ｋ縺溘ａ縺ｫ縲√Ο繧ｰ繝｡繝�繧ｻ繝ｼ繧ｸ縺ｫ繧ｭ繝ｼ繝ｯ繝ｼ繝峨ｒ謖ｿ蜈･
   def self.fatal(message)
     Rails.logger.fatal "[FATAL] #{message}"
   end

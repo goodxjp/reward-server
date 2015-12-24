@@ -89,6 +89,7 @@ Rails.application.routes.draw do
   namespace :notice do
     get 'omotesando/adcrops'
     get 'omotesando/gree'
+    get 'omotesando/app_driver'
   end
 
 
