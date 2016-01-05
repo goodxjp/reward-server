@@ -31,7 +31,48 @@ class AppDriverCampaign < ActiveRecord::Base
     ns_campaign
   end
 
+  def self.change_url(url)
+    # TODO: もと URL の不正を検知できるように
+    url.sub!(/_identifier=/, "_identifier=$USER_ID$")
+  end
+
+  def get_url_for_campaign
+    self.class.change_url(location)
+  end
+
   #
   # 対応するキャンペーン取得
   #
+
+  #
+  # キャンペーン生成
+  #
+  def new_campaign
+    campaign = Campaign.new
+
+    set_campaign(campaign)
+
+    campaign
+  end
+
+  def set_campaign(campaign)
+    campaign.network_id = NetworkSystemAppDriver::NETWORK_ID
+    campaign.campaign_source = campaign_source
+    campaign.source_campaign_identifier = identifier
+
+    campaign.name = name
+    campaign.detail = detail
+    campaign.icon_url = icon
+    campaign.url = get_url_for_campaign
+    campaign.requirement = advertisement_name
+    campaign.requirement_detail = remark
+    if subscription_duration == 0
+      campaign.period = "10 分程度"
+    else
+      campaign.period = "#{subscription_duration} 日程度"
+    end
+    campaign.price = price
+    campaign.payment = advertisement_payment
+    campaign.payment_is_including_tax = false
+  end
 end

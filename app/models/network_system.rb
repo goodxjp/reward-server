@@ -17,4 +17,21 @@ class NetworkSystem < ActiveHash::Base
   ]
 
   enum_accessor :network_system
+
+  # TODO: ↓ここら辺、メタプログラムできれいにできないか。
+
+  def get_concrete_class
+    case self
+    when NetworkSystem::GREE then
+      NetworkSystemGree
+    when NetworkSystem::APP_DRIVER then
+      NetworkSystemAppDriver
+    else
+      nil
+    end
+  end
+
+  def find_ns_campaign(ns_campaign_id)
+    get_concrete_class.find_ns_campaign(ns_campaign_id)
+  end
 end

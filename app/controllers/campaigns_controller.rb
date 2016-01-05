@@ -24,12 +24,23 @@ class CampaignsController < ApplicationController
       else
         @source = nil
       end
+    elsif @campaign.campaign_source_id == NetworkSystemAppDriver::CS_ID_KOYUBI
+      @source = @campaign.get_ns_campaign
     end
   end
 
   # GET /campaigns/new
   def new
-    if not params[:gree_campaign_id].nil?
+    if not params[:network_system_id].nil?
+      network_system = NetworkSystem.find(params[:network_system_id])
+
+      # ネットワークシステム独自キャンペーンを取得
+      #ns_campaign = AppDriverCampaign.find(params[:ns_campaign_id])
+      ns_campaign = network_system.find_ns_campaign(params[:ns_campaign_id])
+
+      @campaign = ns_campaign.new_campaign
+
+    elsif not params[:gree_campaign_id].nil?
       gree_campaign = GreeCampaign.find(params[:gree_campaign_id])
       @campaign = Campaign.new
       # TODO: ここらへんの変換ルールをモデルに
@@ -38,6 +49,8 @@ class CampaignsController < ApplicationController
       @campaign.source_campaign_identifier = gree_campaign.campaign_identifier
 
       @campaign.name = gree_campaign.site_name
+
+
       @campaign.detail = gree_campaign.site_description
       @campaign.icon_url = gree_campaign.icon_url
       @campaign.url = gree_campaign.get_url_for_campaign

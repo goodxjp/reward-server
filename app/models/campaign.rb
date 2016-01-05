@@ -39,6 +39,16 @@ class Campaign < ActiveRecord::Base
     :allow_nil => true
 
   #
+  # ネットワークシステム独自キャンペーン取得
+  #
+  def get_ns_campaign
+    ns_concrete_class = campaign_source.network_system.get_concrete_class
+    ns_campaign = ns_concrete_class.get_ns_campaign_by_campaign(self)
+
+    ns_campaign
+  end
+
+  #
   # 関連オファーを更新する
   #
   # - トランザクション、ロックは上位でかけること。

@@ -19,9 +19,11 @@
             ソース
           </label>
           <div class="col-md-8">
-            <% if not @source.nil? %>
-            <%= link_to '詳細', @source, class: 'btn btn-default btn-xs' %>
-            <% end %>
+            <p class="form-control-static">
+              <% if not @source.nil? %>
+              <%= link_to '詳細', @source, class: 'btn btn-default btn-xs' %>
+              <% end %>
+            </p>
           </div>
         </div>
         <div class="form-group">

@@ -6,7 +6,7 @@ section.content
     .col-md-12
       .box.box-default
         .box-header.with-border
-          | キャンペーン登録を汎用的に
+          = link_to 'キャンペーン登録', new_campaign_path({ network_system_id: NetworkSystem::APP_DRIVER, ns_campaign_id: @ns_campaign.id  }), class: "btn btn-primary"
 
         .box-body
           form.form-horizontal

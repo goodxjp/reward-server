@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class NetworkSystemGree < NetworkSystem
+class NetworkSystemGree
   def self.make_gree_digest_for_redirect_url(campaign, media_user)
     # メディア ID と siteKey はキャンペーンソースによって変わるので DB に保存
     config = GreeConfig.find_by(campaign_source: campaign.campaign_source)

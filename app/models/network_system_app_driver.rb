@@ -2,10 +2,39 @@
 #
 # AppDriver システム
 #
-class NetworkSystemAppDriver < NetworkSystem
+class NetworkSystemAppDriver
+  # ネットワーク ID
+  NETWORK_ID = 4
+
   # AppDriver に新規メディアを登録するごとに追加する
   # キャンペーンソース ID
   CS_ID_KOYUBI = 3
+
+  #
+  # ネットワークシステム独自キャンペーン取得 (抽象メソッド実現)
+  #
+  def self.find_ns_campaign(ns_campaign_id)
+    ns_campaign = AppDriverCampaign.find(ns_campaign_id)
+
+    ns_campaign
+  end
+
+  #
+  # ネットワークシステム独自キャンペーン取得 (抽象メソッド実現)
+  #
+  def self.get_ns_campaign_by_campaign(campaign)
+    ns_campaigns = AppDriverCampaign.where(campaign_source: campaign.campaign_source, identifier: campaign.source_campaign_identifier)
+    if ns_campaigns.size > 1
+      LogUtil.fatal "AppDriverCampaign is incorrect. (identifier = #{campaign.source_campaign_identifier})"
+      ns_campaign = ns_campaigns[0]
+    elsif ns_campaigns.size == 1
+      ns_campaign = ns_campaigns[0]
+    else
+      ns_campaign = nil
+    end
+
+    ns_campaign
+  end
 
   #
   # 案件取得関連
