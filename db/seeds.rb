@@ -75,10 +75,10 @@ campaign_source.name = "adcrops (Android)"
 campaign_source.network_id = 2
 campaign_source.save!
 
-campaign_source = CampaignSource.find_or_create_by(id: 2)
+campaign_source = CampaignSource.find_or_create_by(id: NetworkSystemGree::CS_ID_KOYUBI)
 campaign_source.network_system = NetworkSystem::GREE
 campaign_source.name = "GREE (Android)"
-campaign_source.network_id = 3
+campaign_source.network_id = NetworkSystemGree::NETWORK_ID
 campaign_source.save!
 
 if GreeConfig.find_by(campaign_source: campaign_source) == nil
@@ -91,7 +91,7 @@ end
 campaign_source = CampaignSource.find_or_create_by(id: NetworkSystemAppDriver::CS_ID_KOYUBI)
 campaign_source.network_system = NetworkSystem::APP_DRIVER
 campaign_source.name = "AppDriver (Android)"
-campaign_source.network_id = 4
+campaign_source.network_id = NetworkSystemAppDriver::NETWORK_ID
 campaign_source.save!
 
 if AppDriverConfig.find_by(campaign_source: campaign_source) == nil

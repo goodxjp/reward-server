@@ -39,4 +39,36 @@ class GreeCampaign < ActiveRecord::Base
 
     campaign
   end
+
+  #
+  # キャンペーン生成
+  #
+  def new_campaign
+    campaign = Campaign.new
+
+    set_campaign(campaign)
+
+    campaign
+  end
+
+  def set_campaign(campaign)
+    campaign.network_id = NetworkSystemGree::NETWORK_ID
+    campaign.campaign_source = campaign_source
+    campaign.source_campaign_identifier = campaign_identifier
+
+    campaign.name = site_name
+    campaign.detail = site_description
+    campaign.icon_url = icon_url
+    campaign.url = get_url_for_campaign
+    campaign.requirement = default_thanks_name
+    campaign.requirement_detail = draft
+    if thanks_thanks_period == 0
+      campaign.period = "10 分程度"
+    else
+      campaign.period = "#{thanks_thanks_period} 日程度"
+    end
+    campaign.price = site_price
+    campaign.payment = thanks_media_revenue
+    campaign.payment_is_including_tax = true
+  end
 end

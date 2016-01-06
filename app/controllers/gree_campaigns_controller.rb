@@ -14,16 +14,7 @@ class GreeCampaignsController < ApplicationController
   # GET /campaigns/1.json
   def show
     # 対応するキャンペーン
-    campaigns = Campaign.where(campaign_source: @gree_campaign.campaign_source, source_campaign_identifier: @gree_campaign.campaign_identifier)
-    if campaigns.size > 1
-      logger_fatal "Campaigns are duplication. (campaign_source = #{@gree_campaign.campaign_source}, source_campaign_identifier =  #{@gree_campaign.campaign_identifier} )"
-      @campaign = campaigns[0]
-      # TODO: 警告出したい
-    elsif campaigns.size == 1
-      @campaign = campaigns[0]
-    else
-      @campaign = nil
-    end
+    @campaign = @gree_campaign.corresponding_campaign
   end
 
   # DELETE /campaigns/1

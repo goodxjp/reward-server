@@ -43,6 +43,10 @@ class Campaign < ActiveRecord::Base
   #
   def get_ns_campaign
     ns_concrete_class = campaign_source.network_system.get_concrete_class
+    if ns_concrete_class.nil?
+      return nil
+    end
+
     ns_campaign = ns_concrete_class.get_ns_campaign_by_campaign(self)
 
     ns_campaign

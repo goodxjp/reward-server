@@ -110,7 +110,7 @@ module Notice
       medium = Medium.find(MEDIA_ID_KOYUBI)
 
       # キャンペーンソース
-      campaign_source = CampaignSource.find(2)
+      campaign_source = CampaignSource.find(NetworkSystemGree::CS_ID_KOYUBI)
 
       # TODO: 余裕があったら、sandbox 環境と本番環境のチェックを厳密に
       # 動作環境ごとに手軽に値を変える、管理できる仕組み

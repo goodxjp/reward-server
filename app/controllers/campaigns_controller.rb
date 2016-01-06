@@ -12,21 +12,8 @@ class CampaignsController < ApplicationController
   # GET /campaigns/1
   # GET /campaigns/1.json
   def show
-    # 対応する GREE キャンペーン
-    # TODO: 汎用的に
-    if @campaign.campaign_source_id == 2
-      gree_campaigns = GreeCampaign.where(campaign_source: @campaign.campaign_source, campaign_identifier: @campaign.source_campaign_identifier)
-      if gree_campaigns.size > 1
-        logger_fatal "GreeCampaigns is incorrect. (campaign_identifier = #{@campaign.source_campaign_identifier})"
-        @source = gree_campaigns[0]
-      elsif gree_campaigns.size == 1
-        @source = gree_campaigns[0]
-      else
-        @source = nil
-      end
-    elsif @campaign.campaign_source_id == NetworkSystemAppDriver::CS_ID_KOYUBI
-      @source = @campaign.get_ns_campaign
-    end
+    # 対応するネットワーク独自キャンペーン
+    @source = @campaign.get_ns_campaign
   end
 
   # GET /campaigns/new
@@ -39,32 +26,6 @@ class CampaignsController < ApplicationController
       ns_campaign = network_system.find_ns_campaign(params[:ns_campaign_id])
 
       @campaign = ns_campaign.new_campaign
-
-    elsif not params[:gree_campaign_id].nil?
-      gree_campaign = GreeCampaign.find(params[:gree_campaign_id])
-      @campaign = Campaign.new
-      # TODO: ここらへんの変換ルールをモデルに
-      @campaign.network_id = 3  # TODO: ここら辺もう定数だな。どうにかしたい。
-      @campaign.campaign_source_id = 2  # TODO: ここら辺もう定数だな。どうにかしたい。
-      @campaign.source_campaign_identifier = gree_campaign.campaign_identifier
-
-      @campaign.name = gree_campaign.site_name
-
-
-      @campaign.detail = gree_campaign.site_description
-      @campaign.icon_url = gree_campaign.icon_url
-      @campaign.url = gree_campaign.get_url_for_campaign
-      @campaign.requirement = gree_campaign.default_thanks_name
-      @campaign.requirement_detail = gree_campaign.draft
-
-      if gree_campaign.thanks_thanks_period == 0
-        @campaign.period = "10 分程度"
-      else
-        @campaign.period = "#{gree_campaign.thanks_thanks_period} 日程度"
-      end
-      @campaign.price = gree_campaign.site_price
-      @campaign.payment = gree_campaign.thanks_media_revenue
-      @campaign.payment_is_including_tax = true
     else
       @campaign = Campaign.new
     end

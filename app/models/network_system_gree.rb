@@ -1,5 +1,38 @@
 # -*- coding: utf-8 -*-
 class NetworkSystemGree
+  # ネットワーク ID
+  NETWORK_ID = 3
+
+  # 新規メディアを登録するごとに追加する
+  # キャンペーンソース ID
+  CS_ID_KOYUBI = 2
+
+  #
+  # ネットワークシステム独自キャンペーン取得 (抽象メソッド実現)
+  #
+  def self.find_ns_campaign(ns_campaign_id)
+    ns_campaign = GreeCampaign.find(ns_campaign_id)
+
+    ns_campaign
+  end
+
+  #
+  # ネットワークシステム独自キャンペーン取得 (抽象メソッド実現)
+  #
+  def self.get_ns_campaign_by_campaign(campaign)
+    ns_campaigns = GreeCampaign.where(campaign_source: campaign.campaign_source, campaign_identifier: campaign.source_campaign_identifier)
+    if ns_campaigns.size > 1
+      LogUtil.fatal "GreeCampaign is incorrect. (campaign_identifier = #{campaign.source_campaign_identifier})"
+      ns_campaign = ns_campaigns[0]
+    elsif ns_campaigns.size == 1
+      ns_campaign = ns_campaigns[0]
+    else
+      ns_campaign = nil
+    end
+
+    ns_campaign
+  end
+
   def self.make_gree_digest_for_redirect_url(campaign, media_user)
     # メディア ID と siteKey はキャンペーンソースによって変わるので DB に保存
     config = GreeConfig.find_by(campaign_source: campaign.campaign_source)

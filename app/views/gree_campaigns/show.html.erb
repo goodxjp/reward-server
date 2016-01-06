@@ -8,7 +8,7 @@
       <div class="box box-default">
         <div class="box-header with-border">
           <% if @campaign.nil? %>
-            <%= link_to 'キャンペーン登録', new_campaign_path({ gree_campaign_id: @gree_campaign.id }), :class => 'btn btn-primary' %>
+            <%= link_to 'キャンペーン登録', new_campaign_path({ network_system_id: NetworkSystem::GREE, ns_campaign_id: @gree_campaign.id }), :class => 'btn btn-primary' %>
           <% else %>
             <%= link_to 'キャンペーン更新', edit_campaign_path(@campaign), :class => 'btn btn-primary' %>
           <% end %>

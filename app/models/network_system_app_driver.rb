@@ -6,7 +6,7 @@ class NetworkSystemAppDriver
   # ネットワーク ID
   NETWORK_ID = 4
 
-  # AppDriver に新規メディアを登録するごとに追加する
+  # 新規メディアを登録するごとに追加する
   # キャンペーンソース ID
   CS_ID_KOYUBI = 3
 
