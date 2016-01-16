@@ -54,4 +54,20 @@ module ApplicationHelper
       false
     end
   end
+
+  def label_available(available)
+    attributes = {}
+
+    if available
+      attributes[:class] = "label label-success"
+      content = "有効"
+    else
+      attributes[:class] = "label label-default"
+      content = "無効"
+    end
+
+    content_tag(:span, attributes) do
+      content
+    end
+  end
 end

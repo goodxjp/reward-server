@@ -14,12 +14,22 @@ section.content
         .box-body
           form.form-horizontal
             = fg_readonly_text('ID', @ns_campaign.id)
+            .form-group
+              label.col-md-4.control-label ステータス
+              .col-md-8
+                p.form-control-static
+                  = label_available(@ns_campaign.available)
+            = fg_readonly_text('登録日時', l(@ns_campaign.created_at))
+            = fg_readonly_text('更新日時', l(@ns_campaign.updated_at))
+
+            hr
+
             = fg_readonly_text('id', @ns_campaign.identifier)
             = fg_readonly_text('name', @ns_campaign.name)
             = fg_readonly_textarea('location', @ns_campaign.location)
             = fg_readonly_textarea('remark', @ns_campaign.remark, 3)
             = fg_readonly_text('start_time', l(@ns_campaign.start_time),
-                                 @ns_campaign.start_time > Time.now)
+                                @ns_campaign.start_time > Time.now)
             = fg_readonly_text('end_time', l(@ns_campaign.end_time))
             = fg_readonly_text('budget_is_unlimited', @ns_campaign.budget_is_unlimited)
             = fg_readonly_textarea('detail', @ns_campaign.detail, 3)

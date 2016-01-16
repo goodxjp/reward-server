@@ -56,10 +56,7 @@ table.table.table-striped.table-bordered.table-hover
           = campaign.advertisement_name
 
         td.text-center
-          - if campaign.available
-            span.label.label-success 有効
-          - else
-            span.label.label-default 無効
+         = label_available(campaign.available)
         td
           = campaign.created_at.in_time_zone("Asia/Tokyo").strftime("%Y-%m-%d %H:%M:%S")
 
