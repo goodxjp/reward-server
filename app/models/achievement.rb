@@ -84,7 +84,7 @@ class Achievement < ActiveRecord::Base
     notification = nil
 
     self.add_achievement(media_user, campaign, payment, payment_is_including_tax, point,
-                         occurred_at, notification, PointType::MANUAL)
+                         occurred_at, point_type: PointType::MANUAL)
   end
 
   # TODO: ここら辺のネットワークに依存した処理をどこかに一元化できないか？
