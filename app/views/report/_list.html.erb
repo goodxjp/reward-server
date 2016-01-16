@@ -5,12 +5,15 @@
 
       <th class="col-sm-2" colspan="2">8crops</th>
       <th class="col-sm-2" colspan="2">Glossom</th>
+      <th class="col-sm-2" colspan="2">アドウェイズ</th>
 
-      <th class="col-sm-2" rowspan="2">発行ポイント</th>
-      <th class="col-sm-2" rowspan="2">交換ポイント</th>
+      <th class="col-sm-1" rowspan="2">発行<br>ポイント</th>
+      <th class="col-sm-1" rowspan="2">交換<br>ポイント</th>
       <th class="col-sm-2" rowspan="2">利益</th>
     </tr>
     <tr>
+      <th class="col-sm-1">売上</th>
+      <th class="col-sm-1">消費税</th>
       <th class="col-sm-1">売上</th>
       <th class="col-sm-1">消費税</th>
       <th class="col-sm-1">売上</th>
@@ -26,6 +29,8 @@
       <td class="text-right"><%= number_with_delimiter(row["network_2"][:payment_consumption_tax]) %></td>
       <td class="text-right"><%= number_with_delimiter(row["network_3"][:payment_excluding_tax]) %></td>
       <td class="text-right"><%= number_with_delimiter(row["network_3"][:payment_consumption_tax]) %></td>
+      <td class="text-right"><%= number_with_delimiter(row["network_4"][:payment_excluding_tax]) %></td>
+      <td class="text-right"><%= number_with_delimiter(row["network_4"][:payment_consumption_tax]) %></td>
       <td class="text-right"><%= number_with_delimiter(row[:published_point]) %></td>
       <td class="text-right"><%= number_with_delimiter(row[:exchanged_point]) %></td>
       <td class="text-right"><%= number_with_delimiter(row[:profit]) %></td>
@@ -35,6 +40,8 @@
 
   <tfoot>
     <tr>
+      <td></td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
