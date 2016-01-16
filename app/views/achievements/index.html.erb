@@ -13,7 +13,10 @@
     <thead>
       <tr>
         <th class="col-md-1">ID</th>
-        <th class="col-md-2">売上日時</th>
+        <th class="col-md-2">
+          売上日時<br>
+          (発生日時)
+        </th>
         <th class="col-md-2">ネットワーク</th>
         <th class="col-md-2">キャンペーン</th>
         <th class="col-md-1"></th>
@@ -33,7 +36,7 @@
         <td class="text-center">
           <%= achievement.id %>
         </td>
-        <% if not achievement.sales_at == achievement.occurred_at  # 売上日時が発生日時と異なる場合は目立たせる %>
+        <% if (achievement.sales_at <= achievement.occurred_at - 60) or (achievement.sales_at >= achievement.occurred_at + 60) # 売上日時が発生日時が 1 分以上異なる場合は目立たせる %>
         <td class="danger">
         <% else  %>
         <td>
@@ -42,7 +45,7 @@
             <%= l achievement.sales_at, :format => :default %>
           <% end %>
           <% if not achievement.sales_at == achievement.occurred_at %>
-            <%= l achievement.occurred_at, :format => :default %>
+            (<%= l achievement.occurred_at, :format => :default %>)
           <% end %>
         </td>
         <td>
