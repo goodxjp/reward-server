@@ -38,6 +38,12 @@ namespace :gree do
       #puts "##### #{c.id} #####"
       #puts c.name
 
+      # GREE キャンペーンがミュートかどうかチェック
+      mute = Mute.find_by(target: gree_campaign)
+      if not mute.nil?
+        next
+      end
+
       # 有効、無効に不整合がないかチェック
       #puts c.available
       #puts gree_campaign.available

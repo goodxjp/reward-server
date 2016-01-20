@@ -22,6 +22,33 @@
               </div>
             </div>
             <div class="form-group">
+              <label class="col-md-4 control-label">ステータス</label>
+              <div class="col-md-8">
+                <div class="form-control-static">
+                  <% if @gree_campaign.available %>
+                  <span class="label label-success">有効</span>
+                  <% else %>
+                  <span class="label label-default">無効</span>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-4 control-label">登録日時</label>
+              <div class="col-md-8">
+                <div class="form-control"><%= l @gree_campaign.created_at, :format => :default %></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-4 control-label">更新日時</label>
+              <div class="col-md-8">
+                <div class="form-control"><%= l @gree_campaign.updated_at, :format => :default %></div>
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="form-group">
               <label class="col-md-4 control-label">site_price</label>
               <div class="col-md-8">
                 <div class="form-control"><%= @gree_campaign.site_price %></div>
@@ -209,29 +236,21 @@
               </div>
             </div>
 
+            <hr>
+
             <div class="form-group">
-              <label class="col-md-4 control-label">ステータス</label>
+              <label class="col-md-4 control-label"></label>
               <div class="col-md-8">
-                  <% if @gree_campaign.available %>
-                  <span class="label label-success">有効</span>
+                <div class="form-control-static">
+                  <% if @is_mute %>
+                    <%= link_to 'ミュート解除', toggle_mute_gree_campaign_path, class: 'btn btn-default btn-xs', method: :put, data: { confirm: 'レポート通知を再開します？' } %>
                   <% else %>
-                  <span class="label label-default">無効</span>
+                    <%= link_to 'ミュート', toggle_mute_gree_campaign_path, class: 'btn btn-default btn-xs', method: :put, data: { confirm: 'レポート通知を停止します？' } %>
                   <% end %>
+                </div>
               </div>
             </div>
 
-            <div class="form-group">
-              <label class="col-md-4 control-label">登録日時</label>
-              <div class="col-md-8">
-                <div class="form-control"><%= l @gree_campaign.created_at, :format => :default %></div>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-md-4 control-label">更新日時</label>
-              <div class="col-md-8">
-                <div class="form-control"><%= l @gree_campaign.updated_at, :format => :default %></div>
-              </div>
-            </div>
           </form>
         </div>
       </div><!-- /.box -->

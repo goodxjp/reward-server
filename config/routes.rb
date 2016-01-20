@@ -50,7 +50,11 @@ Rails.application.routes.draw do
   resources :network_systems
 
   # GREE Ads Reward
-  resources :gree_campaigns
+  resources :gree_campaigns do
+    member do
+      put 'toggle_mute'
+    end
+  end
 
   # AppDriver
   resources :app_driver_campaigns

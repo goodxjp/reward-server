@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class GreeCampaignsController < ApplicationController
   before_action :authenticate_admin_user!
-  before_action :set_gree_campaign, only: [:show, :destroy]
+  before_action :set_gree_campaign, only: [:show, :destroy, :toggle_mute]
 
   # GET /campaigns
   # GET /campaigns.json
@@ -15,6 +15,13 @@ class GreeCampaignsController < ApplicationController
   def show
     # 対応するキャンペーン
     @campaign = @gree_campaign.corresponding_campaign
+
+    mute = Mute.find_by(target: @gree_campaign)
+    if mute.nil?
+      @is_mute = false
+    else
+      @is_mute = true
+    end
   end
 
   # DELETE /campaigns/1
@@ -25,6 +32,18 @@ class GreeCampaignsController < ApplicationController
       format.html { redirect_to campaigns_url, notice: 'Campaign was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+  def toggle_mute
+    mute = Mute.find_by(target: @gree_campaign)
+
+    if mute.nil?
+      Mute.create(target: @gree_campaign)
+    else
+      mute.destroy
+    end
+
+    redirect_to action: :show
   end
 
   private
