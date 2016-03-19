@@ -26,6 +26,22 @@ namespace :app_driver do
 
     document = NetworkSystemAppDriver.get_campaigns(uri_string, site_id, media_id, site_key)
     #File.write("app_driver.xml", document)  # デバッグ用
-    NetworkSystemAppDriver.register_campaigns(campaign_source, document)
+    create_ns_campaigns, update_ns_campaigns, delete_ns_campaigns = NetworkSystemAppDriver.register_campaigns(campaign_source, document)
+
+    # TODO: 追加されたネットワーク独自キャンペーンのうち、明らかに Android 登録案件のものを登録
+
+    # TODO: 削除されたネットワーク独自キャンペーンに対応するキャンペーンを無効にする
+
+    # レポートメール送信
+    if create_ns_campaigns.size > 0 or delete_ns_campaigns.size > 0
+      AdminUserMailer.report_app_driver_get(create_ns_campaigns, delete_ns_campaigns).deliver
+    end
+
+  end
+
+  # チェックのみでデータの変更は行わないこと！
+  desc "Cehck AppDriver data"
+  task :check => :environment do
+    # TODO
   end
 end

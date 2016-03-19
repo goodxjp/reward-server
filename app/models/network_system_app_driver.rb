@@ -39,6 +39,10 @@ class NetworkSystemAppDriver
   #
   # 案件取得関連
   #
+
+  #
+  # ネットワークシステム独自キャンペーンをサーバーから取得
+  #
   def self.get_campaigns(uri_string, site_id, media_id, site_key)
     digest = Digest::SHA256.hexdigest "#{media_id}:#{site_key}"
 
@@ -51,6 +55,9 @@ class NetworkSystemAppDriver
     return document
   end
 
+  #
+  # ネットワークシステム独自キャンペーンを登録
+  #
   def self.register_campaigns(campaign_source, document)
     xml = Nokogiri::XML(document)
 
@@ -58,6 +65,11 @@ class NetworkSystemAppDriver
     # ここから取得データにあったものを消していき、残ったものが無効になったキャンペーン
     current_ids = AppDriverCampaign.where(campaign_source: campaign_source,
                                           available: true).ids
+
+    # 追加、更新、削除のキャンペーンを保存
+    create_ns_campaigns = []
+    update_ns_campaigns = []
+    delete_ns_campaigns = []
 
     campaigns = xml.xpath("//campaign")
     campaigns.each do |xml_campaign|
@@ -68,6 +80,7 @@ class NetworkSystemAppDriver
 
       if ns_campaign.nil?
         ns_campaign = AppDriverCampaign.new
+        create_ns_campaigns << ns_campaign
       end
 
       # TODO: 毎回全部上書き → 変更があるのものみ上書き
@@ -82,7 +95,10 @@ class NetworkSystemAppDriver
     puts "Turn to invalid. current_ids = #{current_ids.to_s}"
     AppDriverCampaign.where(id: current_ids).each do |nsc|
       nsc.update(available: false)
+      delete_ns_campaigns << nsc
     end
+
+    return create_ns_campaigns, update_ns_campaigns, delete_ns_campaigns
   end
 
   def self.xml_to_campaign(xml, campaign_source, campaign)

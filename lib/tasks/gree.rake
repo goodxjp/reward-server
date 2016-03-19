@@ -4,6 +4,7 @@ require 'open-uri'
 require 'kconv'
 
 namespace :gree do
+  # チェックのみでデータの変更は行わないこと！
   desc "Cehck GREE Ads Reward data"
   task :check => :environment do
     # 登録済みの GREE のキャンペーンを全てとってきてチェック

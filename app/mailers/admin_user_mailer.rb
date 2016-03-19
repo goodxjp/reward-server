@@ -23,6 +23,16 @@ class AdminUserMailer < ActionMailer::Base
     mail subject: subject
   end
 
+  def report_app_driver_get(create_ns_campaigns, delete_ns_campaigns)
+    @create_ns_campaigns = create_ns_campaigns
+    @delete_ns_campaigns = delete_ns_campaigns
+
+    subject = "Report AppDriver Get"
+    subject = "[Staging] #{subject}"if staging?
+
+    mail subject: subject
+  end
+
   # TODO: いろんな所で使うので、ユーティリティ化したい。
   def staging?
     if (ENV['NEW_RELIC_APP_NAME'] == 'reward-staging')

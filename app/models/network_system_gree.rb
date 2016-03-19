@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+#
+# GREE Ads Reward システム
+#
 class NetworkSystemGree
   # ネットワーク ID
   NETWORK_ID = 3
@@ -55,6 +58,10 @@ class NetworkSystemGree
   #
   # 案件取得関連
   #
+
+  #
+  # ネットワークシステム独自キャンペーンをサーバーから取得
+  #
   def self.get_campaigns(uri_string, site_id, media_id, key)
     request_time = Time.zone.now.to_i
     digest = Digest::SHA256.hexdigest "#{site_id}:#{request_time}:#{key}"
@@ -68,6 +75,9 @@ class NetworkSystemGree
     return document
   end
 
+  #
+  # ネットワークシステム独自キャンペーンを登録
+  #
   def self.register_campaigns(campaign_source, document)
     json = JSON.parse(document)
 
@@ -87,7 +97,7 @@ class NetworkSystemGree
       json['result'].each do |o|
         campaign_identifier = o['campaign_id'].to_s
 
-        # 既存の GREE キャンペーンを取得 (無効なものもあるかもしれないので一度取り直す)
+        # 既存のネットワークシステム独自キャンペーンを取得 (無効なものもあるかもしれないので一度取り直す)
         gree_campaigns = GreeCampaign.where(campaign_source: campaign_source,
                                             campaign_identifier: campaign_identifier)
 
