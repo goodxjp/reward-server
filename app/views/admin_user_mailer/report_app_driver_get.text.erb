@@ -1,18 +1,7 @@
 Create (<%= @create_ns_campaigns.size %>)
-Delete (<%= @delete_ns_campaigns.size %>)
 
 ■Create
 <% @create_ns_campaigns.each do |nc| %>
-----------------------------------------
-##### campaign_id: <%= nc.identifier %> #####
-name_name: <%= nc.name %>
-advertisement_requisite:  <%= nc.advertisement_requisite %>
-advertisement_payment:  <%= nc.advertisement_payment %>
-----------------------------------------
-<% end %>
-
-■Delete
-<% @delete_ns_campaigns.each do |nc| %>
 ----------------------------------------
 ##### campaign_id: <%= nc.identifier %> #####
 name_name: <%= nc.name %>

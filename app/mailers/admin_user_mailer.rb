@@ -23,9 +23,11 @@ class AdminUserMailer < ActionMailer::Base
     mail subject: subject
   end
 
-  def report_app_driver_get(create_ns_campaigns, delete_ns_campaigns)
+  #
+  # AppDriver 案件取得レポートメール送信
+  #
+  def report_app_driver_get(create_ns_campaigns)
     @create_ns_campaigns = create_ns_campaigns
-    @delete_ns_campaigns = delete_ns_campaigns
 
     subject = "Report AppDriver Get"
     subject = "[Staging] #{subject}"if staging?

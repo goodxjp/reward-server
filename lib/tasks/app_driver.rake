@@ -32,9 +32,10 @@ namespace :app_driver do
 
     # TODO: 削除されたネットワーク独自キャンペーンに対応するキャンペーンを無効にする
 
-    # レポートメール送信
-    if create_ns_campaigns.size > 0 or delete_ns_campaigns.size > 0
-      AdminUserMailer.report_app_driver_get(create_ns_campaigns, delete_ns_campaigns).deliver
+    # レポートメール送信 (結構、頻繁に上げ下げされるので、削除したものはレポートメールで送らない)
+    #if create_ns_campaigns.size > 0 or delete_ns_campaigns.size > 0
+    if create_ns_campaigns.size > 0
+      AdminUserMailer.report_app_driver_get(create_ns_campaigns).deliver
     end
 
   end
