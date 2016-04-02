@@ -11,7 +11,7 @@ class Setting
 
   # デフォルト還元率
   def self.reduction_rate(now)
-    return 0.50
+    return 0.90
   end
 end
 

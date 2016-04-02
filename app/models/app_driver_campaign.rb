@@ -61,6 +61,8 @@ class AppDriverCampaign < ActiveRecord::Base
   #
   # キャンペーン生成
   #
+
+  # カテゴリ、報酬金額を決定できていない
   def new_campaign
     campaign = Campaign.new
 
@@ -88,5 +90,15 @@ class AppDriverCampaign < ActiveRecord::Base
     campaign.price = price
     campaign.payment = advertisement_payment
     campaign.payment_is_including_tax = false
+  end
+
+  # 自動登録対象かどうか？
+  def auto_register?
+    if (platform == 3) and (market == 1) and (advertisement_requisite == 15) and
+       (price == 0) and (subscription_duration == 0)
+      return true
+    else
+      return false
+    end
   end
 end

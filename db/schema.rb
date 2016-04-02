@@ -154,7 +154,7 @@ ActiveRecord::Schema.define(version: 20160120051724) do
     t.integer  "source_id"
     t.string   "source_type"
     t.string   "source_campaign_identifier"
-    t.integer  "campaign_category_id"
+    t.integer  "campaign_category_id",                       null: false
     t.string   "name",                                       null: false
     t.text     "detail"
     t.text     "icon_url"
@@ -347,7 +347,7 @@ ActiveRecord::Schema.define(version: 20160120051724) do
   create_table "offers", force: :cascade do |t|
     t.integer  "campaign_id",                              null: false
     t.integer  "medium_id",                                null: false
-    t.integer  "campaign_category_id"
+    t.integer  "campaign_category_id",                     null: false
     t.string   "name",                                     null: false
     t.text     "detail"
     t.text     "icon_url"
